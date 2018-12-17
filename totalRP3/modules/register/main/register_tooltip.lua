@@ -113,6 +113,17 @@ local Rainbowify = TRP3_API.utils.Rainbowify;
 
 local isTrial = IsTrialAccount();
 
+-- TODO Move me to a better place
+do
+	local OOC_ICON = TRP3_API.Ellyb.Icon("Interface\\COMMON\\Indicator-Red")
+	local OOC_TEXT = ColorManager.RED("[" .. loc.CM_OOC .. "] ")
+	---@return string The user's preferred OOC indicator according to the settings
+	function AddOn_TotalRP3.getPreferredOOCIndicator()
+		return getConfigValue(CONFIG_PREFER_OOC_ICON) == "TEXT" and OOC_TEXT or OOC_ICON:GenerateString(15, 15)
+	end
+end
+
+
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- Config getters
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

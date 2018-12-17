@@ -21,6 +21,8 @@
 local _, TRP3_API = ...;
 local Ellyb = TRP3_API.Ellyb;
 
+AddOn_TotalRP3.PlayerMapScanner = {}
+
 --{{{ Lua imports
 local tonumber = tonumber;
 local insert = table.insert;
@@ -38,6 +40,7 @@ local CONFIG_ENABLE_MAP_LOCATION = "register_map_location";
 local CONFIG_DISABLE_MAP_LOCATION_ON_OOC = "register_map_location_ooc";
 local CONFIG_DISABLE_MAP_LOCATION_ON_WAR_MODE = "register_map_location_disable_war_mode";
 local CONFIG_SHOW_DIFFERENT_WAR_MODES = "register_map_location_show_war_modes";
+local CONFIG_MAP_DIM_OUT_OOC = "register_map_location_dim_out_ooc";
 
 local player = AddOn_TotalRP3.Player.GetCurrentUser()
 
@@ -94,6 +97,13 @@ TRP3_API.Events.registerCallback(TRP3_API.Events.WORKFLOW_ON_LOADED, function()
 		configKey = CONFIG_SHOW_DIFFERENT_WAR_MODES,
 		dependentOnOptions = { CONFIG_ENABLE_MAP_LOCATION },
 	});
+	insert(TRP3_API.register.CONFIG_STRUCTURE.elements, {
+		inherit = "TRP3_ConfigCheck",
+		title = loc.CO_LOCATION_DIFFERENT_OOC,
+		help = loc.CO_LOCATION_DIFFERENT_OOC_TT,
+		configKey = CONFIG_MAP_DIM_OUT_OOC,
+		dependentOnOptions = { CONFIG_ENABLE_MAP_LOCATION },
+	});
 
 
 	local SCAN_COMMAND = "C_SCAN";
@@ -142,13 +152,13 @@ TRP3_API.Events.registerCallback(TRP3_API.Events.WORKFLOW_ON_LOADED, function()
 				end
 				local x, y = Map.getPlayerCoordinates();
 				if x and y then
-					broadcast.sendP2PMessage(sender, SCAN_COMMAND, x, y, C_PvP.IsWarModeActive());
+					broadcast.sendP2PMessage(sender, SCAN_COMMAND, x, y, C_PvP.IsWarModeActive(), player:IsInCharacter());
 				end
 			end
 		end
 	end)
 
-	broadcast.registerP2PCommand(SCAN_COMMAND, function(sender, x, y, hasWarModeActive)
+	broadcast.registerP2PCommand(SCAN_COMMAND, function(sender, x, y, hasWarModeActive, isInCharacter)
 		-- Booleans received from commands are strings, need to cast to boolean
 		hasWarModeActive = hasWarModeActive == "true"
 		local checkWarMode;
@@ -158,9 +168,15 @@ TRP3_API.Events.registerCallback(TRP3_API.Events.WORKFLOW_ON_LOADED, function()
 			checkWarMode = hasWarModeActive;
 		end
 
+		-- The isInCharacter flag was introduced later, we default to true if it is mising
+		if isInCharacter == nil then
+			isInCharacter = true
+		end
+
 		if Map.playerCanSeeTarget(sender, checkWarMode) then
 			playerMapScanner:OnScanDataReceived(sender, x, y, {
-				hasWarModeActive = hasWarModeActive
+				hasWarModeActive = hasWarModeActive,
+				isInCharacter = isInCharacter
 			})
 		end
 	end)

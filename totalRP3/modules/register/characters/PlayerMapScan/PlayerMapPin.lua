@@ -44,7 +44,9 @@ TRP3_PlayerMapPinMixin = AddOn_TotalRP3.MapPoiMixins.createPinTemplate(
 TRP3_PlayerMapPinMixin.TEMPLATE_NAME = "TRP3_PlayerMapPinTemplate";
 
 local CONFIG_SHOW_DIFFERENT_WAR_MODES = "register_map_location_show_war_modes";
+local CONFIG_MAP_DIM_OUT_OOC = "register_map_location_dim_out_ooc";
 local getConfigValue = TRP3_API.configuration.getValue;
+local DIMMED_OUT_COLOR = Ellyb.Color("#555")
 
 --- This is called when the data provider acquire a pin, to transform poiInfo received from the scan
 --- into display info to be used to decorate the pin.
@@ -59,6 +61,12 @@ function TRP3_PlayerMapPinMixin:GetDisplayDataFromPoiInfo(poiInfo)
 	--{{{ Player name
 	displayData.playerName = player:GetCustomColoredRoleplayingNamePrefixedWithIcon();
 	--}}}
+
+	--region OOC indicator
+	if not displayData.isInCharacter then
+		displayData.playerName = AddOn_TotalRP3.getPreferredOOCIndicator() .. " " .. displayData.playerName
+	end
+	--endregion
 
 	--{{{ Player relationship
 	-- Special case when seeing ourselves on the map (DEBUG)
@@ -85,6 +93,13 @@ function TRP3_PlayerMapPinMixin:GetDisplayDataFromPoiInfo(poiInfo)
 			-- Store the relationship on the marker itself as the category.
 			displayData.categoryName = loc.REG_RELATION .. ": " .. relationshipColor(loc:GetText("REG_RELATION_".. relation));
 			displayData.categoryPriority = TRP3_API.globals.RELATIONS_ORDER[relation] or huge;
+		end
+
+		-- Override pin color if the user is OOC and we should display them differently (category will be preserved)
+		if not displayData.isInCharacter and getConfigValue(CONFIG_MAP_DIM_OUT_OOC) then
+			displayData.iconAtlas = "PlayerPartyBlip";
+			displayData.iconColor = DIMMED_OUT_COLOR
+			displayData.opacity = 0.5
 		end
 	end
 	--}}}

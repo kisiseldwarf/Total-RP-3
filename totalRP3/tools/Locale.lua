@@ -1234,6 +1234,9 @@ Since patch 8.0.1 you are able to report profiles that violates Blizzard's Terms
 	--- THEN MOVE IT UP ONCE IMPORTED
 	------------------------------------------------------------------------------------------------
 
+	CO_LOCATION_DIFFERENT_OOC = "Differentiate OOC players",
+	CO_LOCATION_DIFFERENT_OOC_TT = "When this option is enabled, players marked as Out of character have their map markers dimmed out and darken.",
+
 	---@language Markdown
 	WHATS_NEW_22_1 = [[
 # Changelog version 1.5.1
