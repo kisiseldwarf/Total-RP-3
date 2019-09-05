@@ -50,3 +50,15 @@ AddOn_TotalRP3.Enums.ROLEPLAY_EXPERIENCE = {
 	EXPERIENCED = 2,
 	VOLUNTEER = 3,
 };
+
+---@alias TRP3_TARGET_TYPES string | '"CHARACTER"' | '"PET"' | '"BATTLE_PET"' | '"MOUNT"' | '"NPC"'
+--- Type of targets, used for tooltips
+AddOn_TotalRP3.Enums.TARGET_TYPES = {
+	CHARACTER = "CHARACTER",
+	PET = "PET",
+	BATTLE_PET = "BATTLE_PET",
+	MOUNT = "MOUNT",
+	NPC = "NPC",
+};
+
+---@alias UnitID string | '"focus"' | '"mouseover"' | '"none"' | '"pet"' | '"player"' | '"target"' | '"vehicle"'

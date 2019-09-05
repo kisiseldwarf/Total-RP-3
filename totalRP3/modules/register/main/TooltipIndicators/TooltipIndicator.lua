@@ -5,60 +5,90 @@ local Ellyb = Ellyb(...)
 ---@class UnitTooltipIndicator : Object
 local UnitTooltipIndicator, _private = Ellyb.Class("TooltipIndicator")
 
----@type UnitTooltipIndicator[]
-AddOn_TotalRP3.unitTooltipIndicators = {}
-
-function UnitTooltipIndicator:initialize(configurationKey, configurationLocaleText, shouldBeEnabledByDefault, priority, allowedTargetTypes)
-	_private[self] = {}
-
+function UnitTooltipIndicator:initialize(allowedTargetTypes)
 	_private[self].allowedTargetTypes = allowedTargetTypes
 
+	AddOn_TotalRP3.UnitTooltipIndicatorsManager:Register(self)
+end
+
+---@return string Must return the configuration key for this tooltip indicator
+--[[ Override ]] function UnitTooltipIndicator:GetConfigurationKey()
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:GetConfigurationLocaleText()", self)
+end
+
+---@return string Must return the localized text to display in the configuration panel
+--[[ Override ]] function UnitTooltipIndicator:GetConfigurationLocaleText()
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:GetConfigurationLocaleText()", self)
+end
+
+---@return number Must provides a priority to display the indicator in the tooltip, the bigger the number, the lower in the tooltip it will be displayed
+--[[ Override ]] function UnitTooltipIndicator:GetPriority()
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:GetConfigurationLocaleText()", self)
+end
+
+---@return boolean Must indicate if the tooltip indicator should be enabled by default or not
+--[[ Override ]] function UnitTooltipIndicator:IsEnabledByDefault()
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:IsEnabledByDefault()", self)
+end
+
+---@return TRP3_TARGET_TYPES[] Must indicate a list of valid target types for the indicator
+--[[ Override ]] function UnitTooltipIndicator:GetValidTargetTypes()
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:GetValidTargetTypes()", self)
+end
+
+---@param targetType TRP3_TARGET_TYPES
+function UnitTooltipIndicator:IsValidTargetType(targetType)
+	return tContains(self:GetValidTargetTypes(), targetType)
+end
+
+---@param tooltip GameTooltip
+---@param target UnitID
+--[[ Override ]] function UnitTooltipIndicator:DisplayInsideTooltipForTarget(tooltip, target, targetType)
+	Ellyb.Assertions.notImplemented("UnitTooltipIndicator:DisplayInsideTooltipForTarget(tooltip, target)", self)
+end
+
+AddOn_TotalRP3.UnitTooltipIndicator = UnitTooltipIndicator
+
+-- TODO: Move me to a separate file
+local UnitTooltipIndicatorsManager = {}
+AddOn_TotalRP3.UnitTooltipIndicatorsManager = UnitTooltipIndicatorsManager
+
+---@type UnitTooltipIndicator[]
+local registeredIndicators = {}
+
+---@param tooltipIndicator UnitTooltipIndicator
+function UnitTooltipIndicatorsManager:Register(tooltipIndicator)
+
+	-- Add to the list of indicators
+	table.insert(registeredIndicators, tooltipIndicator:GetPriority(), tooltipIndicator)
+
+	-- Register configuration
 	TRP3_API.Events.registerCallback(TRP3_API.Events.WORKFLOW_ON_LOADED, function()
+		TRP3_API.configuration.registerConfigKey(tooltipIndicator:GetConfigurationKey(), tooltipIndicator:IsEnabledByDefault())
 
-		TRP3_API.configuration.registerConfigKey(configurationKey, shouldBeEnabledByDefault)
-
+		-- Configuration UI
 		table.insert(TRP3_API.ui.tooltip.CONFIG.elements,{
 			inherit = "TRP3_ConfigCheck",
-			title = configurationLocaleText,
-			configKey = configurationKey,
+			title = tooltipIndicator:GetConfigurationLocaleText(),
+			configKey = tooltipIndicator:GetConfigurationKey(),
 		})
 	end)
-
-	table.insert(AddOn_TotalRP3.unitTooltipIndicators, priority, self)
 end
 
-function UnitTooltipIndicator:IsValidTargetType(targetType)
-	return tContains(_private[self].allowedTargetTypes, targetType)
-end
-
----DisplayInsideTooltipForTarget
---- This is the private version. It should never be called directly, use the public version instead
----@private
----@param tooltip GameTooltip
----@param target string
----@param targetType string @ A target type, as defined in AddOn_TotalRP3.TARGET_TYPES
---[[ Override ]] function UnitTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target, targetType) end
-
----DisplayInsideTooltipForTarget
---- This is the public version, that will automatically call :IsValidTargetType for us and then call the private version.
----@param tooltip GameTooltip
----@param target string
----@param targetType string @ A target type, as defined in AddOn_TotalRP3.TARGET_TYPES
-function UnitTooltipIndicator:DisplayInsideTooltipForTarget(tooltip, target, targetType)
-	if self:IsValidTargetType(targetType) then
-		self:_DisplayInsideTooltipForTarget(tooltip, target, targetType)
+---@param targetType TRP3_TARGET_TYPES
+---@return UnitTooltipIndicator[] A list of indicators valid for the given target type
+function UnitTooltipIndicatorsManager:GetIndicatorsForTargetType(targetType)
+	local indicators = {}
+	for _, indicator in ipairs(registeredIndicators) do
+		if indicator:IsValidTargetType(targetType) then
+			table.insert(indicators, indicator)
+		end
 	end
+	return indicators
 end
 
--- Public constructor
----UnitTooltipIndicator
----@param configurationKey string
----@param configurationLocaleText string
----@param shouldBeEnabledByDefault boolean
----@param priority number
----@param allowedTargetTypes string[] @ Table of allowed target types as defined in AddOn_TotalRP3.TARGET_TYPES
----@overload fun(configurationKey:string, configurationLocaleText:string, shouldBeEnabledByDefault:boolean)
----@return UnitTooltipIndicator
-function AddOn_TotalRP3.UnitTooltipIndicator(configurationKey, configurationLocaleText, shouldBeEnabledByDefault, priority, allowedTargetTypes)
-	return UnitTooltipIndicator(configurationKey, configurationLocaleText, shouldBeEnabledByDefault, priority, allowedTargetTypes)
+--region Move to Ellyb
+function Ellyb.Assertions.notImplemented(methodName, instance)
+	error(("%s method not implemented by %s"):format(methodName, tostring(instance)), 3)
 end
+--endregion

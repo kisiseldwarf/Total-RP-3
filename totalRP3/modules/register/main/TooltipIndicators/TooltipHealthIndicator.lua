@@ -2,19 +2,30 @@ local Ellyb = Ellyb(...)
 local loc = TRP3_API.loc
 local RED, ORANGE = Ellyb.ColorManager.RED, Ellyb.ColorManager.ORANGE
 
-local HealthTooltipIndicator = AddOn_TotalRP3.UnitTooltipIndicator(
-	"SHOW_HEALTH_PERCENTAGE_IN_TOOLTIP",
-	loc.CO_TOOLTIP_HEALTH_INDICATOR,
-	false,
-	50,
-	{
-		AddOn_TotalRP3.TARGET_TYPES.TYPE_CHARACTER,
-		AddOn_TotalRP3.TARGET_TYPES.TYPE_PET
+local HealthTooltipIndicator = AddOn_TotalRP3.UnitTooltipIndicator()
+
+function HealthTooltipIndicator:GetConfigurationKey()
+	return "SHOW_HEALTH_PERCENTAGE_IN_TOOLTIP"
+end
+
+function HealthTooltipIndicator:GetConfigurationLocaleText()
+	return loc.CO_TOOLTIP_HEALTH_INDICATOR
+end
+
+function HealthTooltipIndicator:GetPriority()
+	return 50
+end
+
+function HealthTooltipIndicator:GetValidTargetTypes()
+	return {
+		AddOn_TotalRP3.Enums.TARGET_TYPES.CHARACTER,
+		AddOn_TotalRP3.Enums.TARGET_TYPES.PET
 	}
-)
+end
 
 ---@param tooltip GameTooltip
-function HealthTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target, targetType)
+---@param target UnitID
+function HealthTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target)
 	if not tooltip then
 		tooltip = TRP3_CharacterTooltip
 	end
@@ -30,9 +41,9 @@ function HealthTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target, 
 			local healthPercentage = targetHealth / targetMaxHealth
 			local healthColor
 			if healthColor > 0.5 then
-				healthColor = Ellyb.Color.CreateFromRGBA((1 - healthPercentage) * 2,1,0)
+				healthColor = Ellyb.Color.CreateFromRGBA((1 - healthPercentage) * 2, 1, 0)
 			else
-				healthColor = Ellyb.Color.CreateFromRGBA(1,healthPercentage * 2,0)
+				healthColor = Ellyb.Color.CreateFromRGBA(1, healthPercentage * 2, 0)
 			end
 			healthValue = healthColor(healthPercentage .. "%")
 		end

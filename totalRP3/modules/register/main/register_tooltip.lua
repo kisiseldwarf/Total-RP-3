@@ -620,8 +620,10 @@ local function writeTooltipForCharacter(targetID, _, targetType)
 		tooltipBuilder:AddLine(loc.REG_TT_TARGET:format(name), 1, 1, 1, getSubLineFontSize());
 	end
 
-	for _, tooltipIndicator in ipairs(AddOn_TotalRP3.unitTooltipIndicators) do
-		tooltipIndicator:DisplayInsideTooltipForTarget(tooltipBuilder, targetType, AddOn_TotalRP3.TARGET_TYPES.TYPE_CHARACTER)
+	for _, tooltipIndicator in ipairs(
+		AddOn_TotalRP3.UnitTooltipIndicatorsManager:GetIndicatorsForTargetType(AddOn_TotalRP3.Enums.TARGET_TYPES.CHARACTER)
+	) do
+		tooltipIndicator:DisplayInsideTooltipForTarget(tooltipBuilder, targetType)
 	end
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -877,8 +879,8 @@ local function writeCompanionTooltip(companionFullID, _, targetType, targetMode)
 		tooltipBuilder:AddLine(text, 1, 1, 1, getSubLineFontSize());
 	end
 
-	for _, tooltipIndicator in ipairs(AddOn_TotalRP3.unitTooltipIndicators) do
-		tooltipIndicator:DisplayInsideTooltipForTarget(tooltipBuilder, targetType, targetMode)
+	for _, tooltipIndicator in ipairs(AddOn_TotalRP3.UnitTooltipIndicatorsManager:GetIndicatorsForTargetType(targetMode)) do
+		tooltipIndicator:DisplayInsideTooltipForTarget(tooltipBuilder, targetType)
 	end
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
