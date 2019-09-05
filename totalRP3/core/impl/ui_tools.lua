@@ -128,7 +128,7 @@ local function openDropDown(anchoredFrame, values, callback, space, addCancel)
 	if not dropDownFrame then
 		dropDownFrame = MSA_DropDownMenu_Create(DROPDOWN_FRAME, UIParent);
 	end
-	
+
 	if _G["MSA_DropDownList1"]:IsVisible() then
 		MSA_HideDropDownMenu(1);
 		return;
@@ -633,8 +633,8 @@ function TRP3_API.ui.frame.setupEditBoxesNavigation(tabEditBoxes)
 				else
 					cursor = cursor + 1
 				end
-			end			
-			tabEditBoxes[cursor]:SetFocus();		
+			end
+			tabEditBoxes[cursor]:SetFocus();
 		end)
 	end
 end

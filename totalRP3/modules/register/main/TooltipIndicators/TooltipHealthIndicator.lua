@@ -40,7 +40,7 @@ function HealthTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target)
 		else
 			local healthPercentage = targetHealth / targetMaxHealth
 			local healthColor
-			if healthColor > 0.5 then
+			if healthPercentage > 0.5 then
 				healthColor = Ellyb.Color.CreateFromRGBA((1 - healthPercentage) * 2, 1, 0)
 			else
 				healthColor = Ellyb.Color.CreateFromRGBA(1, healthPercentage * 2, 0)

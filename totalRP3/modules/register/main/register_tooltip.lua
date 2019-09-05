@@ -40,7 +40,7 @@ local getYourCharacter = TRP3_API.profile.getPlayerCharacter;
 local IsUnitIDKnown = TRP3_API.register.isUnitIDKnown;
 local UnitAffectingCombat = UnitAffectingCombat;
 local Events = TRP3_API.events;
-local GameTooltip, _G, wipe, pairs, tinsert, strtrim = GameTooltip, _G, wipe, pairs, tinsert, strtrim;
+local GameTooltip, _G, pairs, tinsert, strtrim = GameTooltip, _G, pairs, tinsert, strtrim;
 local hasProfile, getRelationColors = TRP3_API.register.hasProfile, TRP3_API.register.relation.getRelationColors;
 local checkGlanceActivation = TRP3_API.register.checkGlanceActivation;
 local IC_GUILD, OOC_GUILD;
@@ -604,11 +604,11 @@ local function writeTooltipForCharacter(targetID, _, targetType)
 			local _, targetEnglishClass = UnitClass(targetType .. "target");
 			local targetInfo = getCharacterInfoTab(targetTargetID);
 			local targetClassColor = targetEnglishClass and Utils.color.getClassColor(targetEnglishClass) or Utils.color.CreateColor(1, 1, 1, 1);
-			
+
 			if getConfigValue(CONFIG_CHARACT_COLOR) then
 				targetClassColor = targetTarget:GetCustomColorForDisplay() or targetClassColor;
 				end
-				
+
 			name = getCompleteName(targetInfo.characteristics or {}, name, true);
 
 			if getConfigValue(CONFIG_CROP_TEXT) then
@@ -827,11 +827,11 @@ local function writeCompanionTooltip(companionFullID, _, targetType, targetMode)
 
 				if getConfigValue(CONFIG_CHARACT_COLOR) and ownerInfo.characteristics.CH then
 					local customColor = Utils.color.getColorFromHexadecimalCode(ownerInfo.characteristics.CH);
-						
+
 						if AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast() then
 							customColor:LightenColorUntilItIsReadable();
 						end
-					
+
 					ownerColor = customColor or ownerColor;
 				end
 			end

@@ -41,6 +41,7 @@ function UnitTooltipIndicator:IsValidTargetType(targetType)
 	return tContains(self:GetValidTargetTypes(), targetType)
 end
 
+-- luacheck: ignore 212
 ---@param tooltip GameTooltip
 ---@param target UnitID
 --[[ Override ]] function UnitTooltipIndicator:DisplayInsideTooltipForTarget(tooltip, target, targetType)
