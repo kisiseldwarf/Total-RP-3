@@ -2,7 +2,7 @@
 --- Total RP 3
 --- ---------------------------------------------------------------------------
 --- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---- Copyright 2017 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
 ---
 --- Licensed under the Apache License, Version 2.0 (the "License");
 --- you may not use this file except in compliance with the License.
@@ -61,4 +61,5 @@ TRP3_API.Ellyb.SetDebugMode(false)
 _G.TRP3_API = TRP3_API;
 
 -- New public API, intended for external use
+---@type AddOn_TotalRP3
 AddOn_TotalRP3 = {};

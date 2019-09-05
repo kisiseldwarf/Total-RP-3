@@ -1,20 +1,21 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- This file contains the addon main loading sequence.
---	---------------------------------------------------------------------------
---	Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
---	Licensed under the Apache License, Version 2.0 (the "License");
---	you may not use this file except in compliance with the License.
---	You may obtain a copy of the License at
---
---		http://www.apache.org/licenses/LICENSE-2.0
---
---	Unless required by applicable law or agreed to in writing, software
---	distributed under the License is distributed on an "AS IS" BASIS,
---	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
---	See the License for the specific language governing permissions and
---	limitations under the License.
+--- Total RP 3
+--- This file contains the addon main loading sequence.
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- 	http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 ---@type TRP3_API
@@ -46,6 +47,23 @@ end
 local function loadingSequence()
 	Log.log("OnEnable() START");
 
+	--region Client check
+	--[===[@non-debug@
+	--@retail@
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		TRP3_API.Ellyb.Popups:OpenURL("https://www.curseforge.com/wow/addons/total-rp-3-classic", "You are trying to use the |cffff0000retail|r version of Total RP 3. Please install Total RP 3: Classic instead.");
+		return;
+	end
+	--@end-retail@
+	--[===[@non-retail@
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		TRP3_API.Ellyb.Popups:OpenURL("https://www.curseforge.com/wow/addons/total-rp-3", "You are trying to use |cffff0000Total RP 3: Classic|r. Please install the retail version of Total RP 3 instead.");
+		return;
+	end
+	--@end-non-retail@]===]
+	--@end-non-debug@]===]
+	--endregion
+
 	-- Get info we can't have earlier
 	MAIN_SEQUENCE_DETAIL = "Globals.build";
 	Globals.build();
@@ -64,7 +82,7 @@ local function loadingSequence()
 	-- Call the init callback on all modules
 	MAIN_SEQUENCE_DETAIL = "TRP3_API.module.initModules";
 	TRP3_API.module.initModules();
-	
+
 	-- Welcome \o/
 	MAIN_SEQUENCE_DETAIL = "Welcome message";
 	TRP3_API.utils.message.displayMessage(loc.GEN_WELCOME_MESSAGE:format(Globals.version_display));
@@ -123,7 +141,7 @@ function Globals.addon:OnEnable()
 end
 
 function TRP3_ShowErrorMessage()
-	print(COLORS.ORANGE("[TRP3]") .. " " .. COLORS.RED("Error during addon loading sequence:"));
+	print(COLORS.ORANGE(("[TRP3: %s]"):format(TRP3_API.VERSION_DISPLAY)) .. " " .. COLORS.RED("Error during addon loading sequence:"));
 	print(COLORS.ORANGE("Sequence ID: ") .. " " .. MAIN_SEQUENCE_ID);
 	print(COLORS.ORANGE("Sub-sequence ID: ") .. " " .. MAIN_SEQUENCE_DETAIL);
 	print(COLORS.ORANGE("Error message: ") .. " " .. tostring(MAIN_SEQUENCE_ERROR));

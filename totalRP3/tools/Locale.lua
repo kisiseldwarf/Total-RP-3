@@ -6,21 +6,20 @@
 --- The goal here is to have IDE auto-completion by directly using the table and
 --- accessing its indexes in the code, but actually having the meta table call
 --- the localization functions on runtime to get the localized version of the text.
+--- ---------------------------------------------------------------------------
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
 ---
----	---------------------------------------------------------------------------
----	Copyright 2017 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
 ---
----	Licensed under the Apache License, Version 2.0 (the "License");
----	you may not use this file except in compliance with the License.
----	You may obtain a copy of the License at
+--- 	http://www.apache.org/licenses/LICENSE-2.0
 ---
----		http://www.apache.org/licenses/LICENSE-2.0
----
----	Unless required by applicable law or agreed to in writing, software
----	distributed under the License is distributed on an "AS IS" BASIS,
----	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
----	See the License for the specific language governing permissions and
----	limitations under the License.
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 ---@type TRP3_API
@@ -162,7 +161,6 @@ The codes you have inserted in your profile have been removed to prevent you fro
 	REG_PLAYER_MISC_ADD = "Add an additional field",
 	REG_PLAYER_ABOUT = "About",
 	REG_PLAYER_ABOUTS = "About %s",
-	REG_PLAYER_ABOUT_MUSIC = "Character theme",
 	REG_PLAYER_ABOUT_NOMUSIC = "|cffff9900No theme",
 	REG_PLAYER_ABOUT_UNMUSIC = "|cffff9900Unknown theme",
 	REG_PLAYER_ABOUT_MUSIC_SELECT = "Select character theme",
@@ -328,6 +326,7 @@ It also works on the |cffffff00"At first glance" bar|r!]],
 	REG_LIST_FILTERS = "Filters",
 	REG_LIST_FILTERS_TT = "|cffffff00Click:|r Apply filters\n|cffffff00Right-Click:|r Clear filters",
 	REG_LIST_REALMONLY = "This realm only",
+	REG_LIST_NOTESONLY = "Has notes only",
 	REG_LIST_GUILD = "Character's guild",
 	REG_LIST_NAME = "Character's name",
 	REG_LIST_FLAGS = "Flags",
@@ -606,8 +605,6 @@ Possible status:
 	CO_GLANCE_PRESET_TRP3_HELP = "Shortcut to setup the bar in a TRP3 style : to the bottom of the TRP3 target frame.",
 	CO_GLANCE_TT_ANCHOR = "Tooltips anchor point",
 	CO_MSP = "Mary Sue Protocol",
-	CO_MSP_T3 = "Use template 3 only",
-	CO_MSP_T3_TT = "Even if you choose another \"about\" template, the template 3 will always be used for MSP compatibility.",
 	CO_WIM = "|cffff9900Whisper channels are disabled.",
 	CO_WIM_TT = "You are using |cff00ff00WIM|r, the handling for whisper channels is disabled for compatibility purposes",
 	CO_LOCATION = "Location settings",
@@ -615,8 +612,6 @@ Possible status:
 	CO_LOCATION_ACTIVATE_TT = "Enable the character location system, allowing you to scan for other Total RP users on the world map and allowing them to find you.",
 	CO_LOCATION_DISABLE_OOC = "Disable location when OOC",
 	CO_LOCATION_DISABLE_OOC_TT = "You will not respond to location requests from other players when you've set your RP status to Out Of Character.",
-	CO_LOCATION_DISABLE_PVP = "Disable location when flagged for PvP",
-	CO_LOCATION_DISABLE_PVP_TT = "You will not respond to location requests from other players when you are flagged for PvP.\n\nThis option is particularly useful on PvP realms where players from the other faction can abuse the location system to track you.",
 	CO_SANITIZER = "Sanitize incoming profiles",
 	CO_SANITIZER_TT = "Remove escaped sequences in tooltip fields from incoming profiles when TRP doesn't allow it (color, images ...).",
 
@@ -718,13 +713,6 @@ Just like characters profiles, a |cff00ff00companion profile|r can be linked to 
 	PR_IMPORT_EMPTY = "No importable profile",
 	PR_PROFILE_MANAGEMENT_TITLE = "Profile management",
 	PR_EXPORT_IMPORT_TITLE = "Export/import profile",
-	PR_EXPORT_WARNING_TITLE = "Warning:",
-	PR_EXPORT_WARNING_WINDOWS = [[Please note that some advanced text editing tools like Microsoft Word or Discord will reformat special characters like quotes, altering the content of the data.
-
-If you are planning on copying the text below inside a document, please use simpler text editing tools that do not automatically change characters, like Notepad.]],
-	PR_EXPORT_WARNING_MAC = [[Please note that some advanced text editing tools like Text Edit or Discord will reformat special characters like quotes, altering the content of the data.
-
-If you are planning on copying the text below inside a document, please use simpler text editing tools that do not automatically change characters (in Text Edit go to Format > Make Plain Text before pasting)]],
 	PR_EXPORT_IMPORT_HELP = [[You can export and import profiles using the options in the dropdown menu.
 
 Use the |cffffff00Export profile|r option to generate a chunk of text containing the profile serialized data. You can copy the text using Control-C (or Command-C on a Mac) and paste it somewhere else as a backup. (|cffff0000Please note that some advanced text editing tools like Microsoft Word will reformat special characters like quotes, altering the data. Use simpler text editing tools like Notepad.|r)
@@ -794,6 +782,8 @@ This will works:|cff00ff00
 	UI_ICON_SELECT = "Select icon",
 	UI_MUSIC_BROWSER = "Music browser",
 	UI_MUSIC_SELECT = "Select music",
+	UI_MUSIC_DURATION = "Duration",
+	UI_MUSIC_ALTTITLE = "Alternate title",
 	UI_COLOR_BROWSER = "Color browser",
 	UI_COLOR_BROWSER_SELECT = "Select color",
 	UI_COLOR_BROWSER_PRESETS = "Presets",
@@ -873,6 +863,7 @@ Total RP is not responsible for links leading to harmful content.]],
 	CM_CLASS_WARLOCK = "Warlock",
 	CM_CLASS_MONK = "Monk",
 	CM_CLASS_DRUID = "Druid",
+	CM_CLASS_DEMONHUNTER = "Demon Hunter",
 	CM_CLASS_UNKNOWN = "Unknown",
 	CM_RESIZE = "Resize",
 	CM_RESIZE_TT = "Drag to resize the frame.",
@@ -1103,9 +1094,6 @@ The Kui |cff9966ffNameplates|r module adds several Total RP 3 customizations to 
 %CONTRIBUTORS$s
 
 {h2}{icon:THUMBUP:20} Acknowledgements{/h2}
-{col:ffffff}Ellypse's {/col}{link*https://www.patreon.com/ellypse*Patreon}{col:ffffff} supporters:{/col}
-%s
-
 {col:ffffff}Logo and minimap button icon:{/col}
 - {link*https://ebonfeathers.tumblr.com/*EbonFeather@Tumblr}
 
@@ -1159,108 +1147,10 @@ People will be able to copy and use the content of the link.]],
 	CO_UI_RELOAD_WARNING = [[The interface needs to be reloaded in order for the changes to be applied.
 
 Would you like to reload the interface now?]],
-	CL_TOOLTIP = "Create a chat link",
 	TT_ELVUI_SKIN = "ElvUI skin",
 	TT_ELVUI_SKIN_ENABLE_TOOLTIPS = "Skin tooltips",
 	TT_ELVUI_SKIN_ENABLE_TARGET_FRAME = "Skin target frame",
 	MAP_BUTTON_SUBTITLE_80_DISABLED = "Scans temporarily unavailable due to 8.0 changes",
-
-	---@language Markdown
-	WHATS_NEW_20 = [[
-# Changelog for version 1.4
-
-|cffff8000This version requires Battle for Azeroth, patch 8.0.1.|r
-
-## Add-on communications improvement
-
- Total RP 3 implements the next version of the Mary Sue Protocol. This improved version bring the following improvements:
- - |cffff8000Profiles are now logged on Blizzard's servers|r when sent to other players. This enables Blizzard to view the content of RP profiles in cases of abuse, such as harassment or doxxing. This means you should now treat the contents of your profile as you would public chat in /say, for example. |cffaaaaaa(Goldshire)|r.
- - |cffff8000Cross server and cross faction support with Battle.net friends:|r the add-on can now use Battle.net to transfer data between two Battle.net friends, even if they are from a server that is not connected to yours or if they are from the opposite faction.
- - |cffff8000Improved performance:|r thanks to looser limitations and newer compression algorithms, all data transfer should be faster (sometimes up to 8 times faster for big Extended campaigns).
-
-|cffaaaaaaIt was not possible to make this newer protocol backward compatible with older versions (which will not work with patch 8.0 anyway) and cross add-on communications will only work between people using this newer version of the protocol.|r
-
-## New logos
-{img:Interface\AddOns\totalRP3\resources\trp3logo.blp:128:64}
-Total RP 3 has a new, original logo, to replace the modified game logo (which we obviously did not own). It was commissioned to [EbonFeathers@Tumblr](https://ebonfeathers.tumblr.com/). Using the theme of classic D&D, this logo showcases that role-playing is all about picking the role you want to play.
-
-A new minimap icon also replaces the older one and showcases a classic D&D die.
-{img:Interface\AddOns\totalRP3\resources\trp3minimap.tga:25:25}
-
-## Added
-
-- Added a new settings category called Advanced. Changing the settings on this page may break your experience of the add-on, so a warning message will be displayed to warn you when you modify something, and a reset button will allow you to reset all advanced settings to their default values. Amongst these new advanced settings you can find the settings for the broadcast channel, NPC talk prefix, disable the option to remember the last language used between session, and more.
-- Resources added to the browsers: 369 musics, 1698 icons and 178 images from the Battle for Azeroth expansion.
-
-## Modified
-
-- You can no longer set your residence marker inside an instanced zone.
-- Fixed several issues related to patch 8.0.1.
-
-## Fixed
-
-- Added support for other add-ons through the Mary Sue Protocol when using `/trp3 open [playerName]` command.
-
-## Removed
-
-- Map features have been temporarily disabled while we keep working on fixing them for Battle for Azeroth. The entire world map UI has been re-implemented by Blizzard and it requires more or less a complete rewrite of our map code.
-- We have disabled the button to show the residence location of players from the profile page while we are re-implementing the map features for patch 8.0.
-- The system to upvote or downvote profiles have been removed. The system was confusing to new players and was incorrectly used by groups of people to downvote targeted people.
-]],
-	WHATS_NEW_20_1 = [[
-# Changelog for version 1.4.1
-
-Fixed a rare Lua error that could randomly happen on login.
-
-]],
-	WHATS_NEW_20_2 = [[
-# Changelog for version 1.4.2
-
-## Fixed
-
-- Fixed another rare Lua error that could randomly happen on login (with the `getPlayerCompleteName()` function) - [Issue #159](https://github.com/Ellypse/Total-RP-3/issues/159)
-
-]],
-	---@language Markdown
-	WHATS_NEW_20_3= [[
-# Changelog for version 1.4.3
-
-## Fixed
-
-- Fixed an issue brought by yesterday's hotfixes that would prevent Battle.net communications from working.
-- Fixed an issue where un-selecting profiles in the directory would not actually deselect them, and improved consistency when purging profiles while having some profiles already selected - [Issue #160](https://github.com/Ellypse/Total-RP-3/issues/160)
-- Fixed an issue introduced with the 8.0.1 pre-patch preventing mount profiles from being displayed properly in the tooltips and on the target frame - [Issue #164](https://github.com/Ellypse/Total-RP-3/issues/164)
-- Fixed a layout in the profiles UI that would prevent the Additional information parts from being rendered properly - [Issue #162](https://github.com/Ellypse/Total-RP-3/issues/162)
-- Fixed an issue that would render the chat links tooltip lines in a random order, instead of the correct one.
-- Fixed an issue that would render some profile informations (Additional information, Personality traits) in a random order, instead of the correct one.
-
-]],
-	---@language Markdown
-	WHATS_NEW_20_4= [[
-# Changelog for version 1.4.4
-
-## Fixed
-
-- Fixed XML errors from libraries when using both Storyline and Total RP 3.
-- Fixed Lua error when targeting companions.
-- The trial account flag is now also displayed in your own tooltip.
-- Names are now correctly class colored in chat for non-customized names - [Issue #175](https://github.com/Ellypse/Total-RP-3/issues/175)
-- Fixed Total RP 3's logo missing a die, and improved the minimap icon, including a transparent version for databroker add-ons.
-- The target frame is now refreshed when you summon and dismiss your own mount.
-- Fixed an issue when sorting the directory by last time seen when that information was missing.
-- Unknown profiles are now hidden from the directory and cleaned on launch.
-
-## Added
-
-- Added a limitation option for line breaks in the "currently" tooltip fields (default to 5 line breaks).
-
-## Modified
-
-- Sorting by names in the directory now ignore quotes around names.
-- The "This realm only" filter for the directory now takes into account connected realms.
-
-]],
-	CL_TOOLTIP = "Create a chat link",
 	CO_ADVANCED_SETTINGS = "Advanced settings",
 	CO_ADVANCED_SETTINGS_MENU_NAME = "Advanced",
 	CO_ADVANCED_SETTINGS_POPUP = [[You have just modified an advanced setting.
@@ -1274,41 +1164,137 @@ Please keep in mind that changing those settings might alter your experience wit
 	CO_ADVANCED_LANGUAGES_REMEMBER = "Remember last language used",
 	CO_ADVANCED_LANGUAGES_REMEMBER_TT = "Total RP 3 will remember what language you were using before logging off and automatically select this language back on next login.",
 	CO_TOOLTIP_CURRENT_LINES = "Max \"Currently\" line breaks",
+	REG_PLAYERS = "Players",
+	CO_LOCATION_DISABLE_WAR_MODE = "Disable location when in War Mode",
+	CO_LOCATION_DISABLE_WAR_MODE_TT = "You will not respond to location requests from other players when you have War Mode enabled and you are outside of a |cff69CCF0Sanctuary|r.\n\nThis option is particularly useful to avoid abuses of the location system to track you.",
+	CO_LOCATION_SHOW_DIFFERENT_WAR_MODES = "Show players in different War Mode",
+	CO_LOCATION_SHOW_DIFFERENT_WAR_MODES_TT = "Players who are currently in the zone but have a different War Mode status than you will be shown on the map, with a lower opacity and a special icon in the tooltip.",
+	REG_LOCATION_DIFFERENT_WAR_MODE = "Different War Mode",
+	CO_ADVANCED_BROADCAST_CHANNEL_ALWAYS_LAST = "Keep broadcast channel last",
+	CO_ADVANCED_BROADCAST_CHANNEL_ALWAYS_LAST_TT = "This option will make sure that the broadcast channel is always the last channel in your channels list.",
+	REG_PLAYER_ABOUT_MUSIC_THEME = "Character music theme",
+	REG_PLAYER_EDIT_MUSIC_THEME = "Music theme",
+	LANG_CHANGE_CAUSED_REVERT_TO_DEFAULT = "Current spoken language reverted to default %s because you no longer know the previously selected language %s.",
+	CO_ADVANCED_LANGUAGE_WORKAROUND = "Enable workaround against language reset",
+	CO_ADVANCED_LANGUAGE_WORKAROUND_TT = "Since patch 8.0.1 the game will reset the selected language to the default language for your faction during every loading screen. This workaround makes sure to restore the selected language after a loading screen.",
+
+	REG_REPORT_PLAYER_PROFILE = "Report profile to |cff449fe0Blizzard|r",
+	REG_REPORT_PLAYER_PROFILE_TT = [[You can report a profile that infringe on Blizzard's Terms of Service. This can include harassment, doxxing, hate speech, obscene content or other form of disruptive content.
+
+|cffff0000Please note that this option is NOT to report RP profiles of disputable quality or griefing. Abuses of this feature are punishable!]],
+	REG_REPORT_PLAYER_TEMPLATE = "This player is using the RP profile addon %s to share content against the Terms of Service.",
+	REG_REPORT_PLAYER_TEMPLATE_DATE = "The addon data was transferred through logged addon messages on %s.",
+	REG_REPORT_PLAYER_TEMPLATE_TRIAL_ACCOUNT = "This player was on a trial account.",
+	REG_REPORT_PLAYER_OPEN_URL = [[You can only report players directly from within the game if you can target them (use TRP3's target frame button).
+
+If you wish to report %s's profile and you cannot target them you will need to open a ticket with Blizzard's support using the link bellow.]],
+	REG_REPORT_PLAYER_OPEN_URL_160 = [[If you wish to report %s's profile, you will need to open a ticket with Blizzard's support using the link below.]],
+	NEW_VERSION_BEHIND = "You are currently %s versions behind and are missing on many bug fixes and new features. Other players might not be able to see your profile correctly. Please consider updating the add-on.",
+	REG_PLAYER_RELATIONSHIP_STATUS_UNKNOWN = "Do not show",
+	REG_PLAYER_RELATIONSHIP_STATUS_SINGLE = "Single",
+	REG_PLAYER_RELATIONSHIP_STATUS_TAKEN = "Taken",
+	REG_PLAYER_RELATIONSHIP_STATUS_MARRIED = "Married",
+	REG_PLAYER_RELATIONSHIP_STATUS_DIVORCED = "Divorced",
+	REG_PLAYER_RELATIONSHIP_STATUS_WIDOWED = "Widowed",
+	REG_PLAYER_RELATIONSHIP_STATUS = "Relationship status",
+	REG_PLAYER_RELATIONSHIP_STATUS_TT = [[Indicate the relationship status of your character. Select "Do not show" if you wish to keep that information hidden.]],
+	REG_NOTES_PROFILE = "Notes",
+	REG_NOTES_PROFILE_TT = "Open the notes window for the target character.",
+	REG_PLAYER_NOTES = "Notes",
+	REG_PLAYER_NOTES_PROFILE = "Notes from %s",
+	REG_PLAYER_NOTES_PROFILE_NONAME = "Profile notes",
+	REG_PLAYER_NOTES_PROFILE_HELP = "These private notes are tied to your current profile and will change based on what profile you currently have active.",
+	REG_PLAYER_NOTES_ACCOUNT = "Common notes",
+	REG_PLAYER_NOTES_ACCOUNT_HELP = "These private notes are tied to your account and will be shared with all of your profiles.",
+	---@language Markdown
+	WHATS_NEW_23_4 = [[
+# Changelog version 1.6.4
+
+We are aware of a current issue on Retail causing **quest item usage from the objective tracker** to sometimes fail. While we do not have a fix for it just yet, **typing /reload after getting the error message** temporarily fixes the issue. Sorry for the inconvenience.
+
+## WoW: Classic support
+
+- Total RP 3: Classic is now available as a separate download on CurseForge and WoWInterface! Be sure to install it instead of the retail version of Total RP 3 if you plan on roleplaying in WoW: Classic.
+- Important points to be aware of for the Classic version:
+  - A few icons have been changed across the addon to replace missing icons in Classic.
+  - Companion profiles have been disabled for mounts and non-combat pets, as Blizzard did not provide us with beta access. We will work on implementing them back as soon as possible.
+  - Total RP 3: Extended will not be ported to Classic at launch. We will be evaluating if a Classic port makes sense for us to do at a later date.
+
+## Changed
+
+- When using the character map scan, characters with which you have set a relationship will now appear on top of the others.
+
+]],
 
 	---@language Markdown
-	WHATS_NEW_21 = [[
-# Changelog for version 1.4.5
-
-This version focuses on bug fixes and improvements of Total RP 3's compatibility with other RP add-ons. Special thanks to Itarater, XRP's author, for his help on the add-on communication layer.
+	WHATS_NEW_23_5 = [[
+# Changelog version 1.6.5
 
 ## Added
 
-- Added support for cross-realm add-on communication via group channels. You can now see profiles, trade Total RP 3: Extended items, or even send Total RP chat links of campaigns, with players from a completely different server than yours when they are in your group (party, instance, raid, battleground, etc.).
-- The at-first-glance feature is now exposed to other RP add-ons via the Mary Sue Protocol. XRP and MyRolePlay, will now be able to read at-first-glances from Total RP 3 and also send them from their own implementation!
-- Class and eye colors are now read from other RP add-ons.
+- Added Total RP 3: Extended version number alongside Total RP 3 version number at the bottom of the tooltip.
 
 ## Fixed
 
-- Fixed an issue that would report Total RP 3 as the culprit of other add-ons errors and force error reporting.
-- The chat module will now once again respect the game's settings for displaying class color.
-- Clicking again on a dropdown menu button will now close the dropdown menu.
-- Fixed a bunch of issues when viewing profile of players using a different RP add-on, like an incorrect Out of character status or an incorrect unread flag.
-- Improved the formatting of descriptions sent to players using a different RP add-on. When using the template 3 for your description, the personality traits part of the description is now also sent in the description.
-- Removed invalid Total RP 3 text tags that would sometimes be outputted as is in the descriptions when sent to players using a different add-on.
-- Removing a motto, house or nickname field in your description will now correctly remove those fields from the data sent to other RP add-ons.
-- Fixed broadcasting Total RP 3 dice rolls to your party or raid.
-
-
-## Modified
-
-- The at-first-glance bar and the player name will now be aligned to the center of the target frame, instead of the left.
-- Updated libraries used inside the add-on to the latest version available for Battle for Azeroth.
+- Fixed an error when someone executes a scan in your zone. (Classic only)
+- Fixed a potential error when saving a glance slot.
 
 ]],
+
 	------------------------------------------------------------------------------------------------
 	--- PLACE LOCALIZATION NOT ALREADY UPLOADED TO CURSEFORGE HERE
 	--- THEN MOVE IT UP ONCE IMPORTED
 	------------------------------------------------------------------------------------------------
+
+	DB_STATUS_LC = "Roleplay language",
+	DB_STATUS_LC_TT = [[Sets your preferred roleplaying language. This will be shared with other compatible RP addon users.
+
+|cffff9900Note:|r This does |cffff0000not|r change the user interface language of Total RP 3. This option can instead be found in the |cfffff569Advanced Settings|r page.]],
+
+	-- DB_STATUS_LC_DEFAULT will be formatted with the current locale name, eg. "Italiano".
+	DB_STATUS_LC_DEFAULT = "Default (%1$s)",
+
+	-- DB_STATUS_ICON_ITEM will be formatted with an icon texture and a label for a dropdown item.
+	DB_STATUS_ICON_ITEM = "%1$s %2$s",
+	CO_HIDE_EMPTY_MAP_BUTTON = "Hide when no scans available",
+	SLASH_CMD_STATUS_USAGE = "ic || ooc || toggle",
+	SLASH_CMD_STATUS_HELP = [[Usage: |cff00ff00/trp3 status ic || ooc || toggle|r
+Changes your character status to the specified option:
+
+|cffff9900/trp3 status ic|r will set your status to |cff00ff00in character|r.
+|cffff9900/trp3 status ooc|r will set your status to |cffff0000out of character|r.
+|cffff9900/trp3 status toggle|r will switch your status to the opposite state.]],
+	CO_CHAT_SHOW_OOC = "Show OOC indicator",
+	CO_LOCATION_DISABLE_CLASSIC_PVP = "Disable location when flagged for PvP",
+	CO_LOCATION_DISABLE_CLASSIC_PVP_TT = "You will not respond to location requests from other players when you are flagged for PvP.\n\nThis option is particularly useful to avoid abuses of the location system to track you.",
+
+	---@language Markdown
+	WHATS_NEW_23_6 = [[
+# Changelog version 1.6.6
+
+## Added
+
+- Added slash commands to change your roleplay status, which you can use in macros. You can now use `/trp3 status ic` to get in character, `/trp3 status ooc` to get out of character, or `/trp3 status toggle` to switch status.
+- Added a chat setting to display the OOC indicator next to the name in chat.
+- Added a setting to hide the map scan button if no scan is available.
+- Added a roleplay language field to the main dashboard.
+  - This setting is profile-based, defaults to your addon language, and allows you to indicate the language you're roleplaying in.
+  - If your addon language doesn't match a player's roleplaying language, you'll see a flag at the bottom of their tooltip indicating their roleplaying language.
+  - This change is mainly aimed at Classic roleplayers, as only English RP realms were made.
+- Added back buttons to toggle helmet and cloak display for Classic.
+
+## Changed
+
+- Renamed the war mode setting to PvP mode for Classic.
+
+## Fixed
+
+- Fixed issues when the target bar module was disabled.
+- Fixed an issue causing duplicate Mary-Sue Protocol profiles to appear in the register when unchecking "This realm only".
+- Fixed a few remaining missing icons for Classic (default template 3 icons and `/trp3 roll` icons)
+- Fixed an issue when using the "Right-click to open profile" setting on Classic.
+
+]],
 
 	CO_TOOLTIP_HEALTH_INDICATOR = "Show health percentage",
 	REG_TT_HEALTH = "Health:"
@@ -1333,28 +1319,28 @@ TRP3_API.loc:RegisterNewLocale("deDE", "Deutsch", localeContent);
 TRP3_API.loc:RegisterNewLocale("frFR", "Français", localeContent);
 
 --@localization(locale="esES", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("esES", "Español", localeContent);
+TRP3_API.loc:RegisterNewLocale("esES", "Español (EU)", localeContent);
 
 --@localization(locale="esMX", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("esMX", "Español (Latin American)", localeContent);
+TRP3_API.loc:RegisterNewLocale("esMX", "Español (AL)", localeContent);
 
 --@localization(locale="itIT", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("itIT", "Italian", localeContent);
+TRP3_API.loc:RegisterNewLocale("itIT", "Italiano", localeContent);
 
 --@localization(locale="koKR", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("koKR", "Korean", localeContent);
+TRP3_API.loc:RegisterNewLocale("koKR", "한국어", localeContent);
 
 --@localization(locale="ptBR", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("ptBR", "Brazilian Portuguese", localeContent);
+TRP3_API.loc:RegisterNewLocale("ptBR", "Português", localeContent);
 
 --@localization(locale="ruRU", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("ruRU", "Russian", localeContent);
+TRP3_API.loc:RegisterNewLocale("ruRU", "Pусский", localeContent);
 
 --@localization(locale="zhCN", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("zhCN", "Simplified Chinese", localeContent);
+TRP3_API.loc:RegisterNewLocale("zhCN", "简体中文", localeContent);
 
 --@localization(locale="zhTW", format="lua_table", table-name="localeContent", handle-unlocalized="ignore")@
-TRP3_API.loc:RegisterNewLocale("zhTW", "Traditional Chinese", localeContent);
+TRP3_API.loc:RegisterNewLocale("zhTW", "繁體中文", localeContent);
 
 local Locale = {};
 TRP3_API.Locale = Locale;

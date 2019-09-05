@@ -1,20 +1,21 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- Target widget module
---	---------------------------------------------------------------------------
---	Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
---	Licensed under the Apache License, Version 2.0 (the "License");
---	you may not use this file except in compliance with the License.
---	You may obtain a copy of the License at
---
---		http://www.apache.org/licenses/LICENSE-2.0
---
---	Unless required by applicable law or agreed to in writing, software
---	distributed under the License is distributed on an "AS IS" BASIS,
---	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
---	See the License for the specific language governing permissions and
---	limitations under the License.
+--- Total RP 3
+--- Target widget module
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- 	http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 local ui_TargetFrame;
@@ -36,7 +37,7 @@ local function onStart()
 	local getConfigValue, registerConfigKey, registerConfigHandler, setConfigValue = TRP3_API.configuration.getValue, TRP3_API.configuration.registerConfigKey, TRP3_API.configuration.registerHandler, TRP3_API.configuration.setValue;
 	local assert, pairs, tinsert, table, math, _G = assert, pairs, tinsert, table, math, _G;
 	local getUnitID, unitIDToInfo, companionIDToInfo = Utils.str.getUnitID, Utils.str.unitIDToInfo, Utils.str.companionIDToInfo;
-	local setTooltipForSameFrame, mainTooltip, refreshTooltip = TRP3_API.ui.tooltip.setTooltipForSameFrame, TRP3_MainTooltip, TRP3_RefreshTooltipForFrame;
+	local setTooltipForSameFrame, mainTooltip, refreshTooltip = TRP3_API.ui.tooltip.setTooltipForSameFrame, TRP3_MainTooltip, TRP3_API.ui.tooltip.refresh;
 	local get = TRP3_API.profile.getData;
 	local setupFieldSet = TRP3_API.ui.frame.setupFieldPanel;
 	local originalGetTargetType, getCompanionFullID = TRP3_API.ui.misc.getTargetType, TRP3_API.ui.misc.getCompanionFullID;
@@ -50,7 +51,7 @@ local function onStart()
 	local CONFIG_TARGET_ICON_SIZE = "target_icon_size";
 	local CONFIG_CONTENT_PREFIX = "target_content_";
 
-	local currentTargetID, currentTargetType, currentTargetProfileID;
+	local currentTargetID, currentTargetType;
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 	-- Buttons logic
@@ -101,7 +102,7 @@ local function onStart()
 		local index = 0;
 		local x = marginLeft;
 
-		for i, id in pairs(ids) do
+		for _, id in pairs(ids) do
 			local buttonStructure = targetButtons[id];
 			local uiButton = uiButtons[index+1];
 			-- Create the button
@@ -114,9 +115,17 @@ local function onStart()
 				buttonStructure.adapter(buttonStructure, currentTargetID, currentTargetType);
 			end
 
-			uiButton:SetNormalTexture("Interface\\ICONS\\"..buttonStructure.icon);
-			uiButton:SetPushedTexture("Interface\\ICONS\\"..buttonStructure.icon);
-			uiButton:GetPushedTexture():SetDesaturated(1);
+			if type(buttonStructure.icon) == "table" and buttonStructure.icon.Apply then
+				uiButton:SetNormalTexture(buttonStructure.icon:GetFileID())
+				uiButton:SetPushedTexture(buttonStructure.icon:GetFileID());
+			else
+				uiButton:SetNormalTexture("Interface\\ICONS\\"..buttonStructure.icon);
+				uiButton:SetPushedTexture("Interface\\ICONS\\"..buttonStructure.icon);
+			end
+
+			if uiButton:GetPushedTexture() then
+				uiButton:GetPushedTexture():SetDesaturated(1);
+			end
 			uiButton:SetPoint("TOPLEFT", x, -12);
 			uiButton:SetWidth(buttonSize);
 			uiButton:SetHeight(buttonSize);
@@ -153,6 +162,7 @@ local function onStart()
 		elseif anchor == "RIGHT" then
 			tfX = tfX + (ui_TargetFrame:GetWidth() - oldWidth) / 2;
 		end
+		ui_TargetFrame:ClearAllPoints();
 		ui_TargetFrame:SetPoint(anchor, tfX, tfY);
 		ui_TargetFrame:SetHeight(buttonSize + 23);
 	end
@@ -178,12 +188,12 @@ local function onStart()
 		return EMPTY;
 	end
 
-	local function getCompanionInfo(owner, companionID, currentTargetID)
-		local profile = EMPTY;
+	local function getCompanionInfo(owner, companionID, currentTargetId)
+		local profile;
 		if owner == Globals.player_id then
 			profile = getCompanionProfile(companionID) or EMPTY;
 		else
-			profile = getCompanionRegisterProfile(currentTargetID);
+			profile = getCompanionRegisterProfile(currentTargetId);
 		end
 		return profile;
 	end
@@ -193,7 +203,7 @@ local function onStart()
 	local function displayTargetName()
 		if currentTargetType == TYPE_CHARACTER then
 			local info = getCharacterInfo(currentTargetID);
-			local name, realm = unitIDToInfo(currentTargetID);
+			local name = unitIDToInfo(currentTargetID);
 			if info.characteristics then
 				setupFieldSet(ui_TargetFrame, (info.characteristics.FN or name) .. " " .. (info.characteristics.LN or ""), TARGET_NAME_WIDTH);
 			else
@@ -226,14 +236,14 @@ local function onStart()
 		elseif currentTargetType == TYPE_CHARACTER and (currentTargetID == Globals.player_id or (not isIDIgnored(currentTargetID) and isUnitIDKnown(currentTargetID))) then
 			return true;
 		elseif currentTargetType == TYPE_PET or currentTargetType == TYPE_BATTLE_PET then
-			local owner, companionID = companionIDToInfo(currentTargetID);
+			local owner = companionIDToInfo(currentTargetID);
 			return not isIDIgnored(owner) and (isCurrentMine or companionHasProfile(currentTargetID));
 		elseif currentTargetType == TYPE_NPC then
 			return TRP3_API.quest and TRP3_API.quest.getActiveCampaignLog();
 		end
 	end
 
-	local function onTargetChanged(...)
+	local function onTargetChanged()
 		ui_TargetFrame:Hide();
 		currentTargetType, isCurrentMine = getTargetType();
 		if currentTargetType == TYPE_CHARACTER then
@@ -349,7 +359,7 @@ local function onStart()
 		});
 
 		local ids = {};
-		for buttonID, button in pairs(targetButtons) do
+		for buttonID, _ in pairs(targetButtons) do
 			tinsert(ids, buttonID);
 		end
 		table.sort(ids);
@@ -386,7 +396,7 @@ local function onStart()
 	Utils.event.registerHandler("PLAYER_TARGET_CHANGED", onTargetChanged);
 	Utils.event.registerHandler("PLAYER_MOUNT_DISPLAY_CHANGED", onTargetChanged);
 	Events.listenToEvent(Events.REGISTER_ABOUT_READ, onTargetChanged);
-	Events.listenToEvent(Events.REGISTER_DATA_UPDATED, function(unitID, profileID, dataType)
+	Events.listenToEvent(Events.REGISTER_DATA_UPDATED, function(unitID, _, dataType)
 		if (not unitID or (currentTargetID == unitID)) and (not dataType or dataType == "characteristics" or dataType == "about") then
 			onTargetChanged();
 		end

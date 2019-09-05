@@ -19,6 +19,9 @@
 	-->
 
 	<!-- Please note that the loading order matters a lot -->
+
+	<Script file="__version.lua"/>
+
 	<Script file="VersionCheck.lua"/>
 	<Include file="libs\libs.xml"/>
 	<Script file="init.lua"/>

@@ -1,31 +1,31 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- Character page : Characteristics
--- ---------------------------------------------------------------------------
--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
---
--- http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
+--- Total RP 3
+--- Character page : Characteristics
+------------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 -- imports
 local ipairs = ipairs;
-local Globals, Utils, Comm, Events, UI, Ellyb = TRP3_API.globals, TRP3_API.utils, TRP3_API.communication, TRP3_API.events, TRP3_API.ui, TRP3_API.Ellyb;
+local Globals, Utils, Events, UI, Ellyb = TRP3_API.globals, TRP3_API.utils, TRP3_API.events, TRP3_API.ui, TRP3_API.Ellyb;
 local stEtN = Utils.str.emptyToNil;
-local stNtE = Utils.str.nilToEmpty;
 local get = TRP3_API.profile.getData;
 local getProfile = TRP3_API.register.getProfile;
 local tcopy, tsize = Utils.table.copy, Utils.table.size;
-local numberToHexa, hexaToNumber, hexaToFloat = Utils.color.numberToHexa, Utils.color.hexaToNumber, Utils.color.hexaToFloat;
+local numberToHexa, hexaToNumber = Utils.color.numberToHexa, Utils.color.hexaToNumber;
 local loc = TRP3_API.loc;
 local getDefaultProfile = TRP3_API.profile.getDefaultProfile;
 local assert, type, wipe, strconcat, pairs, tinsert, tremove, _G, strtrim = assert, type, wipe, strconcat, pairs, tinsert, tremove, _G, strtrim;
@@ -36,9 +36,8 @@ local setTooltipForSameFrame = TRP3_API.ui.tooltip.setTooltipForSameFrame;
 local getCurrentContext = TRP3_API.navigation.page.getCurrentContext;
 local setupIconButton = TRP3_API.ui.frame.setupIconButton;
 local setupFieldSet = TRP3_API.ui.frame.setupFieldPanel;
-local getUnitIDCharacter = TRP3_API.register.getUnitIDCharacter;
-local getUnitIDProfile, getPlayerCurrentProfile = TRP3_API.register.getUnitIDProfile, TRP3_API.profile.getPlayerCurrentProfile;
-local hasProfile, getRelationTexture = TRP3_API.register.hasProfile, TRP3_API.register.relation.getRelationTexture;
+local getPlayerCurrentProfile = TRP3_API.profile.getPlayerCurrentProfile;
+local getRelationTexture = TRP3_API.register.relation.getRelationTexture;
 local RELATIONS = TRP3_API.register.relation;
 local getRelationText, getRelationTooltipText, setRelation = RELATIONS.getRelationText, RELATIONS.getRelationTooltipText, RELATIONS.setRelation;
 local CreateFrame = CreateFrame;
@@ -48,11 +47,11 @@ local setTooltipAll = TRP3_API.ui.tooltip.setTooltipAll;
 local showConfirmPopup, showTextInputPopup = TRP3_API.popup.showConfirmPopup, TRP3_API.popup.showTextInputPopup;
 local showAlertPopup = TRP3_API.popup.showAlertPopup;
 local deleteProfile = TRP3_API.register.deleteProfile;
-local selectMenu = TRP3_API.navigation.menu.selectMenu;
-local unregisterMenu = TRP3_API.navigation.menu.unregisterMenu;
 local ignoreID = TRP3_API.register.ignoreID;
 local buildZoneText = Utils.str.buildZoneText;
 local setupEditBoxesNavigation = TRP3_API.ui.frame.setupEditBoxesNavigation;
+local setupListBox = TRP3_API.ui.listbox.setupListBox;
+local is_classic = TRP3_API.globals.is_classic;
 
 local showIconBrowser = function(callback)
 	TRP3_API.popup.showPopup(TRP3_API.popup.ICONS, nil, {callback});
@@ -61,6 +60,8 @@ end;
 local PSYCHO_PRESETS_UNKOWN;
 local PSYCHO_PRESETS;
 local PSYCHO_PRESETS_DROPDOWN;
+
+local RELATIONSHIP_STATUS_DROPDOWN;
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- SCHEMA
@@ -126,7 +127,8 @@ local registerCharLocals = {
 	HE = "REG_PLAYER_HEIGHT",
 	WE = "REG_PLAYER_WEIGHT",
 	BP = "REG_PLAYER_BIRTHPLACE",
-	RE = "REG_PLAYER_RESIDENCE"
+	RE = "REG_PLAYER_RESIDENCE",
+	RS = "REG_PLAYER_RELATIONSHIP_STATUS"
 };
 local miscCharFrame = {};
 local psychoCharFrame = {};
@@ -244,11 +246,47 @@ local function setBkg(backgroundIndex)
 	TRP3_RegisterCharact_CharactPanel:SetBackdrop(backdrop);
 end
 
-local CHAR_KEYS = { "RA", "CL", "AG", "EC", "HE", "WE", "BP", "RE" };
+local CHAR_KEYS = { "RA", "CL", "AG", "EC", "HE", "WE", "BP", "RE", "RS" };
 local FIELD_TITLE_SCALE = 0.3;
 
 local function scaleField(field, containerSize, fieldName)
 	_G[field:GetName() .. (fieldName or "FieldName")]:SetSize(containerSize * FIELD_TITLE_SCALE, 18);
+end
+
+-- Create the pin template, above group members
+---@type BaseMapPoiPinMixin|MapCanvasPinMixin|{Texture: Texture, GetMap: fun():MapCanvasMixin}
+TRP3_PlayerHousePinMixin = AddOn_TotalRP3.MapPoiMixins.createPinTemplate(
+		AddOn_TotalRP3.MapPoiMixins.AnimatedPinMixin -- Use animated icons (bounce in)
+);
+
+-- Expose template name, so the scan can use it for the MapDataProvider
+TRP3_PlayerHousePinMixin.TEMPLATE_NAME = "TRP3_PlayerHousePinTemplate";
+
+function TRP3_PlayerHousePinMixin:GetDisplayDataFromPoiInfo(poiInfo)
+	local player
+	if poiInfo.characterID then
+		player = AddOn_TotalRP3.Player.CreateFromCharacterID(poiInfo.characterID);
+	elseif poiInfo.profileID then
+		player = AddOn_TotalRP3.Player.CreateFromProfileID(poiInfo.profileID);
+	else
+		error("Cannot get display data for this player house.");
+	end
+	return {
+		iconAtlas = "poi-town",
+		tooltip = player:GetCustomColoredRoleplayingNamePrefixedWithIcon()
+	}
+end
+
+function TRP3_PlayerHousePinMixin:Decorate(displayData)
+	self.Texture:SetSize(16, 16);
+	self:SetSize(16, 16);
+
+	if displayData.tooltip then
+		Ellyb.Tooltips.getTooltip(self)
+				:SetTitle(loc.REG_PLAYER_RESIDENCE, Ellyb.ColorManager.ORANGE)
+				:ClearLines()
+				:AddLine(displayData.tooltip)
+	end
 end
 
 local function setConsultDisplay(context)
@@ -279,7 +317,15 @@ local function setConsultDisplay(context)
 	local shownCharacteristics = {};
 	local shownValues = {};
 	for _, attribute in pairs(CHAR_KEYS) do
-		if strtrim(dataTab[attribute] or ""):len() > 0 then
+		if attribute == "RS" then
+			if dataTab[attribute] and dataTab[attribute] > 0 then
+				local relationshipToDisplay = RELATIONSHIP_STATUS_DROPDOWN[dataTab[attribute] + 1];
+				if relationshipToDisplay then
+					tinsert(shownCharacteristics, attribute);
+					shownValues[attribute] = relationshipToDisplay[1];
+				end
+			end
+		elseif strtrim(dataTab[attribute] or ""):len() > 0 then
 			tinsert(shownCharacteristics, attribute);
 			shownValues[attribute] = dataTab[attribute];
 		end
@@ -317,17 +363,25 @@ local function setConsultDisplay(context)
 			TRP3_RegisterCharact_CharactPanel_ResidenceButton:Show();
 			TRP3_RegisterCharact_CharactPanel_ResidenceButton:ClearAllPoints();
 			TRP3_RegisterCharact_CharactPanel_ResidenceButton:SetPoint("RIGHT", frame:GetName() .. "FieldValue", "LEFT", -5, 0);
-			--[[ TODO: Reimplement this feature for patch 8.0
 			setTooltipForSameFrame(TRP3_RegisterCharact_CharactPanel_ResidenceButton, "RIGHT", 0, 5, loc.REG_PLAYER_RESIDENCE_SHOW, loc.REG_PLAYER_RESIDENCE_SHOW_TT:format(dataTab.RC[4]));
 			TRP3_RegisterCharact_CharactPanel_ResidenceButton:SetScript("OnClick", function()
-				MiniMapWorldMapButton:GetScript("OnClick")(MiniMapWorldMapButton, "LeftButton");
-				SetMapByID(dataTab.RC[1]);
-				TRP3_API.map.placeSingleMarker(dataTab.RC[2], dataTab.RC[3], completeName, TRP3_API.map.DECORATION_TYPES.HOUSE);
+				OpenWorldMap(dataTab.RC[1])
+				local characterID;
+				local profileID;
+				if context.source == "player" then
+					characterID = TRP3_API.globals.player_id
+				elseif context.unitID then
+					characterID = context.unitID
+				elseif context.profileID then
+					profileID = context.profileID
+				else
+					error("Could not retrieve unit from this profile.")
+				end
+				AddOn_TotalRP3.Map.placeSingleMarker(dataTab.RC[2], dataTab.RC[3], { characterID = characterID, profileID = profileID }, TRP3_PlayerHousePinMixin.TEMPLATE_NAME)
 			end);
-			]]
 
 			setTooltipForSameFrame(TRP3_RegisterCharact_CharactPanel_ResidenceButton, "RIGHT", 0, 5,
-				loc.REG_PLAYER_RESIDENCE_SHOW, Ellyb.ColorManager.GREEN(dataTab.RC[4]).. Ellyb.ColorManager.RED("\n\nDisplaying player residence on the map disabled due to 8.0 changes."));
+				loc.REG_PLAYER_RESIDENCE_SHOW, Ellyb.ColorManager.GREEN(dataTab.RC[4]));
 		end
 		frame:Show();
 		previous = frame;
@@ -364,7 +418,6 @@ local function setConsultDisplay(context)
 		TRP3_RegisterCharact_CharactPanel_PsychoTitle:Show();
 		TRP3_RegisterCharact_CharactPanel_PsychoTitle:ClearAllPoints();
 		TRP3_RegisterCharact_CharactPanel_PsychoTitle:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, margin);
-		margin = 0;
 		previous = TRP3_RegisterCharact_CharactPanel_PsychoTitle;
 
 		for frameIndex, psychoStructure in ipairs(dataTab.PS) do
@@ -430,6 +483,7 @@ local function saveInDraft()
 	draftData.WE = stEtN(strtrim(TRP3_RegisterCharact_Edit_WeightField:GetText()));
 	draftData.RE = stEtN(strtrim(TRP3_RegisterCharact_Edit_ResidenceField:GetText()));
 	draftData.BP = stEtN(strtrim(TRP3_RegisterCharact_Edit_BirthplaceField:GetText()));
+	draftData.RS = tonumber(TRP3_RegisterCharact_Dropdown_RelationshipField:GetSelectedValue());
 
 	if sanitizeCharacteristics(draftData) then
 		-- Yell at the user about their mischieves
@@ -540,7 +594,7 @@ local MISC_PRESET = {
 	{
 		NA = loc.REG_PLAYER_MSP_HOUSE,
 		VA = "",
-		IC = "inv_misc_kingsring1"
+		IC = is_classic and "INV_Jewelry_Ring_36" or "inv_misc_kingsring1"
 	},
 	{
 		NA = loc.REG_PLAYER_MSP_NICK,
@@ -550,7 +604,7 @@ local MISC_PRESET = {
 	{
 		NA = loc.REG_PLAYER_MSP_MOTTO,
 		VA = "",
-		IC = "INV_Inscription_ScrollOfWisdom_01"
+		IC = is_classic and "INV_Scroll_01" or "INV_Inscription_ScrollOfWisdom_01"
 	},
 	{
 		NA = loc.REG_PLAYER_TRP2_TRAITS,
@@ -565,13 +619,13 @@ local MISC_PRESET = {
 	{
 		NA = loc.REG_PLAYER_TRP2_TATTOO,
 		VA = "",
-		IC = "INV_Inscription_inkblack01"
+		IC = is_classic and "INV_Potion_65" or "INV_Inscription_inkblack01"
 	},
 	{
 		list = "|cff00ff00" .. loc.REG_PLAYER_ADD_NEW,
 		NA = loc.CM_NAME,
 		VA = loc.CM_VALUE,
-		IC = "TEMP"
+		IC = "INV_Misc_QuestionMark"
 	},
 }
 
@@ -594,9 +648,9 @@ local function psychoAdd(presetID)
 	if presetID == "new" then
 		tinsert(draftData.PS, {
 			LT = loc.REG_PLAYER_LEFTTRAIT,
-			LI = "TEMP",
+			LI = "INV_Misc_QuestionMark",
 			RT = loc.REG_PLAYER_RIGHTTRAIT,
-			RI = "TEMP",
+			RI = "INV_Misc_QuestionMark",
 			VA = Globals.PSYCHO_DEFAULT_VALUE_V1,
 			V2 = Globals.PSYCHO_DEFAULT_VALUE_V2,
 		});
@@ -851,8 +905,8 @@ local function onMiscInfoDragUpdate(ticker)
 
 	-- Work out the index of the frame to swap with, if any. Skip if the
 	-- source and target are identical, or if there is no target.
-	local targetIndex = miscInfoQueryCursorIndexPosition(frame);
-	if not targetIndex or targetIndex == sourceIndex then
+	local targetIndex = miscInfoQueryCursorIndexPosition();
+	if not targetIndex or targetIndex == source.miscIndex then
 		return;
 	end
 
@@ -977,6 +1031,8 @@ function setEditDisplay()
 	TRP3_RegisterCharact_Edit_WeightField:SetText(draftData.WE or "");
 	TRP3_RegisterCharact_Edit_ResidenceField:SetText(draftData.RE or "");
 	TRP3_RegisterCharact_Edit_BirthplaceField:SetText(draftData.BP or "");
+
+	TRP3_RegisterCharact_Dropdown_RelationshipField:SetSelectedValue(draftData.RS or AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.UNKNOWN)
 
 	refreshDraftHouseCoordinates();
 
@@ -1137,7 +1193,6 @@ function setEditDisplay()
 	end
 	TRP3_RegisterCharact_Edit_PsychoAdd:ClearAllPoints();
 	TRP3_RegisterCharact_Edit_PsychoAdd:SetPoint("TOP", previous, "BOTTOM", 0, -5);
-	previous = TRP3_RegisterCharact_Edit_PsychoAdd;
 end
 
 local function setupRelationButton(profileID, profile)
@@ -1182,12 +1237,16 @@ local function refreshDisplay()
 
 	-- IsSelf ?
 	TRP3_RegisterCharact_NamePanel_EditButton:Hide();
+	TRP3_ProfileReportButton:Hide()
 	if context.isPlayer then
 		TRP3_RegisterCharact_NamePanel_EditButton:Show();
 	else
 		assert(context.profileID, "No profileID in context");
 		TRP3_RegisterCharact_ActionButton:Show();
 		setupRelationButton(context.profileID, context.profile);
+		if context.profile and context.profile.link then
+			TRP3_ProfileReportButton:Show()
+		end
 	end
 
 	if context.isEditMode then
@@ -1204,7 +1263,7 @@ end
 
 local toast = TRP3_API.ui.tooltip.toast;
 
-local function onActionSelected(value, button)
+local function onActionSelected(value)
 	local context = getCurrentContext();
 	assert(context, "No context for page player_main !");
 	assert(context.profile, "No profile in context");
@@ -1277,6 +1336,10 @@ local function onSave()
 	showCharacteristicsTab();
 end
 
+local function onRelationshipStatusSelection(choice)
+	draftData.RS = choice;
+end
+
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- CHARACTERISTICS - INIT
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1293,8 +1356,8 @@ local function initStructures()
 		{
 			LT = loc.REG_PLAYER_PSYCHO_CHAOTIC,
 			RT = loc.REG_PLAYER_PSYCHO_Loyal,
-			LI = "Ability_Rogue_WrongfullyAccused",
-			RI = "Ability_Paladin_SanctifiedWrath",
+			LI = is_classic and "Spell_Shadow_UnholyFrenzy" or "Ability_Rogue_WrongfullyAccused",
+			RI = is_classic and "Spell_Holy_RighteousFury" or "Ability_Paladin_SanctifiedWrath",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Chaste,
@@ -1312,48 +1375,48 @@ local function initStructures()
 			LT = loc.REG_PLAYER_PSYCHO_Genereux,
 			RT = loc.REG_PLAYER_PSYCHO_Egoiste,
 			LI = "INV_Misc_Gift_02",
-			RI = "INV_Misc_Coin_02",
+			RI = is_classic and "INV_Ingot_03" or "INV_Misc_Coin_02",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Sincere,
 			RT = loc.REG_PLAYER_PSYCHO_Trompeur,
-			LI = "INV_Misc_Toy_07",
+			LI = is_classic and "Spell_Holy_AuraOfLight" or "INV_Misc_Toy_07",
 			RI = "Ability_Rogue_Disguise",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Misericordieux,
 			RT = loc.REG_PLAYER_PSYCHO_Cruel,
 			LI = "INV_ValentinesCandySack",
-			RI = "Ability_Warrior_Trauma",
+			RI = is_classic and "Ability_Rogue_Eviscerate" or "Ability_Warrior_Trauma",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Pieux,
 			RT = loc.REG_PLAYER_PSYCHO_Rationnel,
-			LI = "Spell_Holy_HolyGuidance",
+			LI = is_classic and "Spell_Holy_PowerInfusion" or "Spell_Holy_HolyGuidance",
 			RI = "INV_Gizmo_02",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Pragmatique,
 			RT = loc.REG_PLAYER_PSYCHO_Conciliant,
-			LI = "Ability_Rogue_HonorAmongstThieves",
-			RI = "INV_Misc_GroupNeedMore",
+			LI = is_classic and "Ability_Rogue_DualWeild" or "Ability_Rogue_HonorAmongstThieves",
+			RI = is_classic and "ACHIEVEMENT_GUILDPERK_HAVEGROUP WILLTRAVEL" or "INV_Misc_GroupNeedMore",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Reflechi,
 			RT = loc.REG_PLAYER_PSYCHO_Impulsif,
-			LI = "Spell_Shadow_Brainwash",
-			RI = "Achievement_BG_CaptureFlag_EOS",
+			LI = is_classic and "INV_Misc_PocketWatch_01" or "Spell_Shadow_Brainwash",
+			RI = is_classic and "SPELL_FIRE_INCINERATE" or "Achievement_BG_CaptureFlag_EOS",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Acete,
 			RT = loc.REG_PLAYER_PSYCHO_Bonvivant,
-			LI = "INV_Misc_Food_PineNut",
-			RI = "INV_Misc_Food_99",
+			LI = is_classic and "INV_Misc_Coin_05" or "INV_Misc_Food_PineNut",
+			RI = is_classic and "INV_Misc_Coin_02" or "INV_Misc_Food_99",
 		},
 		{
 			LT = loc.REG_PLAYER_PSYCHO_Valeureux,
 			RT = loc.REG_PLAYER_PSYCHO_Couard,
-			LI = "Ability_Paladin_BeaconofLight",
+			LI = is_classic and "Ability_Warrior_BattleShout" or "Ability_Paladin_BeaconofLight",
 			RI = "Ability_Druid_Cower",
 		},
 	};
@@ -1375,6 +1438,15 @@ local function initStructures()
 		{ loc.REG_PLAYER_PSYCHO_CUSTOM },
 		{ loc.REG_PLAYER_PSYCHO_CREATENEW, "new" },
 	};
+
+	RELATIONSHIP_STATUS_DROPDOWN = {
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_UNKNOWN, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.UNKNOWN},
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_SINGLE, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.SINGLE},
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_TAKEN, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.TAKEN},
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_MARRIED, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.MARRIED},
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_DIVORCED, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.DIVORCED},
+		{loc.REG_PLAYER_RELATIONSHIP_STATUS_WIDOWED, AddOn_TotalRP3.Enums.RELATIONSHIP_STATUS.WIDOWED},
+	};
 end
 
 function TRP3_API.register.inits.characteristicsInit()
@@ -1388,10 +1460,12 @@ function TRP3_API.register.inits.characteristicsInit()
 	TRP3_RegisterCharact_NamePanel_EditButton:SetScript("OnClick", onEdit);
 	TRP3_RegisterCharact_ActionButton:SetScript("OnClick", onActionClicked);
 	TRP3_RegisterCharact_Edit_ResidenceButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	TRP3_RegisterCharact_Edit_ResidenceButton:SetScript("OnClick", function(self, button)
+	TRP3_RegisterCharact_Edit_ResidenceButton:SetScript("OnClick", function(_, button)
 		if button == "LeftButton" then
-			if TRP3_API.map.getCurrentCoordinates() then
-				draftData.RC = {TRP3_API.map.getCurrentCoordinates()};
+			if AddOn_TotalRP3.Map.getPlayerCoordinates() then
+				local x, y= AddOn_TotalRP3.Map.getPlayerCoordinates();
+				local mapId = AddOn_TotalRP3.Map.getPlayerMapID()
+				draftData.RC = { mapId, x, y };
 				tinsert(draftData.RC, Utils.str.buildZoneText());
 				TRP3_RegisterCharact_Edit_ResidenceField:SetText(buildZoneText());
 			else
@@ -1465,8 +1539,9 @@ function TRP3_API.register.inits.characteristicsInit()
 	TRP3_RegisterCharact_Edit_FullTitleFieldText:SetText(loc.REG_PLAYER_FULLTITLE);
 	TRP3_RegisterCharact_CharactPanel_RegisterTitle:SetText(Utils.str.icon("INV_Misc_Book_09", 25) .. " " .. loc.REG_PLAYER_REGISTER);
 	TRP3_RegisterCharact_CharactPanel_Edit_RegisterTitle:SetText(Utils.str.icon("INV_Misc_Book_09", 25) .. " " .. loc.REG_PLAYER_REGISTER);
-	TRP3_RegisterCharact_CharactPanel_PsychoTitle:SetText(Utils.str.icon("Spell_Arcane_MindMastery", 25) .. " " .. loc.REG_PLAYER_PSYCHO);
-	TRP3_RegisterCharact_CharactPanel_Edit_PsychoTitle:SetText(Utils.str.icon("Spell_Arcane_MindMastery", 25) .. " " .. loc.REG_PLAYER_PSYCHO);
+	local PSYCHO_ICON = is_classic and "Spell_Holy_MindSooth" or "Spell_Arcane_MindMastery";
+	TRP3_RegisterCharact_CharactPanel_PsychoTitle:SetText(Utils.str.icon(PSYCHO_ICON, 25) .. " " .. loc.REG_PLAYER_PSYCHO);
+	TRP3_RegisterCharact_CharactPanel_Edit_PsychoTitle:SetText(Utils.str.icon(PSYCHO_ICON, 25) .. " " .. loc.REG_PLAYER_PSYCHO);
 	TRP3_RegisterCharact_CharactPanel_MiscTitle:SetText(Utils.str.icon("INV_MISC_NOTE_06", 25) .. " " .. loc.REG_PLAYER_MORE_INFO);
 	TRP3_RegisterCharact_CharactPanel_Edit_MiscTitle:SetText(Utils.str.icon("INV_MISC_NOTE_06", 25) .. " " .. loc.REG_PLAYER_MORE_INFO);
 	TRP3_RegisterCharact_Edit_RaceFieldText:SetText(loc.REG_PLAYER_RACE);
@@ -1478,10 +1553,15 @@ function TRP3_API.register.inits.characteristicsInit()
 	TRP3_RegisterCharact_Edit_ResidenceFieldText:SetText(loc.REG_PLAYER_RESIDENCE);
 	TRP3_RegisterCharact_Edit_BirthplaceFieldText:SetText(loc.REG_PLAYER_BIRTHPLACE);
 
+	setupListBox(TRP3_RegisterCharact_Dropdown_RelationshipField, RELATIONSHIP_STATUS_DROPDOWN, onRelationshipStatusSelection, loc.REG_PLAYER_RELATIONSHIP_STATUS_UNKNOWN, 200, false);
+	Ellyb.Tooltips.getTooltip(TRP3_RegisterCharact_Dropdown_RelationshipField)
+		:SetTitle(loc.REG_PLAYER_RELATIONSHIP_STATUS)
+		:AddLine(loc.REG_PLAYER_RELATIONSHIP_STATUS_TT);
+	TRP3_RegisterCharact_Dropdown_RelationshipFieldTitle:SetText(loc.REG_PLAYER_RELATIONSHIP_STATUS);
 
 	-- Resizing
-	TRP3_API.events.listenToEvent(TRP3_API.events.NAVIGATION_RESIZED, function(containerwidth, containerHeight)
-		local finalContainerWidth = containerwidth - 70;
+	TRP3_API.events.listenToEvent(TRP3_API.events.NAVIGATION_RESIZED, function(containerWidth)
+		local finalContainerWidth = containerWidth - 70;
 		TRP3_RegisterCharact_CharactPanel_Container:SetSize(finalContainerWidth, 50);
 		TRP3_RegisterCharact_Edit_CharactPanel_Container:SetSize(finalContainerWidth, 50);
 		for _, frame in pairs(registerCharFrame) do

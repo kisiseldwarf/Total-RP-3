@@ -1,6 +1,5 @@
 ----------------------------------------------------------------------------------
 --- Total RP 3
----
 --- Dashboard "About" Tab
 --- ------------------------------------------------------------------------------
 --- Copyright 2018 Daniel "Meorawr" Yates <me@meorawr.io>
@@ -101,7 +100,6 @@ local function getLocalizedText()
 	local replacements = {
 		[1] = TRP3_API.globals.version_display,
 		[2] = TRP3_API.globals.version,
-		[3] = Ellyb:GetPatreonSupporters(),
 	};
 
 	for section, people in pairs(CREDITS) do

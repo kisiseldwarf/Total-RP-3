@@ -1,20 +1,21 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- UI tools
---	---------------------------------------------------------------------------
---	Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
---	Licensed under the Apache License, Version 2.0 (the "License");
---	you may not use this file except in compliance with the License.
---	You may obtain a copy of the License at
---
---		http://www.apache.org/licenses/LICENSE-2.0
---
---	Unless required by applicable law or agreed to in writing, software
---	distributed under the License is distributed on an "AS IS" BASIS,
---	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
---	See the License for the specific language governing permissions and
---	limitations under the License.
+--- Total RP 3
+--- UI tools
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- 	http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 ---@type
@@ -30,23 +31,30 @@ TRP3_API.ui = {
 }
 
 -- imports
+local LibRealmInfo = LibStub:GetLibrary("LibRealmInfo");
+
 local globals = TRP3_API.globals;
 local loc = TRP3_API.loc;
 local floor, tinsert, pairs, wipe, assert, _G, tostring, table, type, strconcat = floor, tinsert, pairs, wipe, assert, _G, tostring, table, type, strconcat;
 local math = math;
 local MouseIsOver, CreateFrame, ToggleDropDownMenu = MouseIsOver, CreateFrame, MSA_ToggleDropDownMenu;
 local UIDropDownMenu_Initialize, UIDropDownMenu_CreateInfo, UIDropDownMenu_AddButton = MSA_DropDownMenu_Initialize, MSA_DropDownMenu_CreateInfo, MSA_DropDownMenu_AddButton;
-local CloseDropDownMenus = CloseDropDownMenus;
 local TRP3_MainTooltip, TRP3_MainTooltipTextRight1, TRP3_MainTooltipTextLeft1, TRP3_MainTooltipTextLeft2 = TRP3_MainTooltip, TRP3_MainTooltipTextRight1, TRP3_MainTooltipTextLeft1, TRP3_MainTooltipTextLeft2;
 local shiftDown = IsShiftKeyDown;
 local UnitIsBattlePetCompanion, UnitIsUnit, UnitIsOtherPlayersPet, UnitIsOtherPlayersBattlePet = UnitIsBattlePetCompanion, UnitIsUnit, UnitIsOtherPlayersPet, UnitIsOtherPlayersBattlePet;
 local UnitIsPlayer = UnitIsPlayer;
 local getUnitID = TRP3_API.utils.str.getUnitID;
 local numberToHexa = TRP3_API.utils.color.numberToHexa;
-local tcopy = TRP3_API.utils.table.copy;
+local is_classic = globals.is_classic;
 
 local CONFIG_UI_SOUNDS = "ui_sounds";
 local CONFIG_UI_ANIMATIONS = "ui_animations";
+
+-- Classic proofing
+if TRP3_API.globals.is_classic then
+	UnitIsBattlePetCompanion = function() return false end;
+	UnitIsOtherPlayersBattlePet = function() return false end;
+end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- Frame utils
@@ -98,7 +106,7 @@ end
 function TRP3_API.ui.frame.createRefreshOnFrame(frame, time, callback)
 	assert(frame and time and callback, "Argument must be not nil");
 	frame.refreshTimer = 1000;
-	frame:SetScript("OnUpdate", function(arg, elapsed)
+	frame:SetScript("OnUpdate", function(_, elapsed)
 		frame.refreshTimer = frame.refreshTimer + elapsed;
 		if frame.refreshTimer > time then
 			frame.refreshTimer = 0;
@@ -112,7 +120,7 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 local DROPDOWN_FRAME = "TRP3_UIDD";
-local dropDownFrame, currentlyOpenedDrop;
+local dropDownFrame;
 
 local function openDropDown(anchoredFrame, values, callback, space, addCancel)
 	assert(anchoredFrame, "No anchoredFrame");
@@ -127,10 +135,10 @@ local function openDropDown(anchoredFrame, values, callback, space, addCancel)
 	end
 
 	UIDropDownMenu_Initialize(dropDownFrame,
-		function(uiFrame, level, menuList)
+		function(_, level, menuList)
 			local levelValues = menuList or values;
 			level = level or 1;
-			for index, tab in pairs(levelValues) do
+			for _, tab in pairs(levelValues) do
 				assert(type(tab) == "table", "Level value is not a table !");
 				local text = tab[1];
 				local value = tab[2];
@@ -171,7 +179,6 @@ local function openDropDown(anchoredFrame, values, callback, space, addCancel)
 							if level > 1 then
 								ToggleDropDownMenu(nil, nil, dropDownFrame);
 							end
-							currentlyOpenedDrop = nil;
 						end;
 					else
 						info.disabled = true;
@@ -193,13 +200,12 @@ local function openDropDown(anchoredFrame, values, callback, space, addCancel)
 	dropDownFrame:SetParent(anchoredFrame);
 	ToggleDropDownMenu(1, nil, dropDownFrame, anchoredFrame:GetName() or "cursor", -((space or -10)), 0);
 	TRP3_API.ui.misc.playUISound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	currentlyOpenedDrop = anchoredFrame;
 end
 TRP3_API.ui.listbox.displayDropDown = openDropDown;
 
 --- Setup a drop down menu for a clickable (Button ...)
 local function setupDropDownMenu(hasClickFrame, values, callback, space, addCancel, rightClick)
-	hasClickFrame:SetScript("OnClick", function(self, button)
+	hasClickFrame:SetScript("OnClick", function(_, button)
 		if (rightClick and button ~= "RightButton") or (not rightClick and button ~= "LeftButton") then return; end
 		openDropDown(hasClickFrame, values, callback, space, addCancel);
 	end);
@@ -243,7 +249,7 @@ local function setupListBox(listBox, values, callback, defaultText, boxWidth, ad
 	listBox.values = values;
 	listBox.callback = callback;
 	local listCallback = function(value)
-		for index, tab in pairs(values) do
+		for _, tab in pairs(values) do
 			local text = tab[1];
 			local val = tab[2];
 			if val == value then
@@ -276,7 +282,7 @@ TRP3_API.ui.listbox.setupListBox = setupListBox;
 
 -- Handle the mouse wheel for the frame in order to slide the slider
 TRP3_API.ui.list.handleMouseWheel = function(frame, slider)
-	frame:SetScript("OnMouseWheel",function(self, delta)
+	frame:SetScript("OnMouseWheel",function(_, delta)
 		if slider:IsEnabled() then
 			local mini,maxi = slider:GetMinMaxValues();
 			if delta == 1 and slider:GetValue() > mini then
@@ -314,14 +320,13 @@ end
 -- 		infoTab, a structure containing :
 -- 			- A widgetTab (the list of all widget used in a full page)
 -- 			- A decorate function, which will receive 3 arguments : a widget and an ID. Decorate will be called on every couple "widget from widgetTab" and "id from dataTab".
---		dataTab, all the possible values
---		slider, the slider :3
+--- 	dataTab, all the possible values
+--- 	slider, the slider :3
 TRP3_API.ui.list.initList = function(infoTab, dataTab, slider)
 	assert(infoTab and dataTab and slider, "Error : no argument can be nil.");
 	assert(infoTab.widgetTab, "Error : no widget tab in infoTab.");
 	assert(infoTab.decorate, "Error : no decorate function in infoTab.");
 
-	local count = 0;
 	local maxPerPage = #infoTab.widgetTab;
 	infoTab.maxPerPage = maxPerPage;
 
@@ -343,7 +348,7 @@ TRP3_API.ui.list.initList = function(infoTab, dataTab, slider)
 			tinsert(infoTab.uiTab, i);
 		end
 	end
-	count = #infoTab.uiTab;
+	local count = #infoTab.uiTab;
 
 	table.sort(infoTab.uiTab);
 
@@ -415,10 +420,12 @@ local function refreshTooltip(Frame)
 			TRP3_MainTooltipTextRight1:SetNonSpaceWrap(true);
 			TRP3_MainTooltipTextRight1:SetTextColor(1, 1, 1);
 		end
+		do
 		local font, _, flag = TRP3_MainTooltipTextLeft1:GetFont();
 		TRP3_MainTooltipTextLeft1:SetFont(font, getTooltipSize() + 4, flag);
 		TRP3_MainTooltipTextLeft1:SetNonSpaceWrap(true);
 		TRP3_MainTooltipTextLeft1:SetTextColor(1, 1, 1);
+		end
 		if Frame.bodyText then
 			TRP3_MainTooltip:AddLine(Frame.bodyText, 1, 0.6666, 0, true);
 			local font, _, flag = TRP3_MainTooltipTextLeft2:GetFont();
@@ -436,7 +443,7 @@ local function tooltipSimpleOnEnter(self)
 	refreshTooltip(self);
 end
 
-local function tooltipSimpleOnLeave(self)
+local function tooltipSimpleOnLeave()
 	TRP3_MainTooltip:Hide();
 end
 
@@ -583,10 +590,18 @@ end
 -- Icon utils
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
+---@param icon string|EllybTexture
 function TRP3_API.ui.frame.setupIconButton(self, icon)
 	assert(self, "Frame is nil");
 	assert(self.Icon or (self:GetName() and _G[self:GetName() .. "Icon"]), "Frame must have a Icon");
-	(self.Icon or _G[self:GetName() .. "Icon"]):SetTexture("Interface\\ICONS\\" .. icon);
+
+	---@type Texture
+	local iconWidget = (self.Icon or _G[self:GetName() .. "Icon"]);
+	if type(icon) == "table" and icon.Apply then
+		icon:Apply(iconWidget);
+	else
+		iconWidget:SetTexture("Interface\\ICONS\\" .. icon);
+	end
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -612,7 +627,7 @@ function TRP3_API.ui.frame.setupEditBoxesNavigation(tabEditBoxes)
 	local maxBound = # tabEditBoxes;
 	local minBound = 1;
 	for index, editbox in pairs(tabEditBoxes) do
-		editbox:SetScript("OnTabPressed", function(self, button)
+		editbox:SetScript("OnTabPressed", function()
 			local cursor = index
 			if shiftDown() then
 				if cursor == minBound then
@@ -642,7 +657,6 @@ local tabBar_HEIGHT_NORMAL = 32;
 
 local function tabBar_onSelect(tabGroup, index)
 	assert(#tabGroup.tabs >= index, "Index out of bound.");
-	local i;
 	for i=1, #tabGroup.tabs do
 		local widget = tabGroup.tabs[i];
 		if i == index then
@@ -721,7 +735,7 @@ function TRP3_API.ui.frame.createTabPanel(tabBar, data, callback, confirmCallbac
 					callback(tabWidget, value);
 				end
 		end
-		tabWidget:SetScript("OnClick", function(self)
+		tabWidget:SetScript("OnClick", function()
 			if not confirmCallback then
 				clickFunction();
 			else
@@ -747,32 +761,32 @@ end
 
 local unitTexture = {
 	Human = {
-		"Achievement_Character_Human_Male",
-		"Achievement_Character_Human_Female",
+		is_classic and "Ability_Warrior_Revenge" or "Achievement_Character_Human_Male",
+		is_classic and "INV_Misc_Head_Human_02" or "Achievement_Character_Human_Female",
 	},
 	Gnome = {
-		"Achievement_Character_Gnome_Male",
-		"Achievement_Character_Gnome_Female",
+		is_classic and "INV_Misc_Head_Gnome_01" or "Achievement_Character_Gnome_Male",
+		is_classic and "INV_Misc_Head_Gnome_02" or "Achievement_Character_Gnome_Female",
 	},
 	Scourge = {
-		"Achievement_Character_Undead_Male",
-		"Achievement_Character_Undead_Female",
+		is_classic and "INV_Misc_Head_Undead_01" or "Achievement_Character_Undead_Male",
+		is_classic and "INV_Misc_Head_Undead_02" or "Achievement_Character_Undead_Female",
 	},
 	NightElf = {
-		"Achievement_Character_Nightelf_Male",
+		is_classic and "Ability_Ambush" or "Achievement_Character_Nightelf_Male",
 		"Achievement_Character_Nightelf_Female",
 	},
 	Dwarf = {
 		"Achievement_Character_Dwarf_Male",
-		"Achievement_Character_Dwarf_Female",
+		is_classic and "INV_Misc_Head_Dwarf_02" or "Achievement_Character_Dwarf_Female",
 	},
 	Draenei = {
 		"Achievement_Character_Draenei_Male",
 		"Achievement_Character_Draenei_Female",
 	},
 	Orc = {
-		"Achievement_Character_Orc_Male",
-		"Achievement_Character_Orc_Female",
+		is_classic and "Ability_Warrior_WarCry" or "Achievement_Character_Orc_Male",
+		is_classic and "INV_Misc_Head_Orc_02" or "Achievement_Character_Orc_Female",
 	},
 	BloodElf = {
 		"Achievement_Character_Bloodelf_Male",
@@ -780,11 +794,11 @@ local unitTexture = {
 	},
 	Troll = {
 		"Achievement_Character_Troll_Male",
-		"Achievement_Character_Troll_Female",
+		is_classic and "INV_Misc_Head_Troll_02" or "Achievement_Character_Troll_Female",
 	},
 	Tauren = {
-		"Achievement_Character_Tauren_Male",
-		"Achievement_Character_Tauren_Female",
+		is_classic and "Spell_Holy_BlessingOfStamina" or "Achievement_Character_Tauren_Male",
+		is_classic and "INV_Misc_Head_Tauren_02" or "Achievement_Character_Tauren_Female",
 	},
 	Worgen = {
 		"achievement_worganhead",
@@ -821,6 +835,14 @@ local unitTexture = {
 	DarkIronDwarf = {
 		"Ability_Racial_Fireblood",
 		"ability_racial_foregedinFlames"
+	},
+	KulTiran = {
+		"Achievement_Boss_Zuldazar_Manceroy_Mestrah",
+		"INV_Faction_ProudmooreAdmiralty"
+	},
+	ZandalariTroll = {
+		"INV_ZandalariMaleHead",
+		"INV_ZandalariFemaleHead"
 	}
 };
 
@@ -908,16 +930,16 @@ end
 local function onContainerTagClicked(button, frame, isP)
 	local values = {};
 	if not isP then
-		tinsert(values, {loc.REG_PLAYER_ABOUT_P});
+		tinsert(values, {loc.REG_PLAYER_ABOUT_HEADER});
 		tinsert(values, {loc.CM_LEFT, 1});
 		tinsert(values, {loc.CM_CENTER, 2});
 		tinsert(values, {loc.CM_RIGHT, 3});
 	else
-		tinsert(values, {loc.REG_PLAYER_ABOUT_HEADER});
+		tinsert(values, {loc.REG_PLAYER_ABOUT_P});
 		tinsert(values, {loc.CM_CENTER, 1});
 		tinsert(values, {loc.CM_RIGHT, 2});
 	end
-	openDropDown(button, values, function(alignIndex, button) insertContainerTag(alignIndex, button, frame) end, 0, true);
+	openDropDown(button, values, function(alignIndex, mouseButton) insertContainerTag(alignIndex, mouseButton, frame) end, 0, true);
 end
 
 function TRP3_API.ui.text.setupToolbar(toolbar, textFrame, parentFrame, point, parentPoint)
@@ -926,37 +948,48 @@ function TRP3_API.ui.text.setupToolbar(toolbar, textFrame, parentFrame, point, p
 	toolbar.icon:SetText(loc.CM_ICON);
 	toolbar.color:SetText(loc.CM_COLOR);
 	toolbar.link:SetText(loc.CM_LINK);
+	toolbar.textFrame = textFrame;
 	toolbar.h1.tagIndex = 1;
 	toolbar.h2.tagIndex = 2;
 	toolbar.h3.tagIndex = 3;
 	toolbar.p.tagIndex = 4;
-	toolbar.h1:SetScript("OnClick", function(button) onContainerTagClicked(button, textFrame) end);
-	toolbar.h2:SetScript("OnClick", function(button) onContainerTagClicked(button, textFrame) end);
-	toolbar.h3:SetScript("OnClick", function(button) onContainerTagClicked(button, textFrame) end);
-	toolbar.p:SetScript("OnClick", function(button) onContainerTagClicked(button, textFrame, true) end);
+	toolbar.h1:SetScript("OnClick", function(button) if toolbar.textFrame then onContainerTagClicked(button, toolbar.textFrame) end end);
+	toolbar.h2:SetScript("OnClick", function(button) if toolbar.textFrame then onContainerTagClicked(button, toolbar.textFrame) end end);
+	toolbar.h3:SetScript("OnClick", function(button) if toolbar.textFrame then onContainerTagClicked(button, toolbar.textFrame) end end);
+	toolbar.p:SetScript("OnClick", function(button) if toolbar.textFrame then onContainerTagClicked(button, toolbar.textFrame, true) end end);
 	toolbar.icon:SetScript("OnClick", function()
+		if toolbar.textFrame then
 		TRP3_API.popup.showPopup(
 			TRP3_API.popup.ICONS,
 			{parent = parentFrame, point = point, parentPoint = parentPoint},
-			{function(icon) onIconTagSelected(icon, textFrame) end});
+				{function(icon) onIconTagSelected(icon, toolbar.textFrame) end});
+		end
 	end);
 	toolbar.color:SetScript("OnClick", function()
+		if toolbar.textFrame then
 		if shiftDown() or (getConfigValue and getConfigValue("default_color_picker")) then
-			TRP3_API.popup.showDefaultColorPicker({function(red, green, blue) onColorTagSelected(red, green, blue, textFrame) end});
+				TRP3_API.popup.showDefaultColorPicker({function(red, green, blue) onColorTagSelected(red, green, blue, toolbar.textFrame) end});
 		else
 			TRP3_API.popup.showPopup(
 				TRP3_API.popup.COLORS,
 				{parent = parentFrame, point = point, parentPoint = parentPoint},
-				{function(red, green, blue) onColorTagSelected(red, green, blue, textFrame) end});
+					{function(red, green, blue) onColorTagSelected(red, green, blue, toolbar.textFrame) end});
+			end
 		end
 	end);
 	toolbar.image:SetScript("OnClick", function()
+		if toolbar.textFrame then
 		TRP3_API.popup.showPopup(
 			TRP3_API.popup.IMAGES,
 			{parent = parentFrame, point = point, parentPoint = parentPoint},
-			{function(image) onImageTagSelected(image, textFrame) end});
+				{function(image) onImageTagSelected(image, toolbar.textFrame) end});
+		end
 	end);
-	toolbar.link:SetScript("OnClick", function() onLinkTagClicked(textFrame) end);
+	toolbar.link:SetScript("OnClick", function() if toolbar.textFrame then onLinkTagClicked(toolbar.textFrame) end end);
+end
+
+function TRP3_API.ui.text.changeToolbarTextFrame(toolbar, textFrame)
+	toolbar.textFrame = textFrame;
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -978,7 +1011,7 @@ end
 
 function TRP3_API.ui.misc.playSoundKit(soundID, channel)
 	if getConfigValue and getConfigValue(CONFIG_UI_SOUNDS) then
-		local willPlay, handlerID = PlaySound(soundID, channel or "SFX");
+		local _, handlerID = PlaySound(soundID, channel or "SFX");
 		return handlerID;
 	end
 end
@@ -999,6 +1032,10 @@ local function playAnimation(animationGroup, callback)
 	end
 end
 TRP3_API.ui.misc.playAnimation = playAnimation;
+
+function TRP3_API.ui.misc.shouldPlayUIAnimation()
+	return getConfigValue and getConfigValue(CONFIG_UI_ANIMATIONS);
+end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- Hovered frames
@@ -1105,7 +1142,7 @@ resizeShadowFrame:SetScript("OnUpdate", function(self)
 	if width < self.minWidth then
 		widthColor = INVALID_SIZE_COLOR;
 	end
-	resizeShadowFrame.text:SetText(heightColor(math.ceil(width)) .. " x " .. heightColor(math.ceil(height)));
+	resizeShadowFrame.text:SetText(widthColor(math.ceil(width)) .. " x " .. heightColor(math.ceil(height)));
 end);
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1120,4 +1157,45 @@ function TRP3_API.ui.frame.setupMove(frame)
 	frame:SetScript("OnDragStop", function(self)
 		self:StopMovingOrSizing();
 	end)
+end
+
+--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+-- Locale Textures
+--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+local LOCALE_ATLAS = [[Interface\AddOns\totalRP3\resources\locales]];
+local LOCALE_ICONS = {
+	["deDE"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.00, 0.25, 0.00, 0.171875, 0, 0),
+	["enGB"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.25, 0.50, 0.00, 0.171875, 0, 0),
+	["enUS"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.50, 0.75, 0.00, 0.171875, 0, 0),
+	["esES"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.75, 1.00, 0.00, 0.171875, 0, 0),
+	["esMX"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.00, 0.25, 0.25, 0.421875, 0, 0),
+	["frFR"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.25, 0.50, 0.25, 0.421875, 0, 0),
+	["itIT"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.50, 0.75, 0.25, 0.421875, 0, 0),
+	["koKR"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.75, 1.00, 0.25, 0.421875, 0, 0),
+	["ptBR"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.00, 0.25, 0.50, 0.671875, 0, 0),
+	["ptPT"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.25, 0.50, 0.50, 0.671875, 0, 0),
+	["ruRU"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.50, 0.75, 0.50, 0.671875, 0, 0),
+	["zhCN"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.75, 1.00, 0.50, 0.671875, 0, 0),
+	["zhTW"] = CreateTextureMarkup(LOCALE_ATLAS, 64, 64, 16, 11, 0.00, 0.25, 0.75, 0.921875, 0, 0),
+};
+
+function TRP3_API.ui.misc.getLocaleIcon(localeCode)
+	-- Some regions should have their locale codes transformed for accuracy,
+	-- for example ptBR on EU realms should probably be ptPT.
+	local currentRegion = LibRealmInfo:GetCurrentRegion();
+	if not currentRegion then
+		currentRegion = GetCurrentRegionName();
+	end
+
+	if currentRegion == "EU" or currentRegion == "RU" then
+		-- EU/RU: enUS => enGB, ptBR => ptPT.
+		if localeCode == "enUS" then
+			localeCode = "enGB";
+		elseif localeCode == "ptBR" then
+			localeCode = "ptPT";
+		end
+	end
+
+	return LOCALE_ICONS[localeCode];
 end

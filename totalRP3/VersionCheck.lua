@@ -1,7 +1,8 @@
 ----------------------------------------------------------------------------------
 --- Total RP 3
+--- This file does a couple of checks to make sure the add-on is being loaded properly in the expected environment.
 --- ---------------------------------------------------------------------------
---- Copyright 2018 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
 ---
 --- Licensed under the Apache License, Version 2.0 (the "License");
 --- you may not use this file except in compliance with the License.
@@ -16,12 +17,24 @@
 --- limitations under the License.
 ----------------------------------------------------------------------------------
 
+---@type TRP3_API
+local _, TRP3_API = ...;
 
-local displayBuild, _, _, interfaceVersionNumber = GetBuildInfo()
+--region Build version check
+if TRP3_API.BUILD_NUMBER == nil then
+	-- luacheck: ignore 311
+	TRP3_API = nil -- Force API reference to nil. This will break most of the add-on so it stops loading.
+	error([[Missing critical Total RP 3 files.
 
-if interfaceVersionNumber < 80000 then
-	error(([[This version of Total RP 3 only supports patch 8.0 Battle for Azeroth, but you are running patch %s.
-
-Please downgrade to the latest version available for this patch.
-If you are using the Twitch client, make sure to set your release type preferences to Release instead of Beta/Alpha.]]):format(displayBuild))
+You probably tried to update the add-on while the game client was running. This is not recommended.
+Please quit the game completely in order for the add-on to properly update.
+]]);
 end
+--endregion
+
+--region Dev builds setup
+--@alpha@
+-- Force showing Lua errors on non release builds
+SetCVar("scriptErrors", 1);
+--@end-alpha@
+--endregion

@@ -1,21 +1,21 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- Global variables
---	---------------------------------------------------------------------------
---	Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---	Copyright 2014 Renaud Parize (Ellypse) (ellypse@totalrp3.info)
+--- Total RP 3
+--- Global variables
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
 --
---	Licensed under the Apache License, Version 2.0 (the "License");
---	you may not use this file except in compliance with the License.
---	You may obtain a copy of the License at
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
 --
---		http://www.apache.org/licenses/LICENSE-2.0
+--- 	http://www.apache.org/licenses/LICENSE-2.0
 --
---	Unless required by applicable law or agreed to in writing, software
---	distributed under the License is distributed on an "AS IS" BASIS,
---	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
---	See the License for the specific language governing permissions and
---	limitations under the License.
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 ---@type TRP3_API
@@ -25,6 +25,8 @@ local Ellyb = TRP3_API.Ellyb;
 local race_loc, race = UnitRace("player");
 local class_loc, class, class_index = UnitClass("player");
 local faction, faction_loc = UnitFactionGroup("player");
+
+local Player = AddOn_TotalRP3.Player.GetCurrentUser();
 
 -- Public accessor
 TRP3_API.r = {};
@@ -48,7 +50,7 @@ TRP3_API.globals = {
 	addon_name_me = "Total RP 3",
 	addon_id_length = 15,
 
-	version = 58,
+	version = 76,
 
 	--@debug@
 	version_display = "-dev",
@@ -70,17 +72,19 @@ TRP3_API.globals = {
 		class = class,
 		faction = faction
 	},
-	is_trial_account = IsTrialAccount() or IsVeteranTrialAccount(),
+	is_trial_account = Player:GetAccountType(),
 	clients = {
 		TRP3 = "trp3",
 		MSP = "msp",
 	},
 
 	icons = {
-		default = "TEMP",
+		default = "INV_Misc_QuestionMark",
 		unknown = "INV_Misc_QuestionMark",
 		profile_default = "INV_Misc_GroupLooking",
 	},
+
+	is_classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC,
 
 	-- Profile Constants
 	PSYCHO_DEFAULT_VALUE_V1 = 3,
@@ -105,13 +109,13 @@ TRP3_API.globals.RELATIONS = RELATIONS;
 
 --- RELATIONS_ORDER defines a logical ordering for relations.
 local RELATIONS_ORDER = {
-	[RELATIONS.NONE] = 0,
-	[RELATIONS.UNFRIENDLY] = 1,
-	[RELATIONS.NEUTRAL] = 2,
+	[RELATIONS.NONE] = 6,
+	[RELATIONS.UNFRIENDLY] = 5,
+	[RELATIONS.NEUTRAL] = 4,
 	[RELATIONS.BUSINESS] = 3,
-	[RELATIONS.FRIEND] = 4,
-	[RELATIONS.LOVE] = 5,
-	[RELATIONS.FAMILY] = 6,
+	[RELATIONS.FRIEND] = 2,
+	[RELATIONS.LOVE] = 1,
+	[RELATIONS.FAMILY] = 0,
 };
 TRP3_API.globals.RELATIONS_ORDER = RELATIONS_ORDER;
 

@@ -1,21 +1,25 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- Directory : main API
--- ---------------------------------------------------------------------------
--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
---
--- http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
+--- Total RP 3
+--- Directory : main API
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
+
+local Directory = {};
+AddOn_TotalRP3.Directory = Directory;
 
 -- Public accessor
 TRP3_API.register = {
@@ -33,32 +37,23 @@ TRP3_API.register.MENU_LIST_ID_TAB = "main_31_";
 local Ellyb = TRP3_API.Ellyb;
 local Globals = TRP3_API.globals;
 local Utils = TRP3_API.utils;
-local stEtN = Utils.str.emptyToNil;
 local loc = TRP3_API.loc;
 local log = Utils.log.log;
 local buildZoneText = Utils.str.buildZoneText;
 local getUnitID = Utils.str.getUnitID;
-local UnitRace, UnitIsPlayer, UnitClass = UnitRace, UnitIsPlayer, UnitClass;
-local UnitFactionGroup, UnitSex, GetGuildInfo = UnitFactionGroup, UnitSex, GetGuildInfo;
-local getDefaultProfile, get = TRP3_API.profile.getDefaultProfile, TRP3_API.profile.getData;
-local getPlayerCharacter = TRP3_API.profile.getPlayerCharacter;
 local Config = TRP3_API.configuration;
 local registerConfigKey = Config.registerConfigKey;
 local getConfigValue = Config.getValue;
 local Events = TRP3_API.events;
-local assert, tostring, time, wipe, strconcat, pairs, tinsert = assert, tostring, time, wipe, strconcat, pairs, tinsert;
+local assert, tostring, wipe, pairs, tinsert = assert, tostring, wipe, pairs, tinsert;
 local registerMenu, selectMenu = TRP3_API.navigation.menu.registerMenu, TRP3_API.navigation.menu.selectMenu;
 local registerPage, setPage = TRP3_API.navigation.page.registerPage, TRP3_API.navigation.page.setPage;
 local getCurrentContext, getCurrentPageID = TRP3_API.navigation.page.getCurrentContext, TRP3_API.navigation.page.getCurrentPageID;
-local showCharacteristicsTab, showAboutTab, showMiscTab;
+local showCharacteristicsTab, showAboutTab, showMiscTab, showNotesTab;
 local get = TRP3_API.profile.getData;
-local UnitIsPVP = UnitIsPVP;
-local tcopy = tcopy;
 local type = type;
 local showAlertPopup = TRP3_API.popup.showAlertPopup;
 
-local EMPTY = Globals.empty;
-local NOTIFICATION_ID_NEW_CHARACTER = TRP3_API.register.NOTIFICATION_ID_NEW_CHARACTER;
 -- Saved variables references
 local profiles, characters;
 
@@ -70,6 +65,7 @@ TRP3_API.register.registerInfoTypes = {
 	CHARACTERISTICS = "characteristics",
 	ABOUT = "about",
 	MISC = "misc",
+	NOTES = "notes",
 	CHARACTER = "character",
 }
 
@@ -95,20 +91,28 @@ local function deleteProfile(profileID, dontFireEvents)
 	-- Unbound characters from this profile
 	if profiles[profileID].link then
 		for characterID, _ in pairs(profiles[profileID].link) do
-			if characters[characterID].profileID == profileID then
+			if characters[characterID] and characters[characterID].profileID == profileID then
 				characters[characterID].profileID = nil;
 			end
 		end
 	end
+
+	-- Deleting a profile should clear the local MSP knowledge of it,
+	-- otherwise things get out of sync if the profile comes through again
+	-- after deletion. For compatibility we'll still emit the table of owners.
 	local mspOwners;
-	if not dontFireEvents then
-		if profiles[profileID].msp then
-			mspOwners = {};
-			for ownerID, _ in pairs(profiles[profileID].link) do
+	if profiles[profileID].msp then
+		for ownerID, _ in pairs(profiles[profileID].link) do
+			msp.char[ownerID] = nil;
+
+			-- No need to build the owner table if we ain't gonna emit it.
+			if not dontFireEvents then
+				mspOwners = mspOwners or {};
 				tinsert(mspOwners, ownerID);
 			end
 		end
 	end
+
 	wipe(profiles[profileID]);
 	profiles[profileID] = nil;
 	if not dontFireEvents then
@@ -188,7 +192,7 @@ end
 -- @param unitID Unit ID of the player to test
 --
 local function unitIDIsFilteredForMatureContent(unitID)
-	if not TRP3_API.register.mature_filter or not unitID or unitID == Globals.player_id or not isUnitIDKnown(unitID) or not profileExists(unitID) then return false end;
+	if not TRP3_API.register.mature_filter or not unitID or unitID == Globals.player_id or not isUnitIDKnown(unitID) or not profileExists(unitID) then return false end ;
 	local profile = getUnitIDProfile(unitID);
 	local profileID = getUnitIDProfileID(unitID);
 	-- Check if the profile has been flagged as containing mature content, that the option to filter such content is enabled
@@ -199,7 +203,7 @@ end
 TRP3_API.register.unitIDIsFilteredForMatureContent = unitIDIsFilteredForMatureContent;
 
 local function profileIDISFilteredForMatureContent (profileID)
-	if not TRP3_API.register.mature_filter then return false end;
+	if not TRP3_API.register.mature_filter then return false end ;
 
 	local profile = getProfileOrNil(profileID);
 
@@ -213,7 +217,7 @@ TRP3_API.register.profileIDISFilteredForMatureContent = profileIDISFilteredForMa
 -- @param unitID Unit ID of the player to test
 --
 local function unitIDIsFlaggedForMatureContent(unitID)
-	if not TRP3_API.register.mature_filter or not unitID or unitID == Globals.player_id or not isUnitIDKnown(unitID) or not profileExists(unitID) then return false end;
+	if not TRP3_API.register.mature_filter or not unitID or unitID == Globals.player_id or not isUnitIDKnown(unitID) or not profileExists(unitID) then return false end ;
 	local profile = getUnitIDProfile(unitID);
 	-- Check if the profile has been flagged as containing mature content, that the option to filter such content is enabled
 	-- and that the profile is not in the pink list.
@@ -240,6 +244,9 @@ function TRP3_API.register.saveCurrentProfileID(unitID, currentProfileID, isMSP)
 	for profileID, profile in pairs(profiles) do
 		if profile.link and profile.link[unitID] then
 			profile.link[unitID] = nil; -- unbound
+			if profile.msp then
+				profiles[profileID] = nil;
+			end
 		end
 	end
 	if not profileExists(unitID) then
@@ -248,6 +255,7 @@ function TRP3_API.register.saveCurrentProfileID(unitID, currentProfileID, isMSP)
 	local profile = getProfile(currentProfileID);
 	profile.link[unitID] = 1; -- bound
 	profile.msp = isMSP;
+	profile.time = time()
 
 	if oldProfileID ~= currentProfileID then
 		Events.fireEvent(Events.REGISTER_DATA_UPDATED, unitID, currentProfileID, nil);
@@ -255,13 +263,14 @@ function TRP3_API.register.saveCurrentProfileID(unitID, currentProfileID, isMSP)
 end
 
 --- Raises error if unknown unitName
-function TRP3_API.register.saveClientInformation(unitID, client, clientVersion, msp, extended, trialAccount)
+function TRP3_API.register.saveClientInformation(unitID, client, clientVersion, msp, extended, trialAccount, extendedVersion)
 	local character = getUnitIDCharacter(unitID);
 	character.client = client;
 	character.clientVersion = clientVersion;
 	character.msp = msp;
 	character.extended = extended;
 	character.isTrial = trialAccount;
+	character.extendedVersion = extendedVersion
 end
 
 --- Raises error if unknown unitName
@@ -281,14 +290,15 @@ end
 TRP3_API.register.saveCharacterInformation = saveCharacterInformation;
 
 local function sanitizeFullProfile(data)
+	if not data or not data.player then return false end
 	local somethingWasSanitizedInsideProfile = false;
-	if TRP3_API.register.sanitizeProfile(registerInfoTypes.CHARACTERISTICS, data.player.characteristics) then
+	if data.player.characteristics and TRP3_API.register.sanitizeProfile(registerInfoTypes.CHARACTERISTICS, data.player.characteristics) then
 		somethingWasSanitizedInsideProfile = true;
 	end
-	if TRP3_API.register.sanitizeProfile(registerInfoTypes.CHARACTER, data.player.character) then
+	if data.player.character and TRP3_API.register.sanitizeProfile(registerInfoTypes.CHARACTER, data.player.character) then
 		somethingWasSanitizedInsideProfile = true;
 	end
-	if TRP3_API.register.sanitizeProfile(registerInfoTypes.MISC, data.player.misc) then
+	if data.player.misc and TRP3_API.register.sanitizeProfile(registerInfoTypes.MISC, data.player.misc) then
 		somethingWasSanitizedInsideProfile = true;
 	end
 	return somethingWasSanitizedInsideProfile;
@@ -368,6 +378,13 @@ function TRP3_API.register.getCharacterList()
 	return characters;
 end
 
+--- Fetch character specific data for the given character ID.
+---@param characterID string The character ID (PlayerName-RealmName) that we want to query
+---@return table|nil Either the character data or nil if the character was not found.
+function Directory.getCharacterDataForCharacterId(characterID)
+	return characters[characterID]
+end
+
 --- Raises error if unknown unitID
 function TRP3_API.register.getUnitIDCharacter(unitID)
 	if unitID == Globals.player_id then
@@ -415,8 +432,8 @@ TRP3_API.r.name = TRP3_API.register.getUnitRPName;
 
 local tabGroup; -- Reference to the tab panel tabs group
 
-local function onMouseOver(...)
-	local unitID, unitRealm = getUnitID("mouseover");
+local function onMouseOver()
+	local unitID = getUnitID("mouseover");
 	if unitID and isUnitIDKnown(unitID) then
 		local _, race = UnitRace("mouseover");
 		local _, class, _ = UnitClass("mouseover");
@@ -436,6 +453,8 @@ local function onInformationUpdated(profileID, infoType)
 				showCharacteristicsTab();
 			elseif infoType == registerInfoTypes.MISC and tabGroup.current == 3 then
 				showMiscTab();
+			elseif infoType == registerInfoTypes.NOTES and tabGroup.current == 4 then
+				showNotesTab();
 			end
 		end
 	end
@@ -447,9 +466,7 @@ end
 
 local function tutorialProvider()
 	if tabGroup then
-		if tabGroup.current == 1 then
-			--			return TRP3_API.register.ui.characteristicsTutorialProvider();
-		elseif tabGroup.current == 2 then
+		if tabGroup.current == 2 then
 			return TRP3_API.register.ui.aboutTutorialProvider();
 		elseif tabGroup.current == 3 then
 			return TRP3_API.register.ui.miscTutorialProvider();
@@ -459,30 +476,34 @@ end
 
 local function createTabBar()
 	local frame = CreateFrame("Frame", "TRP3_RegisterMainTabBar", TRP3_RegisterMain);
-	frame:SetSize(400, 30);
+	frame:SetSize(485, 30);
 	frame:SetPoint("TOPLEFT", 17, 0);
 	frame:SetFrameLevel(1);
 	tabGroup = TRP3_API.ui.frame.createTabPanel(frame,
 		{
 			{ loc.REG_PLAYER_CARACT, 1, 150 },
 			{ loc.REG_PLAYER_ABOUT, 2, 110 },
-			{ loc.REG_PLAYER_PEEK, 3, 130 }
+			{ loc.REG_PLAYER_PEEK, 3, 130 },
+			{ loc.REG_PLAYER_NOTES, 4, 85 }
 		},
-		function(tabWidget, value)
-		-- Clear all
+		function(_, value)
+			-- Clear all
 			TRP3_RegisterCharact:Hide();
 			TRP3_RegisterAbout:Hide();
 			TRP3_RegisterMisc:Hide();
+			TRP3_RegisterNotes:Hide();
 			if value == 1 then
 				showCharacteristicsTab();
 			elseif value == 2 then
 				showAboutTab();
 			elseif value == 3 then
 				showMiscTab();
+			elseif value == 4 then
+				showNotesTab();
 			end
 			TRP3_API.events.fireEvent(TRP3_API.events.NAVIGATION_TUTORIAL_REFRESH, "player_main");
 		end,
-		-- Confirmation callback
+	-- Confirmation callback
 		function(callback)
 			if getCurrentContext() and getCurrentContext().isEditMode then
 				TRP3_API.popup.showConfirmPopup(loc.REG_PLAYER_CHANGE_CONFIRM,
@@ -496,7 +517,7 @@ local function createTabBar()
 	TRP3_API.register.player.tabGroup = tabGroup;
 end
 
-local function showTabs(context)
+local function showTabs()
 	local context = getCurrentContext();
 	assert(context, "No context for page player_main !");
 	tabGroup:SelectTab(1);
@@ -508,8 +529,9 @@ end
 
 function TRP3_API.register.ui.isTabSelected(infoType)
 	return (infoType == registerInfoTypes.CHARACTERISTICS and tabGroup.current == 1)
-			or (infoType == registerInfoTypes.ABOUT and tabGroup.current == 2)
-			or (infoType == registerInfoTypes.MISC and tabGroup.current == 3);
+		or (infoType == registerInfoTypes.ABOUT and tabGroup.current == 2)
+		or (infoType == registerInfoTypes.MISC and tabGroup.current == 3)
+		or (infoType == registerInfoTypes.NOTES and tabGroup.current == 4);
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -525,6 +547,12 @@ local function cleanupCharacters()
 			character.profileID = nil;
 		end
 	end
+	for unitID, character in pairs(characters) do
+		if not character.profileID and not TRP3_API.register.isIDIgnored(unitID) then
+			wipe(character)
+			characters[unitID] = nil
+		end
+	end
 end
 
 local function cleanupCompanions()
@@ -532,11 +560,10 @@ local function cleanupCompanions()
 	local deleteCompanionProfile = TRP3_API.companions.register.deleteProfile;
 
 	local companionProfiles = TRP3_API.companions.register.getProfiles();
-	local characterProfiles = TRP3_API.profile.getProfiles();
 
 	for companionProfileID, companionProfile in pairs(companionProfiles) do
 		for companionFullID, _ in pairs(companionProfile.links) do
-			local ownerID, companionID = companionIDToInfo(companionFullID);
+			local ownerID, _ = companionIDToInfo(companionFullID);
 			if not isUnitIDKnown(ownerID) or not profileExists(ownerID) then
 				companionProfile.links[companionFullID] = nil;
 			end
@@ -550,7 +577,7 @@ end
 
 local function cleanupPlayerRelations()
 	for _, myProfile in pairs(TRP3_API.profile.getProfiles()) do
-		for profileID, relation in pairs(myProfile.relation or {}) do
+		for profileID, _ in pairs(myProfile.relation or {}) do
 			if not profiles[profileID] then
 				myProfile.relation[profileID] = nil;
 			end
@@ -576,21 +603,31 @@ local function cleanupProfiles()
 		end
 	end
 
-	if type(getConfigValue("register_auto_purge_mode")) ~= "number" then
-		return;
-	end
-	log(("Purging profiles older than %s day(s)"):format(getConfigValue("register_auto_purge_mode") / 86400));
-	-- First, get a tab with all profileID with which we have a relation
-	local relatedProfileIDs = {};
-	for _, profile in pairs(TRP3_API.profile.getProfiles()) do
-		for profileID, relation in pairs(profile.relation or {}) do
-			relatedProfileIDs[profileID] = true;
+	log("Purging unbound MSP profiles")
+	for profileID, profile in pairs(profiles) do
+		if profile.msp and Ellyb.Tables.isEmpty(profile.link) then
+			deleteProfile(profileID, true);
 		end
 	end
-	log("Protected profiles: " .. tsize(relatedProfileIDs));
+
+	if type(getConfigValue("register_auto_purge_mode")) ~= "number" then
+		return ;
+	end
+	log(("Purging profiles older than %s day(s)"):format(getConfigValue("register_auto_purge_mode") / 86400));
+	-- First, get a tab with all profileID with which we have a relation or on which we have notes
+	local protectedProfileIDs = {};
+	for _, profile in pairs(TRP3_API.profile.getProfiles()) do
+		for profileID, _ in pairs(profile.relation or {}) do
+			protectedProfileIDs[profileID] = true;
+		end
+		for profileID, _ in pairs(profile.notes or {}) do
+			protectedProfileIDs[profileID] = true;
+		end
+	end
+	log("Protected profiles: " .. tsize(protectedProfileIDs));
 	local profilesToPurge = {};
 	for profileID, profile in pairs(profiles) do
-		if not relatedProfileIDs[profileID] and (not profile.time or time() - profile.time > getConfigValue("register_auto_purge_mode")) then
+		if not protectedProfileIDs[profileID] and (not profile.time or time() - profile.time > getConfigValue("register_auto_purge_mode")) then
 			tinsert(profilesToPurge, profileID);
 		end
 	end
@@ -614,57 +651,10 @@ local function cleanupMyProfiles()
 	end
 end
 
---*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
--- Scan Marker Decorators
---*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
--- SCAN_MARKER_BLIP_RELATIONSHIP_SUBLEVEL is a texture sublevel applied to the
--- blip for markers representing characters you have relationship states set
--- with.
---
--- The net result is they'll take priority in the draw order, and get shown
--- on top of a pile of dots in crowded scenarios.
-local SCAN_MARKER_BLIP_RELATIONSHIP_SUBLEVEL = 4;
-
---- Decorates a marker with additional information based upon the established
---  relationship defined in the characters' profile.
---
---  @param characterID The ID of the character.
---  @param entry The entry containing the scan result data.
---  @param marker The marker blip being decorated.
-local function scanMarkerDecorateRelationship(characterID, entry, marker)
-	-- Skip bad character IDs.
-	if not isUnitIDKnown(characterID) then
-		return;
+local function getFirstCharacterIDFromProfile(profile)
+	if type(profile.link) == "table" then
+		return next(profile.link)
 	end
-
-	-- Easiest way to get at relationship stuff takes the profile ID.
-	local profileID = getUnitIDProfileID(characterID);
-	if not profileID then
-		return;
-	end
-
-	local relation = TRP3_API.register.relation.getRelation(profileID);
-	if relation == TRP3_API.register.relation.NONE then
-		-- This profile has no relationship status.
-		return;
-	end
-
-	-- Swap out the atlas for this marker.
-	marker.iconAtlas = "PlayerPartyBlip";
-
-	-- Recycle any color instance already present if there is one.
-	local r, g, b = TRP3_API.register.relation.getRelationColors(profileID);
-	marker.iconColor = marker.iconColor or Ellyb.Color(0, 0, 0, 0);
-	marker.iconColor:SetRGBA(r, g, b, 1);
-
-	-- Arbitrary increase in layer means we'll display these icons over the
-	-- defaults.
-	marker.iconSublevel = SCAN_MARKER_BLIP_RELATIONSHIP_SUBLEVEL;
-
-	-- Store the relationship on the marker itself as the category.
-	marker.categoryName = loc:GetText("REG_RELATION_".. relation);
-	marker.categoryPriority = Globals.RELATIONS_ORDER[relation] or -math.huge;
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -675,6 +665,7 @@ function TRP3_API.register.init()
 	showCharacteristicsTab = TRP3_API.register.ui.showCharacteristicsTab;
 	showAboutTab = TRP3_API.register.ui.showAboutTab;
 	showMiscTab = TRP3_API.register.ui.showMiscTab;
+	showNotesTab = TRP3_API.register.ui.showNotesTab;
 
 	-- Init save variables
 	if not TRP3_Register then
@@ -740,21 +731,13 @@ function TRP3_API.register.init()
 
 	registerConfigKey("register_auto_purge_mode", 864000);
 
-	local CONFIG_ENABLE_MAP_LOCATION = "register_map_location";
-	local CONFIG_DISABLE_MAP_LOCATION_ON_OOC = "register_map_location_ooc";
-	local CONFIG_DISABLE_MAP_LOCATION_ON_PVP = "register_map_location_pvp";
-
-	registerConfigKey(CONFIG_ENABLE_MAP_LOCATION, true);
-	registerConfigKey(CONFIG_DISABLE_MAP_LOCATION_ON_OOC, false);
-	registerConfigKey(CONFIG_DISABLE_MAP_LOCATION_ON_PVP, false);
-
 	local AUTO_PURGE_VALUES = {
-		{loc.CO_REGISTER_AUTO_PURGE_0, false},
-		{loc.CO_REGISTER_AUTO_PURGE_1:format(1), 86400},
-		{loc.CO_REGISTER_AUTO_PURGE_1:format(2), 86400*2},
-		{loc.CO_REGISTER_AUTO_PURGE_1:format(5), 86400*5},
-		{loc.CO_REGISTER_AUTO_PURGE_1:format(10), 86400*10},
-		{loc.CO_REGISTER_AUTO_PURGE_1:format(30), 86400*30},
+		{ loc.CO_REGISTER_AUTO_PURGE_0, false },
+		{ loc.CO_REGISTER_AUTO_PURGE_1:format(1), 86400 },
+		{ loc.CO_REGISTER_AUTO_PURGE_1:format(2), 86400 * 2 },
+		{ loc.CO_REGISTER_AUTO_PURGE_1:format(5), 86400 * 5 },
+		{ loc.CO_REGISTER_AUTO_PURGE_1:format(10), 86400 * 10 },
+		{ loc.CO_REGISTER_AUTO_PURGE_1:format(30), 86400 * 30 },
 	}
 
 	-- Build configuration page
@@ -771,31 +754,7 @@ function TRP3_API.register.init()
 				listContent = AUTO_PURGE_VALUES,
 				configKey = "register_auto_purge_mode",
 				listCancel = true,
-			},
-			{
-				inherit = "TRP3_ConfigH1",
-				title = loc.CO_LOCATION,
-			},
-			{
-				inherit = "TRP3_ConfigCheck",
-				title = loc.CO_LOCATION_ACTIVATE,
-				help = loc.CO_LOCATION_ACTIVATE_TT,
-				configKey = CONFIG_ENABLE_MAP_LOCATION,
-			},
-			{
-				inherit = "TRP3_ConfigCheck",
-				title = loc.CO_LOCATION_DISABLE_OOC,
-				help = loc.CO_LOCATION_DISABLE_OOC_TT,
-				configKey = CONFIG_DISABLE_MAP_LOCATION_ON_OOC,
-				dependentOnOptions = {CONFIG_ENABLE_MAP_LOCATION},
-			},
-			{
-				inherit = "TRP3_ConfigCheck",
-				title = loc.CO_LOCATION_DISABLE_PVP,
-				help = loc.CO_LOCATION_DISABLE_PVP_TT,
-				configKey = CONFIG_DISABLE_MAP_LOCATION_ON_PVP,
-				dependentOnOptions = {CONFIG_ENABLE_MAP_LOCATION},
-			},
+			}
 		}
 	};
 	TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_FINISH, function()
@@ -807,107 +766,29 @@ function TRP3_API.register.init()
 		Config.registerConfigurationPage(TRP3_API.register.CONFIG_STRUCTURE);
 	end);
 
-	local function locationEnabled()
-		return getConfigValue(CONFIG_ENABLE_MAP_LOCATION)
-			and (not getConfigValue(CONFIG_DISABLE_MAP_LOCATION_ON_OOC) or get("player/character/RP") ~= 2)
-			and (not getConfigValue(CONFIG_DISABLE_MAP_LOCATION_ON_PVP) or not UnitIsPVP("player"));
-	end
-
 	-- Initialization
 	TRP3_API.register.inits.characteristicsInit();
 	TRP3_API.register.inits.aboutInit();
 	TRP3_API.register.inits.glanceInit();
 	TRP3_API.register.inits.miscInit();
+	TRP3_API.register.inits.notesInit();
+
 	TRP3_API.register.inits.dataExchangeInit();
 	wipe(TRP3_API.register.inits);
 	TRP3_API.register.inits = nil; -- Prevent init function to be called again, and free them from memory
 
+	TRP3_ProfileReportButton:SetScript("OnClick", function()
+		local context = TRP3_API.navigation.page.getCurrentContext();
+		local characterID = getFirstCharacterIDFromProfile(context.profile) or UNKNOWN;
+		local reportText = loc.REG_REPORT_PLAYER_OPEN_URL_160:format(characterID);
+		if context.profile.time then
+			local DATE_FORMAT = "%Y-%m-%d around %H:%M";
+			reportText = reportText .. "\n\n" .. loc.REG_REPORT_PLAYER_TEMPLATE_DATE:format(date(DATE_FORMAT, context.profile.time));
+		end
+		Ellyb.Popups:OpenURL("https://battle.net/support/help/product/wow/197/1501/solution", reportText);
+	end)
+
+	Ellyb.Tooltips.getTooltip(TRP3_ProfileReportButton):SetTitle(loc.REG_REPORT_PLAYER_PROFILE)
+
 	createTabBar();
-
-	local CHARACTER_SCAN_COMMAND = "CSCAN";
-	local GetCurrentMapAreaID, SetMapToCurrentZone, GetPlayerMapPosition = GetCurrentMapAreaID, SetMapToCurrentZone, GetPlayerMapPosition;
-	local SetMapByID, tonumber, broadcast = SetMapByID, tonumber, AddOn_TotalRP3.Communications.broadcast;
-	local UnitInParty = UnitInParty;
-	local Ambiguate, tContains = Ambiguate, tContains;
-	local phasedZones = {
-		971, -- Alliance garrison
-		976  -- Horde garrison
-	};
-
-	local function playersCanSeeEachOthers(sender)
-		if sender == Globals.player_id then
-			return false;
-		end
-		local currentMapID = GetCurrentMapAreaID();
-		if tContains(phasedZones, currentMapID) then
-			return UnitInParty(Ambiguate(sender, "none"));
-		else
-			return true;
-		end
-	end
-
-	TRP3_API.map.registerScan({
-		id = "playerScan",
-		buttonText = loc.MAP_SCAN_CHAR,
-		buttonIcon = "Achievement_GuildPerk_EverybodysFriend",
-		scan = function()
-			local zoneID = GetCurrentMapAreaID();
-			broadcast.broadcast(CHARACTER_SCAN_COMMAND, zoneID);
-		end,
-		scanTitle = loc.MAP_SCAN_CHAR_TITLE,
-		scanCommand = CHARACTER_SCAN_COMMAND,
-		scanResponder = function(sender, zoneID)
-			if locationEnabled() and playersCanSeeEachOthers(sender) then
-				local mapID, x, y = TRP3_API.map.getCurrentCoordinates("player");
-				if mapID and x and y and tonumber(mapID) == tonumber(zoneID) then
-					broadcast.sendP2PMessage(sender, CHARACTER_SCAN_COMMAND, x, y, zoneID, Globals.addon_name_short);
-				end
-			end;
-		end,
-		canScan = function(currentlyScanning)
-			local mapID, x, y = TRP3_API.map.getCurrentCoordinates("player");
-			return getConfigValue(CONFIG_ENABLE_MAP_LOCATION) and not currentlyScanning and x ~= nil and y ~= nil;
-		end,
-		scanAssembler = function(saveStructure, sender, x, y, mapId, addon)
-			if playersCanSeeEachOthers(sender) then
-				saveStructure[sender] = { x = x, y = y, mapId = mapId, addon = addon };
-			end
-		end,
-		scanComplete = function(saveStructure)
-		end,
-		scanMarkerDecorator = function(characterID, entry, marker)
-			-- Reset attributes on the marker before decorating.
-			marker.categoryName = nil;
-			marker.categoryPriority = nil;
-			marker.iconAtlas = nil;
-			marker.iconSublevel = nil;
-			marker.sortName = characterID;
-
-			-- We'll reset the color rather than nil it out and potentially
-			-- allocate a new one anyway.
-			if marker.iconColor then
-				marker.iconColor:SetRGBA(1, 1, 1, 1);
-			end
-
-			local line;
-			if isUnitIDKnown(characterID) and getUnitIDCurrentProfile(characterID) then
-				local profile = getUnitIDCurrentProfile(characterID);
-				line = TRP3_API.register.getCompleteName(profile.characteristics, characterID, true);
-
-				-- Sort by the proper name of the character instead.
-				marker.sortName = line;
-
-				if profile.characteristics and profile.characteristics.CH then
-					line = "|cff" .. profile.characteristics.CH .. line;
-				end
-			end
-			if not line then
-				line = 	characterID:gsub("%-.*$", "");
-			end
-			marker.scanLine = line;
-
-			scanMarkerDecorateRelationship(characterID, entry, marker);
-		end,
-		scanDuration = 2.5;
-	});
 end

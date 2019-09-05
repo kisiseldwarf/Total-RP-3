@@ -1,20 +1,21 @@
 ----------------------------------------------------------------------------------
--- Total RP 3
--- Toolbar widget module
---	---------------------------------------------------------------------------
---	Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
---
---	Licensed under the Apache License, Version 2.0 (the "License");
---	you may not use this file except in compliance with the License.
---	You may obtain a copy of the License at
---
---		http://www.apache.org/licenses/LICENSE-2.0
---
---	Unless required by applicable law or agreed to in writing, software
---	distributed under the License is distributed on an "AS IS" BASIS,
---	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
---	See the License for the specific language governing permissions and
---	limitations under the License.
+--- Total RP 3
+--- Toolbar widget module
+--- ---------------------------------------------------------------------------
+--- Copyright 2014 Sylvain Cossement (telkostrasz@telkostrasz.be)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
+---
+--- Licensed under the Apache License, Version 2.0 (the "License");
+--- you may not use this file except in compliance with the License.
+--- You may obtain a copy of the License at
+---
+--- 	http://www.apache.org/licenses/LICENSE-2.0
+---
+--- Unless required by applicable law or agreed to in writing, software
+--- distributed under the License is distributed on an "AS IS" BASIS,
+--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--- See the License for the specific language governing permissions and
+--- limitations under the License.
 ----------------------------------------------------------------------------------
 
 local toolbar;
@@ -36,8 +37,7 @@ local function onStart()
 	local loc = TRP3_API.loc;
 	local icon = Utils.str.icon;
 	local color = Utils.str.color;
-	local assert, pairs, tContains, tinsert, table, math, _G = assert, pairs, tContains, tinsert, table, math, _G;
-	local CreateFrame, SendChatMessage, UnitIsDND, UnitIsAFK, GetMouseFocus = CreateFrame, SendChatMessage, UnitIsDND, UnitIsAFK, GetMouseFocus;
+	local assert, pairs, tinsert, table, math  = assert, pairs, tinsert, table, math;
 	local toolbarContainer, mainTooltip = TRP3_ToolbarContainer, TRP3_MainTooltip;
 	local getConfigValue, registerConfigKey, registerConfigHandler, setConfigValue = TRP3_API.configuration.getValue, TRP3_API.configuration.registerConfigKey, TRP3_API.configuration.registerHandler, TRP3_API.configuration.setValue;
 	local setTooltipForFrame = TRP3_API.ui.tooltip.setTooltipForFrame;
@@ -85,7 +85,7 @@ local function onStart()
 			local x = marginLeft;
 			local y = -marginTop;
 			local numLines = 1;
-			for i, id in pairs(ids) do
+			for _, id in pairs(ids) do
 				local buttonStructure = buttonStructures[id];
 				local uiButton = uiButtons[index+1];
 				if uiButton == nil then -- Create the button
@@ -163,7 +163,11 @@ local function onStart()
 	-- @param buttonStructure
 	--
 	local function getTooltipTitleWithIcon(buttonStructure)
-		return icon(buttonStructure.icon, 25) .. " " .. (buttonStructure.tooltip or buttonStructure.configText);
+		if type(buttonStructure.icon) == "string" then
+			return icon(buttonStructure.icon, 25) .. " " .. (buttonStructure.tooltip or buttonStructure.configText);
+		else
+			return buttonStructure.icon:GenerateString(25) .. " " .. (buttonStructure.tooltip or buttonStructure.configText);
+		end
 	end
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -207,7 +211,11 @@ local function onStart()
 		local LDBButton = LDBObjects[buttonStructure.id];
 		assert(LDBButton, "Could not find a registered LDB object for id " .. buttonStructure.id)
 
-		LDBButton.icon = "Interface\\ICONS\\" .. buttonStructure.icon;
+		if type(buttonStructure.icon) == "string" then
+			LDBButton.icon = "Interface\\ICONS\\" .. buttonStructure.icon;
+		else
+			LDBButton.icon = buttonStructure.icon:GetFileID();
+		end
 		LDBButton.tooltipTitle = getTooltipTitleWithIcon(buttonStructure);
 		LDBButton.tooltipSub = buttonStructure.tooltipSub;
 
@@ -236,8 +244,13 @@ local function onStart()
 	--
 	local function updateToolbarButton(toolbarButton, buttonStructure)
 		-- Setting the textures
-		toolbarButton:SetNormalTexture("Interface\\ICONS\\" .. buttonStructure.icon);
-		toolbarButton:SetPushedTexture("Interface\\ICONS\\" .. buttonStructure.icon);
+		if type(buttonStructure.icon) == "string" then
+			toolbarButton:SetNormalTexture("Interface\\ICONS\\" .. buttonStructure.icon);
+			toolbarButton:SetPushedTexture("Interface\\ICONS\\" .. buttonStructure.icon);
+		else
+			toolbarButton:SetNormalTexture(buttonStructure.icon:GetFileID());
+			toolbarButton:SetPushedTexture(buttonStructure.icon:GetFileID());
+		end
 		toolbarButton:GetPushedTexture():SetDesaturated(1);
 		-- Refreshing the tooltip
 		setTooltipForFrame(toolbarButton, toolbarButton, "LEFT", 0, 0, getTooltipTitleWithIcon(buttonStructure), buttonStructure.tooltipSub);
@@ -351,7 +364,7 @@ local function onStart()
 		});
 
 		local ids = {};
-		for buttonID, button in pairs(buttonStructures) do
+		for buttonID, _ in pairs(buttonStructures) do
 			tinsert(ids, buttonID);
 		end
 		table.sort(ids);

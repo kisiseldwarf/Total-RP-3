@@ -8,7 +8,7 @@
 --- so we can check in the code if a profile has mature content by doing
 --- if profile.hasMatureContent then
 --- ---------------------------------------------------------------------------
---- Copyright 2018 Renaud "Ellypse" Parize (ellypse@totalrp3.info)
+--- Copyright 2014-2019 Renaud "Ellypse" Parize <ellypse@totalrp3.info> @EllypseCelwe
 ---
 --- Licensed under the Apache License, Version 2.0 (the "License");
 --- you may not use this file except in compliance with the License.
@@ -25,20 +25,8 @@
 
 ---@type TRP3_API
 local _, TRP3_API = ...;
-local matureFilterPopup;
 
 local function onStart()
-
-	-- Lua imports
-	local pairs = pairs;
-	local tinsert = tinsert;
-	local assert = assert;
-	local type = type;
-	local strtrim = strtrim;
-	local time = time;
-
-	-- WoW imports
-	local UnitIsPlayer = UnitIsPlayer;
 
 	-- TRP3 API imports
 	local Utils, Events, Register, UI, Config = TRP3_API.utils, TRP3_API.events, TRP3_API.register, TRP3_API.ui, TRP3_API.configuration;
@@ -499,7 +487,7 @@ local function onStart()
 	registerConfigHandler(MATURE_FILTER_CONFIG, function()
 		local unitID = getUnitID("target");
 		if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
-			local profile, profileID = getUnitIDProfile(unitID);
+			local _, profileID = getUnitIDProfile(unitID);
 			Events.fireEvent(Events.REGISTER_DATA_UPDATED, unitID, profileID, nil);
 		end
 	end);
@@ -578,67 +566,69 @@ local function onStart()
 	-- TARGET FRAME BUTTONS
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-	-- Add to white list button
-	TRP3_API.target.registerButton({
-		id = "aa_player_w_mature_white_list",
-		configText = loc.MATURE_FILTER_ADD_TO_WHITELIST_OPTION,
-		onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
-		condition = function(targetType, unitID)
-			if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
-				local profileID = getUnitIDProfileID(unitID);
-				return profileID and TRP3_API.register.unitIDIsFilteredForMatureContent(unitID)
-			else
-				return false;
-			end
-		end,
-		onClick = whitelistProfileByUnitIDConfirm,
-		tooltipSub = "|cffffff00" .. loc.CM_CLICK .. "|r: " .. loc.MATURE_FILTER_ADD_TO_WHITELIST_TT,
-		tooltip = loc.MATURE_FILTER_ADD_TO_WHITELIST,
-		icon = "INV_ValentinesCard02"
-	});
-	-- Remove from white list button
-	TRP3_API.target.registerButton({
-		id = "aa_player_w_mature_remove_white_list",
-		configText = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST_OPTION,
-		onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
-		condition = function(targetType, unitID)
-			if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
-				local profile = getUnitIDProfile(unitID);
-				local profileID = getUnitIDProfileID(unitID);
-				return profileID and profile.hasMatureContent and isProfileWhitelisted(profileID);
-			else
-				return false;
-			end
-		end,
-		onClick = function(unitID)
-			removeUnitProfileFromWhitelistConfirm(unitID);
-		end,
-		tooltipSub = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST_TT,
-		tooltip = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST,
-		icon = "INV_Inscription_ParchmentVar03"
-	});
+	if TRP3_API.target then
+		-- Add to white list button
+		TRP3_API.target.registerButton({
+			id = "aa_player_w_mature_white_list",
+			configText = loc.MATURE_FILTER_ADD_TO_WHITELIST_OPTION,
+			onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
+			condition = function(_, unitID)
+				if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
+					local profileID = getUnitIDProfileID(unitID);
+					return profileID and TRP3_API.register.unitIDIsFilteredForMatureContent(unitID)
+				else
+					return false;
+				end
+			end,
+			onClick = whitelistProfileByUnitIDConfirm,
+			tooltipSub = "|cffffff00" .. loc.CM_CLICK .. "|r: " .. loc.MATURE_FILTER_ADD_TO_WHITELIST_TT,
+			tooltip = loc.MATURE_FILTER_ADD_TO_WHITELIST,
+			icon = "INV_ValentinesCard02"
+		});
+		-- Remove from white list button
+		TRP3_API.target.registerButton({
+			id = "aa_player_w_mature_remove_white_list",
+			configText = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST_OPTION,
+			onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
+			condition = function(_, unitID)
+				if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
+					local profile = getUnitIDProfile(unitID);
+					local profileID = getUnitIDProfileID(unitID);
+					return profileID and profile.hasMatureContent and isProfileWhitelisted(profileID);
+				else
+					return false;
+				end
+			end,
+			onClick = function(unitID)
+				removeUnitProfileFromWhitelistConfirm(unitID);
+			end,
+			tooltipSub = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST_TT,
+			tooltip = loc.MATURE_FILTER_REMOVE_FROM_WHITELIST,
+			icon = TRP3_API.globals.is_classic and "INV_Scroll_07" or "INV_Inscription_ParchmentVar03"
+		});
 
-	-- Manually flag player button
-	TRP3_API.target.registerButton({
-		id = "aa_player_w_mature_flag",
-		configText = loc.MATURE_FILTER_FLAG_PLAYER_OPTION,
-		onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
-		condition = function(targetType, unitID)
-			if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
-				local profile = getUnitIDProfile(unitID);
-				local profileID = getUnitIDProfileID(unitID);
-				return profileID and not profile.hasMatureContent and not isProfileWhitelisted(profileID);
-			else
-				return false;
-			end
-		end,
-		onClick = function(unitID)
-			flagUnitProfileHasHavingMatureContentConfirm(unitID);
-		end,
-		tooltipSub = loc.MATURE_FILTER_FLAG_PLAYER_TT,
-		tooltip = loc.MATURE_FILTER_FLAG_PLAYER,
-		icon = "Ability_Hunter_MasterMarksman"
-	});
+		-- Manually flag player button
+		TRP3_API.target.registerButton({
+			id = "aa_player_w_mature_flag",
+			configText = loc.MATURE_FILTER_FLAG_PLAYER_OPTION,
+			onlyForType = TRP3_API.ui.misc.TYPE_CHARACTER,
+			condition = function(_, unitID)
+				if UnitIsPlayer("target") and unitID ~= player_id and not TRP3_API.register.isIDIgnored(unitID) then
+					local profile = getUnitIDProfile(unitID);
+					local profileID = getUnitIDProfileID(unitID);
+					return profileID and not profile.hasMatureContent and not isProfileWhitelisted(profileID);
+				else
+					return false;
+				end
+			end,
+			onClick = function(unitID)
+				flagUnitProfileHasHavingMatureContentConfirm(unitID);
+			end,
+			tooltipSub = loc.MATURE_FILTER_FLAG_PLAYER_TT,
+			tooltip = loc.MATURE_FILTER_FLAG_PLAYER,
+			icon = TRP3_API.globals.is_classic and "Ability_Hunter_SniperShot" or "Ability_Hunter_MasterMarksman"
+		});
+	end
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 	-- EVENT LISTENER
