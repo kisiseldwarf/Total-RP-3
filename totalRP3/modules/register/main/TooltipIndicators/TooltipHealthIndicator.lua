@@ -36,7 +36,7 @@ function HealthTooltipIndicator:_DisplayInsideTooltipForTarget(tooltip, target)
 	if targetHealth and targetMaxHealth then
 		local healthValue
 		if targetHealth == 0 then
-			RED(DEAD)
+			RED(DEAD) -- Redemption
 		else
 			local healthPercentage = targetHealth / targetMaxHealth
 			local healthColor
