@@ -866,6 +866,29 @@ function hooking()
 			textBeforeParse = nil;
 		end
 	end);
+
+	-- Do you want to be able to ctrl-click a name and open the profile
+	-- of the user up? It's a pretty neat idea after all. We'll have to do
+	-- some hard replacements though.
+	local OriginalChatFrame_OnHyperLinkShow = ChatFrame_OnHyperlinkShow;
+	ChatFrame_OnHyperlinkShow = function(self, link, text, button)
+		-- Ignore any clicks that aren't the left button and don't have
+		-- the control button held.
+		if not IsControlKeyDown() or button ~= "LeftButton" then
+			return OriginalChatFrame_OnHyperLinkShow(self, link, text, button);
+		end
+
+		-- Grab the link and see if it's a player name.
+		local isPlayerNameLink = (strsub(link, 1, 7) == "player:");
+		local playerName = strsplit(":", strsub(link, 8));
+
+		-- If it's not a player name being clicked, ignore.
+		if not isPlayerNameLink or not playerName then
+			return OriginalChatFrame_OnHyperLinkShow(self, link, text, button);
+		end
+
+		TRP3_API.slash.openProfile(playerName);
+	end
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

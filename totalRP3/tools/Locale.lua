@@ -944,6 +944,8 @@ Total RP is not responsible for links leading to harmful content.]],
 
 	BINDING_NAME_TRP3_TOGGLE = "Toggle main frame";
 	BINDING_NAME_TRP3_TOOLBAR_TOGGLE = "Toggle toolbar";
+	BINDING_NAME_TRP3_OPEN_TARGET_PROFILE = "Open target profile",
+	BINDING_NAME_TRP3_TOGGLE_CHARACTER_STATUS = "Toggle character status",
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 	-- About TRP3
@@ -1426,14 +1428,6 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 - Various compatibility changes related to 9.0 API modifications.
 
 ]],
-
-	------------------------------------------------------------------------------------------------
-	--- PLACE LOCALIZATION NOT ALREADY UPLOADED TO CURSEFORGE HERE
-	--- THEN MOVE IT UP ONCE IMPORTED
-	------------------------------------------------------------------------------------------------
-
-	BINDING_NAME_TRP3_OPEN_TARGET_PROFILE = "Open target profile",
-	BINDING_NAME_TRP3_TOGGLE_CHARACTER_STATUS = "Toggle character status",
 	WHATS_NEW_24_2 =  [[# Changelog version 2.1
 
 ## Added
@@ -1453,6 +1447,23 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 - Potential fix for the guide channel being swapped with the xtensionxtooltip2 channel.
 
 ]],
+
+	------------------------------------------------------------------------------------------------
+	--- PLACE LOCALIZATION NOT ALREADY UPLOADED TO CURSEFORGE HERE
+	--- THEN MOVE IT UP ONCE IMPORTED
+	------------------------------------------------------------------------------------------------
+
+	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+	-- UNIT POPUPS
+	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+	UP_MODULE_NAME = "Player Dropdown Integration",
+	UP_MODULE_DESCRIPTION = "Adds profile-related shortcuts to player dropdown menus.",
+
+	UP_GENERIC_MENU_TITLE = "Total RP 3",
+	UP_OPEN_PROFILE_BUTTON = "Open Profile",
+
+
 };
 
 -- Use Ellyb to generate the Localization system

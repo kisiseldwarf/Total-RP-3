@@ -135,4 +135,6 @@
 	<Include file="tooltip_skins\tooltips_skins.xml"/>
 
 	<Include file="ChatLinks\ChatLinks.xml"/>
+
+	<Include file="UnitPopups\UnitPopups.xml"/>
 </Ui>
