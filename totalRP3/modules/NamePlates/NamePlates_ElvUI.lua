@@ -86,7 +86,7 @@ function TRP3_ElvUINamePlates:RegisterPostUpdateHook(object, method, handler)
 end
 
 function TRP3_ElvUINamePlates:OnUnitDisplayInfoUpdated(unitToken)
-	self:UpdateUnit(unitToken);
+	self:UpdateUnitFrameForUnit(unitToken);
 end
 
 function TRP3_ElvUINamePlates:GetUnitFrameForUnit(unitToken)
@@ -94,7 +94,7 @@ function TRP3_ElvUINamePlates:GetUnitFrameForUnit(unitToken)
 	return nameplate and nameplate.unitFrame or nil;
 end
 
-function TRP3_ElvUINamePlates:UpdateUnit(unitToken)
+function TRP3_ElvUINamePlates:UpdateUnitFrameForUnit(unitToken)
 	local unitframe = self:GetUnitFrameForUnit(unitToken);
 
 	if not unitframe then
