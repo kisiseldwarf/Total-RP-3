@@ -25,6 +25,8 @@ local L = TRP3_API.loc;
 -- TODO: Localization rework to not need to modify existing strings further.
 -- TODO: Add localization note that icon size isn't supported.
 -- TODO: Add localization strings for the module name/description.
+-- TODO: Override more tags (name:short, :veryshort, etc.)
+-- TODO: Implement cropping (depends on the above)
 --
 
 TRP3_ElvUINamePlates = {};
