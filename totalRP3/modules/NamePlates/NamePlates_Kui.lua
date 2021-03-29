@@ -14,8 +14,8 @@
 	limitations under the License.
 ]]--
 
+local TRP3 = AddOn_TotalRP3;
 local TRP3_API = select(2, ...);
-local TRP3_NamePlates = TRP3_NamePlates;
 local TRP3_NamePlatesUtil = TRP3_NamePlatesUtil;
 local L = TRP3_API.loc;
 
@@ -60,9 +60,8 @@ function TRP3_KuiNamePlates:OnModuleEnable()
 		return false, L.NAMEPLATES_MODULE_DISABLED_BY_EXTERNAL;
 	end
 
-	TRP3_NamePlates.RegisterCallback(self, "OnNamePlateDataUpdated");
+	TRP3.NamePlates.RegisterCallback("OnUnitDisplayInfoUpdated", self.OnUnitDisplayInfoUpdated, self);
 
-	self.unitDisplayInfo = {};
 	self.initialized = {};
 
 	self.plugin = KuiNameplates:NewPlugin("TotalRP3", 250);
@@ -87,10 +86,10 @@ function TRP3_KuiNamePlates:OnModuleEnable()
 	self.plugin:RegisterMessage("Hide");
 end
 
-function TRP3_KuiNamePlates:OnNamePlateDataUpdated(_, nameplate, unitToken, displayInfo)
-	self:SetUnitDisplayInfo(unitToken, displayInfo);
+function TRP3_KuiNamePlates:OnUnitDisplayInfoUpdated(unitToken)
+	local nameplate = KuiNameplates:GetNameplateForUnit(unitToken);
 
-	if nameplate.kui then
+	if nameplate then
 		self:UpdateNamePlate(nameplate.kui);
 	end
 end
@@ -171,7 +170,7 @@ function TRP3_KuiNamePlates:OnNameplateNameTextUpdated(nameplate)
 		return;
 	end
 
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.unit);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.unit);
 	local displayText;
 
 	if displayInfo and displayInfo.name then
@@ -214,7 +213,7 @@ function TRP3_KuiNamePlates:UpdateNamePlateHealthBar(nameplate)
 		return;
 	end
 
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.unit);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.unit);
 
 	if displayInfo and displayInfo.shouldColorHealth then
 		nameplate.HealthBar:SetStatusBarColor(displayInfo.color:GetRGB());
@@ -224,7 +223,7 @@ function TRP3_KuiNamePlates:UpdateNamePlateHealthBar(nameplate)
 end
 
 function TRP3_KuiNamePlates:UpdateNamePlateIcon(nameplate)
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.unit);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.unit);
 	local displayIcon = displayInfo and displayInfo.icon or nil;
 	local shouldHide = displayInfo and displayInfo.shouldHide or false;
 	local unitframe = nameplate.parent.UnitFrame;
@@ -254,7 +253,7 @@ function TRP3_KuiNamePlates:UpdateNamePlateIcon(nameplate)
 end
 
 function TRP3_KuiNamePlates:UpdateNamePlateFullTitle(nameplate)
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.unit);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.unit);
 	local displayText = displayInfo and displayInfo.fullTitle or nil;
 	local displayFont = nameplate.GuildText:GetFont();
 	local shouldHide = displayInfo and displayInfo.shouldHide or false;
@@ -300,7 +299,7 @@ function TRP3_KuiNamePlates:UpdateNamePlateVisibility(nameplate)
 		return;
 	end
 
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.unit);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.unit);
 
 	if displayInfo and displayInfo.shouldHide then
 		if nameplate:IsShown() then
@@ -349,14 +348,6 @@ function TRP3_KuiNamePlates:CanCustomizeNamePlate(nameplate)
 	else
 		return true;
 	end
-end
-
-function TRP3_KuiNamePlates:GetUnitDisplayInfo(unitToken)
-	return self.unitDisplayInfo[unitToken];
-end
-
-function TRP3_KuiNamePlates:SetUnitDisplayInfo(unitToken, displayInfo)
-	self.unitDisplayInfo[unitToken] = displayInfo;
 end
 
 --

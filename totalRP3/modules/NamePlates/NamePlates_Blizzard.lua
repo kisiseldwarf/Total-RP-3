@@ -14,8 +14,8 @@
 	limitations under the License.
 ]]--
 
+local TRP3 = AddOn_TotalRP3;
 local TRP3_API = select(2, ...);
-local TRP3_NamePlates = TRP3_NamePlates;
 local TRP3_NamePlatesUtil = TRP3_NamePlatesUtil;
 local L = TRP3_API.loc;
 
@@ -153,10 +153,9 @@ function TRP3_BlizzardNamePlates:OnModuleEnable()
 		TRP3_NAMEPLATES_ADDON = "Blizzard_NamePlates";
 	end
 
-	self.unitDisplayInfo = {};
 	self.initializedNameplates = {};
 
-	TRP3_NamePlates.RegisterCallback(self, "OnNamePlateDataUpdated");
+	TRP3.NamePlates.RegisterCallback(self, "OnUnitDisplayInfoUpdated");
 
 	hooksecurefunc("CompactUnitFrame_SetUpFrame", function(...) return self:OnUnitFrameSetUp(...); end);
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function() return self:OnUpdateNamePlateOptions(); end);
@@ -168,9 +167,12 @@ function TRP3_BlizzardNamePlates:OnUpdateNamePlateOptions()
 	self:UpdateAllNamePlateOptions();
 end
 
-function TRP3_BlizzardNamePlates:OnNamePlateDataUpdated(_, nameplate, unitToken, displayInfo)
-	self:SetUnitDisplayInfo(unitToken, displayInfo);
-	self:UpdateNamePlate(nameplate);
+function TRP3_BlizzardNamePlates:OnUnitDisplayInfoUpdated(unitToken)
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unitToken);
+
+	if nameplate then
+		self:UpdateNamePlate(nameplate);
+	end
 end
 
 function TRP3_BlizzardNamePlates:OnUnitFrameSetUp(unitframe)
@@ -266,7 +268,7 @@ function TRP3_BlizzardNamePlates:UpdateNamePlateName(nameplate)
 
 	local unitframe = nameplate.UnitFrame;
 	local unitToken = nameplate.namePlateUnitToken;
-	local displayInfo = self:GetUnitDisplayInfo(unitToken);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unitToken);
 
 	local overrideText;
 	local overrideColor;
@@ -315,7 +317,7 @@ function TRP3_BlizzardNamePlates:UpdateNamePlateHealthBar(nameplate)
 
 	local unitframe = nameplate.UnitFrame;
 	local unitToken = nameplate.namePlateUnitToken;
-	local displayInfo = self:GetUnitDisplayInfo(unitToken);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unitToken);
 
 	local overrideColor;
 
@@ -334,7 +336,7 @@ function TRP3_BlizzardNamePlates:UpdateNamePlateIcon(nameplate)
 
 	local unitframe = nameplate.UnitFrame;
 	local unitToken = nameplate.namePlateUnitToken;
-	local displayInfo = self:GetUnitDisplayInfo(unitToken);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unitToken);
 	local displayIcon = displayInfo and displayInfo.icon or nil;
 	local shouldHide = displayInfo and displayInfo.shouldHide or false;
 
@@ -362,7 +364,7 @@ function TRP3_BlizzardNamePlates:UpdateNamePlateFullTitle(nameplate)
 
 	local unitframe = nameplate.UnitFrame;
 	local unitToken = nameplate.namePlateUnitToken;
-	local displayInfo = self:GetUnitDisplayInfo(unitToken);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unitToken);
 	local displayText = displayInfo and displayInfo.fullTitle or nil;
 	local shouldHide = displayInfo and displayInfo.shouldHide or false;
 
@@ -404,7 +406,7 @@ function TRP3_BlizzardNamePlates:UpdateNamePlateVisibility(nameplate)
 		return;
 	end
 
-	local displayInfo = self:GetUnitDisplayInfo(nameplate.namePlateUnitToken);
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(nameplate.namePlateUnitToken);
 	local unitframe = nameplate.UnitFrame;
 	local shouldShow; -- This is only false or nil explicitly.
 
@@ -471,14 +473,6 @@ function TRP3_BlizzardNamePlates:UpdateAllNamePlateOptions()
 	for frameName in pairs(self.initializedNameplates) do
 		self:UpdateNamePlateOptions(_G[frameName]);
 	end
-end
-
-function TRP3_BlizzardNamePlates:GetUnitDisplayInfo(unitToken)
-	return self.unitDisplayInfo[unitToken];
-end
-
-function TRP3_BlizzardNamePlates:SetUnitDisplayInfo(unitToken, displayInfo)
-	self.unitDisplayInfo[unitToken] = displayInfo;
 end
 
 --

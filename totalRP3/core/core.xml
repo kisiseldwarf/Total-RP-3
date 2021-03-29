@@ -49,6 +49,8 @@
 
 	<Script file="impl\globals.lua"/>
 	<Script file="impl\events.lua"/>
+	<Script file="impl\ObjectUtil.lua"/>
+	<Script file="impl\CallbackRegistryMixin.lua"/>
 	<Script file="impl\utils.lua"/>
 	<Script file="impl\ui_tools.lua"/>
 	<Script file="impl\slash.lua"/>

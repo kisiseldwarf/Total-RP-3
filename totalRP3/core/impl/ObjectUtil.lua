@@ -1,4 +1,4 @@
-<!--
+--[[
 	Copyright 2021 Total RP 3 Development Team
 
 	Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +12,12 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
--->
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
-	<Include file="NamePlates_API.lua"/>
-	<Include file="NamePlates_Shared.lua"/>
-	<Include file="NamePlates_Core.lua"/>
-	<Include file="NamePlates_Blizzard.lua"/>
-	<Include file="NamePlates_Kui.lua"/>
-</Ui>
+]]--
+
+TRP3_ObjectUtil = {};
+
+function TRP3_ObjectUtil.CreateAndInitFromMixin(mixin, ...)
+	local object = CreateFromMixins(mixin);
+	object:Init(...);
+	return object;
+end

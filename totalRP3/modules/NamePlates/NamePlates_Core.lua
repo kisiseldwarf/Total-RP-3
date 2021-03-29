@@ -14,6 +14,7 @@
 	limitations under the License.
 ]]--
 
+local TRP3 = AddOn_TotalRP3;
 local TRP3_API = select(2, ...);
 local L = TRP3_API.loc;
 
@@ -346,7 +347,7 @@ function TRP3_NamePlates:OnModuleInitialize()
 	self.characterRequestTimes = {};
 	self.unitRegisterIDs = {};
 
-	self.callbacks.OnUsed = function() self:OnModuleUsed(); end;
+	TRP3.NamePlates.RegisterCallback("OnCallbackRegistryUsed", self.OnCallbackRegistryUsed, self);
 
 	-- Register configuration keys and the settings page early on so that
 	-- everything can access it.
@@ -370,7 +371,7 @@ function TRP3_NamePlates:OnModuleEnable()
 	self:ActivateModule();
 end
 
-function TRP3_NamePlates:OnModuleUsed()
+function TRP3_NamePlates:OnCallbackRegistryUsed()
 	self.moduleUsed = true;
 	self:ActivateModule();
 end
@@ -463,7 +464,7 @@ function TRP3_NamePlates:UpdateNamePlateForUnit(unitToken)
 
 	if nameplate then
 		local displayInfo = self:GetUnitDisplayInfo(unitToken);
-		self.callbacks:Fire("OnNamePlateDataUpdated", nameplate, unitToken, displayInfo);
+		AddOn_TotalRP3.NamePlates.SetUnitDisplayInfo(unitToken, displayInfo);
 	end
 end
 
