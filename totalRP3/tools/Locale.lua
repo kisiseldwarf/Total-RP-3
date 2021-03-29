@@ -1523,7 +1523,6 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 
 	NAMEPLATES_CONFIG_MENU_TITLE = "Nameplates",
 	NAMEPLATES_CONFIG_PAGE_TEXT = "Nameplate settings",
-	NAMEPLATES_CONFIG_PAGE_HELP = "Please note that only |cff449fe0Blizzard|r and |cff9966ffKui|r nameplates are currently supported. Refer to the help tip on each setting below for additional information.",
 	NAMEPLATES_CONFIG_VISIBILITY_HEADER = "Visibility settings",
 	NAMEPLATES_CONFIG_DISABLE_IN_COMBAT = "Disable customizations when in combat",
 	NAMEPLATES_CONFIG_DISABLE_IN_COMBAT_HELP = "If checked, disables nameplate customizations while you are in combat.",
@@ -1537,19 +1536,15 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 	NAMEPLATES_CONFIG_HIDE_OUT_OF_CHARACTER_UNITS_HELP = "If checked, hides the nameplates of units that are currently out of character.",
 	NAMEPLATES_CONFIG_ELEMENT_HEADER = "Customization settings",
 	NAMEPLATES_CONFIG_CUSTOMIZE_NAMES = "Show custom names",
-	NAMEPLATES_CONFIG_CUSTOMIZE_NAMES_HELP = "If checked, replaces the name shown on nameplates.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_NAME_COLORS = "Show custom name colors",
-	NAMEPLATES_CONFIG_CUSTOMIZE_NAME_COLORS_HELP = "If checked, overrides the color of name texts with the class color of a units' profile.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_HEALTH_COLORS = "Show custom health colors",
 	NAMEPLATES_CONFIG_CUSTOMIZE_HEALTH_COLORS_HELP = "If checked, overrides the color of health bars with the class color of a units' profile.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_TITLES = "Show prefix titles",
 	NAMEPLATES_CONFIG_CUSTOMIZE_TITLES_HELP = "If checked, shows the short title of a unit on nameplates before their name.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_FULL_TITLES = "Show full length titles",
-	NAMEPLATES_CONFIG_CUSTOMIZE_FULL_TITLES_HELP = "If checked, shows the full title of a unit on nameplates.|n|nFor |cff449fe0Blizzard|r and |cff9966ffKui|r nameplates, full titles are only shown in name-only mode.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_ROLEPLAY_STATUS = "Show roleplay status indicator",
 	NAMEPLATES_CONFIG_CUSTOMIZE_ROLEPLAY_STATUS_HELP = "If checked, shows an indicator of a units' roleplay status (IC or OOC) on nameplates.",
 	NAMEPLATES_CONFIG_CUSTOMIZE_ICONS = "Show icons",
-	NAMEPLATES_CONFIG_CUSTOMIZE_ICONS_HELP = "If checked, shows profile icons on nameplates.",
 	NAMEPLATES_CONFIG_ICON_SIZE = "Icon size",
 	NAMEPLATES_CONFIG_ICON_SIZE_HELP = "Configures the size of icons displayed on nameplates if the |cffffff00Show icons|r option is enabled.",
 	NAMEPLATES_CONFIG_ACTIVE_QUERY = "Automatically fetch profiles",
@@ -1571,11 +1566,6 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 	KUI_NAMEPLATES_WARN_OUTDATED_MODULE = "The Kui |cff9966ffNameplates|r plugin for Total RP 3 has been integrated directly into the main addon.|n|nThe old plugin has been disabled automatically, and |cffffcc00we recommend that you uninstall it|r as it is no longer needed.",
 
 	CO_TOOLTIP_HIDE_IN_INSTANCE = "Hide while in instance",
-
-	------------------------------------------------------------------------------------------------
-	--- PLACE LOCALIZATION NOT ALREADY UPLOADED TO CURSEFORGE HERE
-	--- THEN MOVE IT UP ONCE IMPORTED
-	------------------------------------------------------------------------------------------------
 
 	UNIT_POPUPS_CONFIG_MENU_TITLE = "Menu settings",
 	UNIT_POPUPS_CONFIG_PAGE_TEXT = "Menu settings",
@@ -1614,6 +1604,17 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 - Fixed localization not being properly applied to various settings.
 
 ]],
+
+	------------------------------------------------------------------------------------------------
+	--- PLACE LOCALIZATION NOT ALREADY UPLOADED TO CURSEFORGE HERE
+	--- THEN MOVE IT UP ONCE IMPORTED
+	------------------------------------------------------------------------------------------------
+
+	NAMEPLATES_CONFIG_PAGE_HELP = "Please note that only |cff449fe0Blizzard|r, |cff1784d1ElvUI|r, and |cff9966ffKui|r nameplates are currently supported. Refer to the help tip on each setting below for additional information.",
+	NAMEPLATES_CONFIG_CUSTOMIZE_NAMES_HELP = "If checked, replaces the name shown on nameplates.|n|nFor |cff1784d1ElvUI|r nameplates, custom names will replace the contents of the |cffffff00name|r tag.",
+	NAMEPLATES_CONFIG_CUSTOMIZE_NAME_COLORS_HELP = "If checked, overrides the color of name texts with the class color of a units' profile.|n|nFor |cff1784d1ElvUI|r nameplates, custom names will replace the contents of the |cffffff00namecolor|r tag.",
+	NAMEPLATES_CONFIG_CUSTOMIZE_FULL_TITLES_HELP = "If checked, shows the full title of a unit on nameplates.|n|nFor |cff449fe0Blizzard|r and |cff9966ffKui|r nameplates, full titles are only shown in name-only mode.|n|nFor |cff1784d1ElvUI|r nameplates, full titles will replace the contents of the |cffffff00title|r tag.",
+	NAMEPLATES_CONFIG_CUSTOMIZE_ICONS_HELP = "If checked, shows profile icons on nameplates.|n|nFor |cff1784d1ElvUI|r nameplates, icons will be used to replace portraits.",
 
 };
 

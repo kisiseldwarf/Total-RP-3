@@ -18,5 +18,6 @@
 	<Include file="NamePlates_Shared.lua"/>
 	<Include file="NamePlates_Core.lua"/>
 	<Include file="NamePlates_Blizzard.lua"/>
+	<Include file="NamePlates_ElvUI.lua"/>
 	<Include file="NamePlates_Kui.lua"/>
 </Ui>

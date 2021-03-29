@@ -176,6 +176,13 @@ stds.wow = {
 			},
 		},
 
+		ColorMixin = {
+			fields = {
+				"GenerateHexColorMarkup",
+				"GetRGB",
+			},
+		},
+
 		C_ChatInfo = {
 			fields = {
 				"RegisterAddonMessagePrefix",
