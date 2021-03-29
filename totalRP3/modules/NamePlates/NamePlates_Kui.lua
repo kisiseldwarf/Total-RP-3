@@ -90,7 +90,7 @@ function TRP3_KuiNamePlates:OnUnitDisplayInfoUpdated(unitToken)
 	local nameplate = KuiNameplates:GetNameplateForUnit(unitToken);
 
 	if nameplate then
-		self:UpdateNamePlate(nameplate.kui);
+		self:UpdateNamePlate(nameplate);
 	end
 end
 
