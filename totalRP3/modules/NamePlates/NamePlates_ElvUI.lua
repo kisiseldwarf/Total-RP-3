@@ -20,7 +20,6 @@ local TRP3_NamePlatesUtil = TRP3_NamePlatesUtil;
 local L = TRP3_API.loc;
 
 --
--- TODO: Sort out initialization of hooks.
 -- TODO: Investigate the hide nameplate options, as these are NYI.
 -- TODO: Localization rework to not need to modify existing strings further.
 -- TODO: Add localization note that icon size isn't supported.
@@ -78,6 +77,14 @@ function TRP3_ElvUINamePlates:RegisterOverrideTag(tag, method, ...)
 	end
 end
 
+function TRP3_ElvUINamePlates:RegisterPostUpdateHook(object, method, handler)
+	local original = object[method];
+
+	object[method] = function(...)
+		return handler(self, original, ...);
+	end
+end
+
 function TRP3_ElvUINamePlates:OnUnitDisplayInfoUpdated(unitToken)
 	self:UpdateUnit(unitToken);
 end
@@ -90,43 +97,19 @@ end
 function TRP3_ElvUINamePlates:UpdateUnit(unitToken)
 	local unitframe = self:GetUnitFrameForUnit(unitToken);
 
-	if unitframe then
-		-- TODO: Find something we can listen to for initialization.
-
-		if not unitframe.Health.TRPTEST then
-			unitframe.Health.TRPTEST = true;
-			local o = unitframe.Health.PostUpdateColor;
-			unitframe.Health.PostUpdateColor = function(health, unit, ...)
-				local di = TRP3.NamePlates.GetUnitDisplayInfo(unit);
-
-				if di and di.color and di.shouldColorHealth then
-					health:SetStatusBarColor(ColorMixin.GetRGB(di.color));
-				elseif o then
-					return o(health, unit, ...);
-				end
-			end
-		end
-
-		if not unitframe.Portrait.TRPTEST then
-			unitframe.Portrait.TRPTEST = true;
-			local o = unitframe.Portrait.PostUpdate;
-			unitframe.Portrait.PostUpdate = function(portrait, unit, ...)
-				local di = TRP3.NamePlates.GetUnitDisplayInfo(unit);
-
-				if di and di.icon then
-					portrait:SetTexture(TRP3_API.utils.getIconTexture(di.icon));
-					portrait:SetTexCoord(0, 1, 0, 1);
-					portrait.backdrop:Hide();
-				elseif o then
-					return o(portrait, unit, ...);
-				end
-			end
-		end
-
-		unitframe:UpdateTags();
-		unitframe.Health:ForceUpdate();
-		unitframe.Portrait:ForceUpdate();
+	if not unitframe then
+		return;
 	end
+
+	if not unitframe.TRP3_initialized then
+		self:RegisterPostUpdateHook(unitframe.Health, "PostUpdateColor", self.UpdateHealthColor);
+		self:RegisterPostUpdateHook(unitframe.Portrait, "PostUpdate", self.UpdateIcon);
+		unitframe.TRP3_initialized = true;
+	end
+
+	unitframe:UpdateTags();
+	unitframe.Health:ForceUpdate();
+	unitframe.Portrait:ForceUpdate();
 end
 
 function TRP3_ElvUINamePlates:GetUnitNameText(unitToken, realUnitToken, originalFunc)
@@ -164,6 +147,28 @@ function TRP3_ElvUINamePlates:GetUnitFullTitle(unitToken)
 
 	if displayInfo and displayInfo.fullTitle then
 		return displayInfo.fullTitle;  -- TODO: Cropping.
+	end
+end
+
+function TRP3_ElvUINamePlates:UpdateHealthColor(originalFunc, healthbar, unit, ...)
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unit);
+
+	if displayInfo and displayInfo.color and displayInfo.shouldColorHealth then
+		healthbar:SetStatusBarColor(ColorMixin.GetRGB(displayInfo.color));
+	elseif originalFunc then
+		return originalFunc(healthbar, unit, ...);
+	end
+end
+
+function TRP3_ElvUINamePlates:UpdateIcon(originalFunc, portrait, unit, ...)
+	local displayInfo = TRP3.NamePlates.GetUnitDisplayInfo(unit);
+
+	if displayInfo and displayInfo.icon then
+		portrait:SetTexture(TRP3_API.utils.getIconTexture(displayInfo.icon));
+		portrait:SetTexCoord(0, 1, 0, 1);
+		portrait.backdrop:Hide();
+	elseif originalFunc then
+		return originalFunc(portrait, unit, ...);
 	end
 end
 
