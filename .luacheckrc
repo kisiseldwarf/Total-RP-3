@@ -170,14 +170,6 @@ stds.wow = {
 
 		-- Global Functions
 
-		AnchorUtil = {
-			fields = {
-				"CreateAnchor",
-				"CreateGridLayout",
-				"GridLayout",
-			},
-		},
-
 		C_ChatInfo = {
 			fields = {
 				"RegisterAddonMessagePrefix",
@@ -271,11 +263,23 @@ stds.wow = {
 			},
 		},
 
+		C_Texture = {
+			fields = {
+				"GetAtlasInfo",
+			},
+		},
+
 		C_Timer = {
 			fields = {
 				"After",
 				"NewTicker",
 				"NewTimer",
+			},
+		},
+
+		Enum = {
+			fields = {
+				"InputContext",
 			},
 		},
 
@@ -303,6 +307,7 @@ stds.wow = {
 		"FindInTableIf",
 		"FormatLargeNumber",
 		"FormatPercentage",
+		"FramePool_HideAndClearAnchors",
 		"GameTooltip_AddBlankLineToTooltip",
 		"GameTooltip_AddColoredLine",
 		"GameTooltip_AddNormalLine",
@@ -311,6 +316,7 @@ stds.wow = {
 		"GetAddOnEnableState",
 		"GetAddOnInfo",
 		"GetAddOnMetadata",
+		"GetAtlasInfo",
 		"GetAutoCompleteRealms",
 		"GetChannelDisplayInfo",
 		"GetChannelName",
@@ -332,11 +338,13 @@ stds.wow = {
 		"GetNumLanguages",
 		"GetPlayerInfoByGUID",
 		"GetRealmName",
+		"GetScaledCursorPosition",
 		"GetSpellDescription",
 		"GetSpellInfo",
 		"GetSpellTexture",
 		"GetStablePetInfo",
 		"GetSubZoneText",
+		"GetTickTime",
 		"GetTime",
 		"GetZonePVPInfo",
 		"GetZoneText",
@@ -359,6 +367,7 @@ stds.wow = {
 		"MouseIsOver",
 		"nop",
 		"OpenWorldMap",
+		"PercentageBetween",
 		"PetCanBeRenamed",
 		"PlayMusic",
 		"PlaySound",
@@ -369,6 +378,7 @@ stds.wow = {
 		"ReloadUI",
 		"RemoveChatWindowChannel",
 		"ResetCursor",
+		"Round",
 		"Saturate",
 		"SecondsToClock",
 		"SendChatMessage",
@@ -388,6 +398,8 @@ stds.wow = {
 		"StopSound",
 		"strcmputf8i",
 		"SwapChatChannelByLocalID",
+		"tDeleteItem",
+		"tIndexOf",
 		"tostringall",
 		"UIDropDownMenu_AddButton",
 		"UIDropDownMenu_AddSeparator",
@@ -447,9 +459,9 @@ stds.wow = {
 		"GameFontNormalHuge3",
 		"GameFontNormalLarge",
 		"GameTooltip",
-		"GridLayoutMixin",
 		"MapCanvasDataProviderMixin",
 		"NamePlateDriverFrame",
+		"ObjectPoolMixin",
 		"SystemFont_LargeNamePlate",
 		"SystemFont_NamePlate",
 		"TargetFrame",
@@ -476,6 +488,7 @@ stds.wow = {
 		"FOCUS",
 		"FUEL",
 		"FURY",
+		"GRAY_FONT_COLOR",
 		"HEALTH",
 		"HOLY_POWER",
 		"INSANITY",

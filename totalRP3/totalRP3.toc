@@ -13,6 +13,32 @@
 ## SavedVariables: TRP3_Profiles, TRP3_Characters, TRP3_Configuration, TRP3_Flyway, TRP3_Presets, TRP3_Companions, TRP3_MatureFilter, TRP3_Colors, TRP3_Notes
 ## X-URL: http://totalrp3.info
 
+libs\libs.xml
+
+resources\AtlasData.lua
+
+core\Utils\AnchorUtil.lua
+core\Utils\FunctionUtil.lua
+core\Utils\MathUtil.lua
+core\Utils\MixinUtil.lua
+core\Utils\RegionUtil.lua
+core\Utils\TableUtil.lua
+core\Utils\TextureUtil.lua
+
+core\Mixins\CallbackRegistry.lua
+core\Mixins\DataProvider.lua
+core\Mixins\Interpolator.lua
+core\Mixins\Pools.lua
+
+core\ui\Blizzard_EventFrame.xml
+core\ui\Blizzard_EventButton.xml
+core\ui\Blizzard_EventEditBox.xml
+core\ui\Blizzard_ScrollUtil.lua
+core\ui\Blizzard_ScrollController.lua
+core\ui\Blizzard_ScrollBox.xml
+core\ui\Blizzard_ScrollBar.xml
+core\ui\Blizzard_ScrollTemplates.xml
+
 totalRP3.xml
 
 #@do-not-package@

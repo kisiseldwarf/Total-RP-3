@@ -174,14 +174,14 @@ function TRP3_PetBrowserMixin:OnLoad()
 	self.AcceptButton:SetText(L.UI_PET_BROWSER_ACCEPT);
 
 	-- Icon grid layout setup.
-	local GRID_DIRECTION = GridLayoutMixin.Direction.TopLeftToBottomRight;
+	local GRID_DIRECTION = TRP3_GridLayoutMixin.Direction.TopLeftToBottomRight;
 	local GRID_STRIDE    = self:GetIconGridSize();
 	local GRID_PADDING_X = 4;
 	local GRID_PADDING_Y = 4;
 
 	self.iconPool    = CreateFramePool("CheckButton", self, "TRP3_PetBrowserIconButton");
-	self.iconAnchor  = AnchorUtil.CreateAnchor("TOPLEFT", self.IconPager, "TOPLEFT", 57, -12);
-	self.iconLayout  = AnchorUtil.CreateGridLayout(GRID_DIRECTION, GRID_STRIDE, GRID_PADDING_X, GRID_PADDING_Y);
+	self.iconAnchor  = TRP3_AnchorUtil.CreateAnchor("TOPLEFT", self.IconPager, "TOPLEFT", 57, -12);
+	self.iconLayout  = TRP3_AnchorUtil.CreateGridLayout(GRID_DIRECTION, GRID_STRIDE, GRID_PADDING_X, GRID_PADDING_Y);
 	self.iconButtons = {};
 end
 
@@ -402,7 +402,7 @@ function TRP3_PetBrowserMixin:UpdatePagerVisualization()
 		slotIndex = slotIndex and self:NextPetSlot(slotIndex) or nil;
 	end
 
-	AnchorUtil.GridLayout(self.iconButtons, self.iconAnchor, self.iconLayout);
+	TRP3_AnchorUtil.GridLayout(self.iconButtons, self.iconAnchor, self.iconLayout);
 end
 
 function TRP3_PetBrowserMixin:UpdateIconButtonVisualization(iconButton, petInfo)
