@@ -30,6 +30,7 @@ core\Mixins\DataProvider.lua
 core\Mixins\Interpolator.lua
 core\Mixins\Pools.lua
 
+core\ui\Blizzard_Backdrop.xml
 core\ui\Blizzard_EventFrame.xml
 core\ui\Blizzard_EventButton.xml
 core\ui\Blizzard_EventEditBox.xml
