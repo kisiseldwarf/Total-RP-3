@@ -30,4 +30,48 @@
 	<Script file="totalRP3.lua"/>
 	<Include file="modules\modules.xml"/>
 
+	<Frame name="TRP3_ScrollingFontTest" parent="UIParent" inherits="TRP3_ScrollingHTMLTemplate">
+		<Size x="640" y="480"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="0" g="0" b="0" a="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self:SetText(string.rep("ABC|n", 100));
+				self:RegisterEvent("PLAYER_TARGET_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				if UnitExists("target") then
+					local player = AddOn_TotalRP3.Player.CreateFromUnit("target");
+					local about = player:GetInfo("about");
+
+					if about and about.TE == 1 and about.T1.TX then
+						self:SetText(TRP3_API.utils.str.toHTML(about.T1.TX));
+					else
+						self:ClearText();
+					end
+				else
+					self:ClearText();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="TRP3_ScrollingFontBar" parent="UIParent" inherits="TRP3_WowTrimScrollBar">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="TRP3_ScrollingFontTest" relativePoint="TOPRIGHT"/>
+			<Anchor point="BOTTOMLEFT" relativeTo="TRP3_ScrollingFontTest" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				TRP3_ScrollUtil.RegisterScrollBoxWithScrollBar(TRP3_ScrollingFontTest:GetScrollBox(), self)
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

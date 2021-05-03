@@ -39,6 +39,8 @@ core\ui\Blizzard_ScrollController.lua
 core\ui\Blizzard_ScrollBox.xml
 core\ui\Blizzard_ScrollBar.xml
 core\ui\Blizzard_ScrollTemplates.xml
+core\ui\EventHTML.xml
+core\ui\ScrollingHTML.xml
 
 totalRP3.xml
 
