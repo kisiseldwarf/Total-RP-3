@@ -53,6 +53,11 @@
 	<Script file="impl\ui_tools.lua"/>
 	<Script file="impl\slash.lua"/>
 
+	<Include file="Analytics\Enums.lua"/>
+	<Include file="Analytics\EventRegistry.lua"/>
+	<Include file="Analytics\EventContext.lua"/>
+	<Include file="Analytics\Metrics.lua"/>
+	<Include file="Analytics\API.lua"/>
 
 	<Include file="ui\main.xml"/>
 	<Script file="impl\main_structure.lua"/>

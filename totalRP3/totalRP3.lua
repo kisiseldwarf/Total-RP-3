@@ -47,6 +47,9 @@ end
 local function loadingSequence()
 	Log.log("OnEnable() START");
 
+	local TODO_EventContext = AddOn_TotalRP3.Analytics.CreateEventContext({ time = GetTime() });
+	TODO_EventContext:RecordMessage("Starting load sequence");
+
 	-- Get info we can't have earlier
 	MAIN_SEQUENCE_DETAIL = "Globals.build";
 	Globals.build();
@@ -70,6 +73,9 @@ local function loadingSequence()
 	MAIN_SEQUENCE_DETAIL = "Welcome message";
 	TRP3_API.utils.message.displayMessage(loc.GEN_WELCOME_MESSAGE:format(Globals.version_display));
 
+	TODO_EventContext:Attach({ welcomedAt = GetTime() });
+	TODO_EventContext:RecordMessage("Has welcomed");
+
 	MAIN_SEQUENCE_DETAIL = "AddOn_TotalRP3.Communications.broadcast.init";
 	AddOn_TotalRP3.Communications.broadcast.init();
 	MAIN_SEQUENCE_DETAIL = "TRP3_API.profile.init";
@@ -82,6 +88,8 @@ local function loadingSequence()
 	TRP3_API.register.init();
 	MAIN_SEQUENCE_DETAIL = "TRP3_API.popup.init";
 	TRP3_API.popup.init();
+
+	TODO_EventContext:RecordMessage("Has initialized some more", { time = GetTime() });
 
 	MAIN_SEQUENCE_DETAIL = "TRP3_API.events.fireEvent::WORKFLOW_ON_LOAD";
 	TRP3_API.events.fireEvent(TRP3_API.events.WORKFLOW_ON_LOAD);
@@ -104,6 +112,7 @@ local function loadingSequence()
 
 	TRP3_API.events.fireEvent(TRP3_API.events.NAVIGATION_RESIZED, TRP3_MainFramePageContainer:GetWidth(), TRP3_MainFramePageContainer:GetHeight());
 
+	TODO_EventContext:RecordError("Oh no!", { what = "something exploded", really = true, why = 42 })
 	Log.log("OnEnable() DONE");
 end
 

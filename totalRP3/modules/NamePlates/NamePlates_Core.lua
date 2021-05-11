@@ -21,6 +21,8 @@ local displayInfoPool = {};
 local playerCharacterPool = setmetatable({}, { __mode = "kv" });
 local isInCombat = InCombatLockdown();
 
+local TODO_NamePlateRequestCounter = AddOn_TotalRP3.Analytics.CreateCounter("nameplates.request_count");
+
 local function GetOrCreateDisplayInfo(unitToken)
 	if not displayInfoPool[unitToken] then
 		displayInfoPool[unitToken] = {};
@@ -458,6 +460,7 @@ end
 
 function TRP3_NamePlates:RequestUnitProfile(unitToken)
 	if ShouldRequestProfiles() then
+		TODO_NamePlateRequestCounter:Increment();
 		TRP3_NamePlatesRequestQueue:EnqueueUnitQuery(unitToken);
 	else
 		TRP3_NamePlatesRequestQueue:DequeueUnitQuery(unitToken);

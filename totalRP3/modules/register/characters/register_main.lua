@@ -821,12 +821,52 @@ function TRP3_API.register.init()
 			}
 		}
 	};
+
+	local TODO_PlayerUsesRPStyle_ICFrequence = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_ic_frequence");
+	local TODO_PlayerUsesRPStyle_AcceptInjury = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_accept_injury");
+	local TODO_PlayerUsesRPStyle_AcceptDeath = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_accept_death");
+	local TODO_PlayerUsesRPStyle_AcceptRomance = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_accept_romance");
+	local TODO_PlayerUsesRPStyle_BattleResolution = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_battle_resolution");
+	local TODO_PlayerUsesRPStyle_GuildMembership = AddOn_TotalRP3.Analytics.CreateBoolean("player.profiles.uses_guild_membership");
+	local TODO_PlayerProfileCount = AddOn_TotalRP3.Analytics.CreateCounter("player.profile_count");
+
 	TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_FINISH, function()
 		cleanupPlayerRelations();
 		cleanupProfiles();
 		cleanupCharacters();
 		cleanupCompanions();
 		cleanupMyProfiles();
+
+
+		do
+			for _, profile in pairs(TRP3_API.profile.getProfiles()) do
+				TODO_PlayerProfileCount:Increment();
+
+				local ST = profile.player and profile.player.misc and profile.player.misc.ST;
+
+				if ST then
+					if ST["1"] and ST["1"] ~= 0 then
+						TODO_PlayerUsesRPStyle_ICFrequence:Set();
+					end
+					if ST["2"] and ST["2"] ~= 0 then
+						TODO_PlayerUsesRPStyle_AcceptInjury:Set();
+					end
+					if ST["3"] and ST["3"] ~= 0 then
+						TODO_PlayerUsesRPStyle_AcceptDeath:Set();
+					end
+					if ST["4"] and ST["4"] ~= 0 then
+						TODO_PlayerUsesRPStyle_AcceptRomance:Set();
+					end
+					if ST["5"] and ST["5"] ~= 0 then
+						TODO_PlayerUsesRPStyle_BattleResolution:Set();
+					end
+					if ST["6"] and ST["6"] ~= 0 then
+						TODO_PlayerUsesRPStyle_GuildMembership:Set();
+					end
+				end
+			end
+		end
+
 		Config.registerConfigurationPage(TRP3_API.register.CONFIG_STRUCTURE);
 	end);
 
