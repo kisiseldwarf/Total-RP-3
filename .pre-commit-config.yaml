@@ -1,0 +1,41 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# fail_fast: true
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^totalRP3/(Libs/(MSA.*|TaintLess|UTF8)|Locales)/
+
+      - id: end-of-file-fixer
+
+      - id: mixed-line-ending
+        exclude: ^totalRP3/Libs/(MSA.*|TaintLess|UTF8)/
+        args: [--fix=crlf]
+
+      - id: check-xml
+        exclude: ^totalRP3/Libs/(MSA.*|TaintLess|UTF8)/
+
+      - id: check-yaml
+        types: [file]
+        files: \.(pkgmeta|ya?ml)$
+
+      - id: fix-byte-order-marker
+
+  - repo: local
+    hooks:
+      - id: luacheck
+        name: Luacheck
+        description: Lint and static analysis of Lua code
+        entry: luacheck
+        language: system
+        types: [lua]
+        exclude: ^totalRP3/(Libs/(MSA.*|TaintLess|UTF8)/|Locales/[a-z]{2}[A-Z]{2}\.lua)
+
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v0.15.1
+    hooks:
+      - id: stylua-system
+        exclude: ^totalRP3/(Libs/(MSA.*|TaintLess|UTF8)/|Locales/[a-z]{2}[A-Z]{2}\.lua)
