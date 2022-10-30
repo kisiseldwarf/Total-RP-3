@@ -1,5 +1,5 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Maths then
 	return
@@ -14,14 +14,14 @@ Ellyb.Maths = Maths
 ---@param max number The maximum for the value. If value + increment is higher than max, max will be used instead
 ---@return number The incremented value
 function Maths.incrementValueUntilMax(value, increment, max)
-	Ellyb.Assertions.isType(value, "number", "value");
-	Ellyb.Assertions.isType(increment, "number", "increment");
-	Ellyb.Assertions.isType(max, "number", "max");
+	Ellyb.Assertions.isType(value, "number", "value")
+	Ellyb.Assertions.isType(increment, "number", "increment")
+	Ellyb.Assertions.isType(max, "number", "max")
 
 	if value + increment > max then
-		return max;
+		return max
 	else
-		return value + increment;
+		return value + increment
 	end
 end
 
@@ -30,7 +30,7 @@ end
 ---@param value number The number to wrap
 ---@param max number The max value
 function Maths.wrap(value, max)
-	return (value - 1) % max + 1;
+	return (value - 1) % max + 1
 end
 
 --- Round the given number to the given decimal
@@ -40,5 +40,5 @@ end
 ---@overload fun(value:number):number
 function Maths.round(value, decimals)
 	local mult = 10 ^ (decimals or 0)
-	return math.floor(value * mult) / mult;
+	return math.floor(value * mult) / mult
 end

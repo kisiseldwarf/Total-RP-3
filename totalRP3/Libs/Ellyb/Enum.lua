@@ -1,15 +1,15 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Enum then
 	return
 end
 
-local Enum = {};
-Ellyb.Enum = Enum;
+local Enum = {}
+Ellyb.Enum = Enum
 
 Enum.CHARS = {
-	NON_BREAKING_SPACE = " "
+	NON_BREAKING_SPACE = " ",
 }
 
 Enum.UI_ESCAPE_SEQUENCES = {
@@ -40,5 +40,5 @@ Enum.LOCALES = {
 
 Enum.GAME_CLIENT_TYPES = {
 	RETAIL = WOW_PROJECT_MAINLINE,
-	CLASSIC = WOW_PROJECT_CLASSIC
+	CLASSIC = WOW_PROJECT_CLASSIC,
 }

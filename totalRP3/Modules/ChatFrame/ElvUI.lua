@@ -2,35 +2,35 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
+local _, TRP3_API = ...
 
-local loc = TRP3_API.loc;
+local loc = TRP3_API.loc
 
 local function onStart()
 	-- Stop right here if ElvUI is not installed
 	if not ElvUI then
-		return false, loc.MO_ADDON_NOT_INSTALLED:format("ElvUI");
+		return false, loc.MO_ADDON_NOT_INSTALLED:format("ElvUI")
 	end
 
-	local ElvUI = ElvUI[1];
-	local ElvUIChatModule = ElvUI:GetModule("Chat", true);
+	local ElvUI = ElvUI[1]
+	local ElvUIChatModule = ElvUI:GetModule("Chat", true)
 	if not ElvUIChatModule then
-		return false, "Your version of ElvUI doesn't need this module to function.";
+		return false, "Your version of ElvUI doesn't need this module to function."
 	end
-	local ElvUIGetColoredName = ElvUIChatModule.GetColoredName;
+	local ElvUIGetColoredName = ElvUIChatModule.GetColoredName
 
 	if not ElvUIGetColoredName then
-		return false, "Your version of ElvUI doesn't need this module to function.";
+		return false, "Your version of ElvUI doesn't need this module to function."
 	end
 
 	-- Build the fallback, using ElvUI's function
 	local function fallback(...)
-		return ElvUIGetColoredName(ElvUIChatModule, ...);
+		return ElvUIGetColoredName(ElvUIChatModule, ...)
 	end
 
 	-- Replace ElvUI's GetColoredName
 	function ElvUIChatModule:GetColoredName(...)
-		return TRP3_API.utils.customGetColoredNameWithCustomFallbackFunction(fallback, ...);
+		return TRP3_API.utils.customGetColoredNameWithCustomFallbackFunction(fallback, ...)
 	end
 end
 
@@ -43,6 +43,6 @@ TRP3_API.module.registerModule({
 	["onStart"] = onStart,
 	["minVersion"] = 48,
 	["requiredDeps"] = {
-		{"trp3_chatframes",  1.100},
-	}
-});
+		{ "trp3_chatframes", 1.100 },
+	},
+})

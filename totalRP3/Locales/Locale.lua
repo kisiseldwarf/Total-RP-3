@@ -2,17 +2,17 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
-local Ellyb = Ellyb(_);
+local _, TRP3_API = ...
+local Ellyb = Ellyb(_)
 
 -- WoW imports
-local pairs = pairs;
-local tinsert = table.insert;
+local pairs = pairs
+local tinsert = table.insert
 
-local IS_FRENCH_LOCALE = GetLocale() == "frFR";
+local IS_FRENCH_LOCALE = GetLocale() == "frFR"
 
 -- Bindings locale
-BINDING_HEADER_TRP3 = "Total RP 3";
+BINDING_HEADER_TRP3 = "Total RP 3"
 
 -- Complete locale declaration
 TRP3_API.loc = {
@@ -87,34 +87,34 @@ TRP3_API.loc = {
 	REG_PLAYER_SHOWPSYCHO_TT = "Check if you want to use the personality description.\n\nIf you don't want to indicate your character's personality this way, keep this box unchecked and the personality frame will remain totally hidden.",
 	REG_PLAYER_PSYCHO_ADD = "Add a personality trait",
 	REG_PLAYER_PSYCHO_POINT = "Add a point",
-	REG_PLAYER_PSYCHO_MORE = "Add a point to \"%s\"",
+	REG_PLAYER_PSYCHO_MORE = 'Add a point to "%s"',
 	REG_PLAYER_PSYCHO_ATTIBUTENAME_TT = "Attribute name",
 	REG_PLAYER_PSYCHO_RIGHTICON_TT = "Set the right attribute icon.",
 	REG_PLAYER_PSYCHO_LEFTICON_TT = "Set the left attribute icon.",
 	REG_PLAYER_PSYCHO_SOCIAL = "Social traits",
 	REG_PLAYER_PSYCHO_PERSONAL = "Personal traits",
-	REG_PLAYER_PSYCHO_CHAOTIC = "Chaotic";
-	REG_PLAYER_PSYCHO_Loyal = "Lawful";
-	REG_PLAYER_PSYCHO_Chaste = "Chaste";
-	REG_PLAYER_PSYCHO_Luxurieux = "Lustful";
-	REG_PLAYER_PSYCHO_Indulgent = "Forgiving";
-	REG_PLAYER_PSYCHO_Rencunier = "Vindictive";
-	REG_PLAYER_PSYCHO_Genereux = "Altruistic";
-	REG_PLAYER_PSYCHO_Egoiste = "Selfish";
-	REG_PLAYER_PSYCHO_Sincere = "Truthful";
-	REG_PLAYER_PSYCHO_Trompeur = "Deceitful";
-	REG_PLAYER_PSYCHO_Misericordieux = "Gentle ";
-	REG_PLAYER_PSYCHO_Cruel = "Brutal";
-	REG_PLAYER_PSYCHO_Pieux = "Superstitious";
-	REG_PLAYER_PSYCHO_Pragmatique = "Renegade";
-	REG_PLAYER_PSYCHO_Conciliant = "Paragon";
-	REG_PLAYER_PSYCHO_Rationnel = "Rational";
-	REG_PLAYER_PSYCHO_Reflechi = "Cautious";
-	REG_PLAYER_PSYCHO_Impulsif = "Impulsive";
-	REG_PLAYER_PSYCHO_Acete = "Ascetic";
-	REG_PLAYER_PSYCHO_Bonvivant = "Bon vivant";
-	REG_PLAYER_PSYCHO_Valeureux = "Valorous";
-	REG_PLAYER_PSYCHO_Couard = "Spineless";
+	REG_PLAYER_PSYCHO_CHAOTIC = "Chaotic",
+	REG_PLAYER_PSYCHO_Loyal = "Lawful",
+	REG_PLAYER_PSYCHO_Chaste = "Chaste",
+	REG_PLAYER_PSYCHO_Luxurieux = "Lustful",
+	REG_PLAYER_PSYCHO_Indulgent = "Forgiving",
+	REG_PLAYER_PSYCHO_Rencunier = "Vindictive",
+	REG_PLAYER_PSYCHO_Genereux = "Altruistic",
+	REG_PLAYER_PSYCHO_Egoiste = "Selfish",
+	REG_PLAYER_PSYCHO_Sincere = "Truthful",
+	REG_PLAYER_PSYCHO_Trompeur = "Deceitful",
+	REG_PLAYER_PSYCHO_Misericordieux = "Gentle ",
+	REG_PLAYER_PSYCHO_Cruel = "Brutal",
+	REG_PLAYER_PSYCHO_Pieux = "Superstitious",
+	REG_PLAYER_PSYCHO_Pragmatique = "Renegade",
+	REG_PLAYER_PSYCHO_Conciliant = "Paragon",
+	REG_PLAYER_PSYCHO_Rationnel = "Rational",
+	REG_PLAYER_PSYCHO_Reflechi = "Cautious",
+	REG_PLAYER_PSYCHO_Impulsif = "Impulsive",
+	REG_PLAYER_PSYCHO_Acete = "Ascetic",
+	REG_PLAYER_PSYCHO_Bonvivant = "Bon vivant",
+	REG_PLAYER_PSYCHO_Valeureux = "Valorous",
+	REG_PLAYER_PSYCHO_Couard = "Spineless",
 	REG_PLAYER_PSYCHO_CUSTOM = "Custom trait",
 	REG_PLAYER_PSYCHO_CREATENEW = "Create a trait",
 	REG_PLAYER_PSYCHO_CUSTOMCOLOR = "Select attribute color",
@@ -185,14 +185,14 @@ The codes you have inserted in your profile have been removed to prevent you fro
 	REG_PLAYER_PEEK = "Miscellaneous",
 	REG_PLAYER_CURRENT = "Currently",
 	REG_PLAYER_CURRENTOOC = "Currently (OOC)",
-	REG_PLAYER_CURRENT_OOC = "This is OOC information";
+	REG_PLAYER_CURRENT_OOC = "This is OOC information",
 	REG_PLAYER_GLANCE = "At first glance",
 	REG_PLAYER_GLANCE_USE = "Activate this slot",
 	REG_PLAYER_GLANCE_TITLE = "Attribute name",
 	REG_PLAYER_GLANCE_UNUSED = "Unused slot",
-	REG_PLAYER_GLANCE_CONFIG = "|cff00ff00\"At first glance\"|r is a set of slots you can use to define important information about this character.\n\nYou can use these actions on the slots:\n|cffffff00Click:|r configure slot\n|cffffff00Double-click:|r toggle slot activation\n|cffffff00Right-click:|r slot presets\n|cffffff00Drag & drop:|r reorder slots",
+	REG_PLAYER_GLANCE_CONFIG = '|cff00ff00"At first glance"|r is a set of slots you can use to define important information about this character.\n\nYou can use these actions on the slots:\n|cffffff00Click:|r configure slot\n|cffffff00Double-click:|r toggle slot activation\n|cffffff00Right-click:|r slot presets\n|cffffff00Drag & drop:|r reorder slots',
 	REG_PLAYER_GLANCE_EDITOR = "Glance editor : Slot %s",
-	REG_PLAYER_GLANCE_BAR_TARGET = "\"At first glance\" presets",
+	REG_PLAYER_GLANCE_BAR_TARGET = '"At first glance" presets',
 	REG_PLAYER_GLANCE_BAR_LOAD_SAVE = "Group presets",
 	REG_PLAYER_GLANCE_BAR_SAVE = "Save group as a preset",
 	REG_PLAYER_GLANCE_BAR_LOAD = "Group preset",
@@ -207,8 +207,8 @@ The codes you have inserted in your profile have been removed to prevent you fro
 	REG_PLAYER_GLANCE_PRESET_CATEGORY = "Preset category",
 	REG_PLAYER_GLANCE_PRESET_NAME = "Preset name",
 	REG_PLAYER_GLANCE_PRESET_CREATE = "Create preset",
-	REG_PLAYER_GLANCE_PRESET_REMOVE = "Removed preset |cff00ff00%s|r.";
-	REG_PLAYER_GLANCE_PRESET_ADD = "Created preset |cff00ff00%s|r.";
+	REG_PLAYER_GLANCE_PRESET_REMOVE = "Removed preset |cff00ff00%s|r.",
+	REG_PLAYER_GLANCE_PRESET_ADD = "Created preset |cff00ff00%s|r.",
 	REG_PLAYER_GLANCE_PRESET_ALERT1 = "You must enter a preset category.",
 	REG_PLAYER_GLANCE_PRESET_GET_CAT = "%s\n\nPlease enter the category name for this preset.",
 	REG_PLAYER_GLANCE_MENU_COPY = "Copy slot",
@@ -455,8 +455,8 @@ Class: 50 characters|r]],
 	CO_TOOLTIP_NOTIF_TT = "The notifications line is the line containing the client version, the unread description marker and the 'At first glance' marker.",
 	CO_TOOLTIP_RELATION = "Show relationship color",
 	CO_TOOLTIP_RELATION_TT = "Set the character tooltip border to a color representing the relation.",
-	CO_TOOLTIP_CURRENT = "Show \"current\" information",
-	CO_TOOLTIP_CURRENT_SIZE = "Max \"current\" information length",
+	CO_TOOLTIP_CURRENT = 'Show "current" information',
+	CO_TOOLTIP_CURRENT_SIZE = 'Max "current" information length',
 	CO_TOOLTIP_PROFILE_ONLY = "Use only if target has a profile",
 	CO_TOOLTIP_IN_CHARACTER_ONLY = "Hide when out of character",
 	CO_TOOLTIP_HIDE_IN_INSTANCE = "Hide while in instance",
@@ -475,7 +475,7 @@ Class: 50 characters|r]],
 	CO_TOOLTIP_SECONDARY_COLOR = "Secondary text color",
 	CO_TOOLTIP_SECONDARY_COLOR_HELP = [[The color used in the tooltip to display secondary subtext such as realm and guild names, the currently and OOC contents, and zone or health information.]],
 	CO_REGISTER = "Register settings",
-	CO_REGISTER_ABOUT_SETTINGS = "\"About\" settings",
+	CO_REGISTER_ABOUT_SETTINGS = '"About" settings',
 	CO_REGISTER_ABOUT_H1_SIZE = "Header 1 text size",
 	CO_REGISTER_ABOUT_H1_SIZE_TT = "Size of the text between {h1} tags. Default: %s",
 	CO_REGISTER_ABOUT_H2_SIZE = "Header 2 text size",
@@ -509,11 +509,11 @@ Class: 50 characters|r]],
 	CO_MODULES_STATUS_3 = "Total RP 3 update required",
 	CO_MODULES_STATUS_4 = "Error on initialization",
 	CO_MODULES_STATUS_5 = "Error on startup",
-	CO_MODULES_TT_NONE = "No dependencies";
-	CO_MODULES_TT_DEPS = "Dependencies";
+	CO_MODULES_TT_NONE = "No dependencies",
+	CO_MODULES_TT_DEPS = "Dependencies",
 	CO_MODULES_TT_TRP = "%sFor Total RP 3 build %s minimum.|r",
 	CO_MODULES_TT_DEP = "\n%s- %s (version %s)|r",
-	CO_MODULES_TT_ERROR = "\n\n|cffff0000Error:|r\n%s";
+	CO_MODULES_TT_ERROR = "\n\n|cffff0000Error:|r\n%s",
 	CO_MODULES_TUTO = [[A module is a independent feature that can be enabled or disabled.
 
 Possible status:
@@ -589,7 +589,7 @@ Possible status:
 	CO_CHAT_MAIN_NPC = "NPC talk detection",
 	CO_CHAT_MAIN_NPC_USE = "Use NPC talk detection",
 	CO_CHAT_MAIN_NPC_PREFIX = "NPC talk detection pattern",
-	CO_CHAT_MAIN_NPC_PREFIX_TT = "If a chat line said in the EMOTE channel begins with this prefix, it will be interpreted as an NPC chat.\n\n|cff00ff00By default : \"|| \"\n(without the \" and with a space after the pipe)",
+	CO_CHAT_MAIN_NPC_PREFIX_TT = 'If a chat line said in the EMOTE channel begins with this prefix, it will be interpreted as an NPC chat.\n\n|cff00ff00By default : "|| "\n(without the " and with a space after the pipe)',
 	CO_CHAT_MAIN_EMOTE = "Emote detection",
 	CO_CHAT_MAIN_EMOTE_USE = "Use emote detection",
 	CO_CHAT_MAIN_EMOTE_PATTERN = "Emote detection pattern",
@@ -601,7 +601,7 @@ Possible status:
 	CO_CHAT_MAIN_EMOTE_YELL_TT = "Do not show *emote* or <emote> in yelling.",
 	CO_CHAT_NPCSPEECH_REPLACEMENT = "Customize companion names in NPC speeches",
 	CO_CHAT_NPCSPEECH_REPLACEMENT_TT = "If a companion name is in brackets in an NPC speech, it will be colored and its icon will be shown depending on your settings above.",
-	CO_GLANCE_MAIN = "\"At first glance\" bar",
+	CO_GLANCE_MAIN = '"At first glance" bar',
 	CO_GLANCE_RESET_TT = "Reset the bar position to the bottom left of the anchored frame.",
 	CO_GLANCE_LOCK = "Lock bar",
 	CO_GLANCE_LOCK_TT = "Prevent the bar from being dragged",
@@ -672,7 +672,7 @@ Possible status:
 	PR_PROFILE_CREATED = "Profile %s created.",
 	PR_CREATE_PROFILE = "Create profile",
 	PR_PROFILE_DELETED = "Profile %s deleted.",
-	PR_PROFILE_HELP = "A profile contains all information about a |cffffff00\"character\"|r as a |cff00ff00roleplay character|r.\n\nA real |cffffff00\"WoW character\"|r can be bound to only one profile at a time, but can switch from one to another whenever you want.\n\nYou can also bind several |cffffff00\"WoW characters\"|r to the same |cff00ff00profile|r !",
+	PR_PROFILE_HELP = 'A profile contains all information about a |cffffff00"character"|r as a |cff00ff00roleplay character|r.\n\nA real |cffffff00"WoW character"|r can be bound to only one profile at a time, but can switch from one to another whenever you want.\n\nYou can also bind several |cffffff00"WoW characters"|r to the same |cff00ff00profile|r !',
 	PR_PROFILE_DETAIL = "This profile is currently bound to these WoW characters",
 	PR_DELETE_PROFILE = "Delete profile",
 	PR_DUPLICATE_PROFILE = "Duplicate profile",
@@ -940,8 +940,8 @@ Total RP is not responsible for links leading to harmful content.]],
 	-- Bindings
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-	BINDING_NAME_TRP3_TOGGLE = "Toggle main frame";
-	BINDING_NAME_TRP3_TOOLBAR_TOGGLE = "Toggle toolbar";
+	BINDING_NAME_TRP3_TOGGLE = "Toggle main frame",
+	BINDING_NAME_TRP3_TOOLBAR_TOGGLE = "Toggle toolbar",
 
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 	-- About TRP3
@@ -1199,7 +1199,7 @@ Please keep in mind that changing those settings might alter your experience wit
 	CO_ADVANCED_LANGUAGES = "Languages",
 	CO_ADVANCED_LANGUAGES_REMEMBER = "Remember last language used",
 	CO_ADVANCED_LANGUAGES_REMEMBER_TT = "Total RP 3 will remember what language you were using before logging off and automatically select this language back on next login.",
-	CO_TOOLTIP_CURRENT_LINES = "Max \"Currently\" line breaks",
+	CO_TOOLTIP_CURRENT_LINES = 'Max "Currently" line breaks',
 	REG_PLAYERS = "Players",
 	CO_LOCATION_DISABLE_WAR_MODE = "Disable location when in War Mode",
 	CO_LOCATION_DISABLE_WAR_MODE_TT = "You will not respond to location requests from other players when you have War Mode enabled and you are outside of a |cff69CCF0Sanctuary|r.\n\nThis option is particularly useful to avoid abuses of the location system to track you.",
@@ -1393,14 +1393,14 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 - Fixed an issue with the residence button on Classic.
 
 ]],
-	WHATS_NEW_23_13 =  [[# Changelog version 1.6.13
+	WHATS_NEW_23_13 = [[# Changelog version 1.6.13
 
 ## Fixed
 
 - Fixed an issue with upgrade patches that would happen only for people with a clean install of the add-on. - #407
 
 ]],
-	WHATS_NEW_24_1 =  [[# Changelog version 2.0
+	WHATS_NEW_24_1 = [[# Changelog version 2.0
 
 ## Added
 
@@ -1426,7 +1426,7 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 
 	BINDING_NAME_TRP3_OPEN_TARGET_PROFILE = "Open target profile",
 	BINDING_NAME_TRP3_TOGGLE_CHARACTER_STATUS = "Toggle character status",
-	WHATS_NEW_24_2 =  [[# Changelog version 2.1
+	WHATS_NEW_24_2 = [[# Changelog version 2.1
 
 ## Added
 
@@ -1453,7 +1453,7 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 	UI_PET_BROWSER_BOUND_WARNING = "|cffff0000Warning: |rThis pet is currently assigned to the profile |cff00ff00%1$s|r. Assigning a profile to this pet will replace the current profile.",
 	UI_PET_BROWSER_NAME_WARNING = "|cffff0000Warning: |rThis pet has not been renamed. We recommend renaming the pet to prevent showing this profile on other pets you own with the same name.",
 	REG_PLAYER_MISC_PRESET_PRONOUNS = "Pronouns",
-	WHATS_NEW_24_3 =  [[# Changelog version 2.2
+	WHATS_NEW_24_3 = [[# Changelog version 2.2
 
 ## Added
 
@@ -1547,7 +1547,7 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 	UNIT_POPUPS_MODULE_DISABLE_WARNING = "A user interface reload is required to disable the unit popups module.|n|n|cffff0000Warning: |rOnce disabled, this module can only be re-enabled from the |cffffcc00Modules status|r page.|n|nAre you sure you want to disable this module?",
 	UNIT_POPUPS_CONFIG_ENTRIES_HEADER = "Menu entries",
 	UNIT_POPUPS_CONFIG_SHOW_HEADER_TEXT = "Show header text",
-	UNIT_POPUPS_CONFIG_SHOW_HEADER_TEXT_HELP = "If checked, shows a \"Roleplay Options\" header above any added menu entries.",
+	UNIT_POPUPS_CONFIG_SHOW_HEADER_TEXT_HELP = 'If checked, shows a "Roleplay Options" header above any added menu entries.',
 	UNIT_POPUPS_CONFIG_SHOW_SEPARATOR = "Show separator",
 	UNIT_POPUPS_CONFIG_SHOW_SEPARATOR_HELP = "If checked, shows a separator bar above any added menu entries.",
 	UNIT_POPUPS_CONFIG_SHOW_CHARACTER_STATUS = "Show character status toggle",
@@ -1647,7 +1647,6 @@ We are aware of a current issue on Retail causing **quest item usage from the ob
 	CREDITS_WEBSITE_LINK_TEXT = "Website",
 	CREDITS_NAME_WITH_ROLE = "%1$s (%2$s)",
 	CREDITS_GUILD_NAME = "<%1$s>",
-
 
 	WHATS_NEW_24_7 = [[# Changelog version 2.3.4
 
@@ -1801,24 +1800,23 @@ Classic users: Companion profiles may have to be relinked due to API changes.
 - Removed temporarily right-click menu options in Retail due to a conflict with Edit Mode that can prevent the use of abilities in combat. They will be re-added once the conflict has been resolved.
 
 ]],
-
-};
+}
 
 -- Use Ellyb to generate the Localization system
-TRP3_API.loc = Ellyb.Localization(TRP3_API.loc);
+TRP3_API.loc = Ellyb.Localization(TRP3_API.loc)
 
-local Locale = {};
-TRP3_API.Locale = Locale;
+local Locale = {}
+TRP3_API.Locale = Locale
 
 --- Initialize a locale for the addon.
 function Locale.init()
 	-- Register config
-	TRP3_API.configuration.registerConfigKey("AddonLocale", GetLocale());
-	TRP3_API.loc:SetCurrentLocale(TRP3_API.configuration.getValue("AddonLocale"), true);
+	TRP3_API.configuration.registerConfigKey("AddonLocale", GetLocale())
+	TRP3_API.loc:SetCurrentLocale(TRP3_API.configuration.getValue("AddonLocale"), true)
 end
 
 -- Backward compatibility with older use of Total RP 3's Locale module
-Locale.getText = Ellyb.Functions.bind(TRP3_API.loc.GetText, TRP3_API.loc);
+Locale.getText = Ellyb.Functions.bind(TRP3_API.loc.GetText, TRP3_API.loc)
 
 ---generateFrenchDeterminerForText
 ---@param text string @ The text containing the |2 tag to replace with the appropriate determiner
@@ -1826,15 +1824,17 @@ Locale.getText = Ellyb.Functions.bind(TRP3_API.loc.GetText, TRP3_API.loc);
 ---@return string generatedText @ Text where the |2 tag is replaced by the correct determiner for what's following
 function Locale.generateFrenchDeterminerForText(text, followingText)
 	-- This function only applies to the French locale. If we were to call it on a different locale, do nothing
-	if not IS_FRENCH_LOCALE then return text end
-
-	if Ellyb.Strings.isAVowel(Ellyb.Strings.getFirstLetter(followingText)) then
-		text = text:gsub("|2", "de");
-	else
-		text = text:gsub("|2 ", "d'");
+	if not IS_FRENCH_LOCALE then
+		return text
 	end
 
-	return text;
+	if Ellyb.Strings.isAVowel(Ellyb.Strings.getFirstLetter(followingText)) then
+		text = text:gsub("|2", "de")
+	else
+		text = text:gsub("|2 ", "d'")
+	end
+
+	return text
 end
 
 ---Generate two string with the two possible French determiners "de" and "d'" using a string that contains the |2 tag
@@ -1842,7 +1842,7 @@ end
 ---@param text string @ A text with a |2 tag inside it
 ---@return string, string textWithDe, textWidthD @ Two string, one with "de" and one with "d'"
 function Locale.generateFrenchDeterminersVersions(text)
-	return Locale.generateFrenchDeterminerForText(text, "a"), Locale.generateFrenchDeterminerForText(text, "b");
+	return Locale.generateFrenchDeterminerForText(text, "a"), Locale.generateFrenchDeterminerForText(text, "b")
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1850,10 +1850,10 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 local function isColorBlindModeEnabled()
-	return GetCVar("colorblindMode") == "1";
+	return GetCVar("colorblindMode") == "1"
 end
 
-local REPLACE_PATTERN, NAME_PATTERN = "%%s", "([%%S%%-%%P]+)";
+local REPLACE_PATTERN, NAME_PATTERN = "%%s", "([%%S%%-%%P]+)"
 local PET_OWNER_MATCHING_LINES = {
 	UNITNAME_TITLE_CHARM,
 	UNITNAME_TITLE_CREATION,
@@ -1867,10 +1867,10 @@ local BATTLE_PET_OWNER_MATCHING_LINES = {
 
 -- Insert the search pattern inside the strings
 for key, pattern in pairs(PET_OWNER_MATCHING_LINES) do
-	PET_OWNER_MATCHING_LINES[key] = pattern:gsub(REPLACE_PATTERN, NAME_PATTERN);
+	PET_OWNER_MATCHING_LINES[key] = pattern:gsub(REPLACE_PATTERN, NAME_PATTERN)
 end
 for key, pattern in pairs(BATTLE_PET_OWNER_MATCHING_LINES) do
-	BATTLE_PET_OWNER_MATCHING_LINES[key] = pattern:gsub(REPLACE_PATTERN, NAME_PATTERN);
+	BATTLE_PET_OWNER_MATCHING_LINES[key] = pattern:gsub(REPLACE_PATTERN, NAME_PATTERN)
 end
 
 -- French is a funny language.
@@ -1878,87 +1878,92 @@ end
 -- Blizzard is using the |2 tag in the global strings (like UNITNAME_TITLE_PET) for this special replacement.
 -- We need to replace that tag in the strings with the two versions possible if the user is using the French client.
 if IS_FRENCH_LOCALE then
-	local newPetOwnerMatchingLines = {};
+	local newPetOwnerMatchingLines = {}
 	for _, pattern in pairs(PET_OWNER_MATCHING_LINES) do
-		local textWithDe, textWithD = Locale.generateFrenchDeterminersVersions(pattern);
-		tinsert(newPetOwnerMatchingLines, textWithDe);
-		tinsert(newPetOwnerMatchingLines, textWithD);
+		local textWithDe, textWithD = Locale.generateFrenchDeterminersVersions(pattern)
+		tinsert(newPetOwnerMatchingLines, textWithDe)
+		tinsert(newPetOwnerMatchingLines, textWithD)
 	end
-	PET_OWNER_MATCHING_LINES = newPetOwnerMatchingLines;
-	local newBattlePetOwnerMatchingLines = {};
+	PET_OWNER_MATCHING_LINES = newPetOwnerMatchingLines
+	local newBattlePetOwnerMatchingLines = {}
 	for _, pattern in pairs(BATTLE_PET_OWNER_MATCHING_LINES) do
-		local textWithDe, textWithD = Locale.generateFrenchDeterminersVersions(pattern);
-		tinsert(newBattlePetOwnerMatchingLines, textWithDe);
-		tinsert(newBattlePetOwnerMatchingLines, textWithD);
+		local textWithDe, textWithD = Locale.generateFrenchDeterminersVersions(pattern)
+		tinsert(newBattlePetOwnerMatchingLines, textWithDe)
+		tinsert(newBattlePetOwnerMatchingLines, textWithD)
 	end
-	BATTLE_PET_OWNER_MATCHING_LINES = newBattlePetOwnerMatchingLines;
+	BATTLE_PET_OWNER_MATCHING_LINES = newBattlePetOwnerMatchingLines
 end
 
 ---@param tooltipLines string[] @ A table corresponding to the tooltip lines in which we should search for a pet owner
 ---@return string|void owner @ The name of the owner, if found
 function Locale.findPetOwner(tooltipLines)
-	local masterLine = isColorBlindModeEnabled() and tooltipLines[3] or tooltipLines[2];
+	local masterLine = isColorBlindModeEnabled() and tooltipLines[3] or tooltipLines[2]
 	if masterLine then
-		local master;
+		local master
 		for _, matchingPattern in pairs(PET_OWNER_MATCHING_LINES) do
-			master = masterLine:match(matchingPattern);
-			if master then break end
+			master = masterLine:match(matchingPattern)
+			if master then
+				break
+			end
 		end
-		return master;
+		return master
 	end
 end
 
 function Locale.findBattlePetOwner(lines)
-	local lineNumber = 3;
+	local lineNumber = 3
 
 	if not TRP3_DUMMY_TOOLTIP.SetCompanionPet then
 		-- GameTooltip API doesn't support companion pets so this is likely
 		-- a Classic client, which uses the previous line.
-		lineNumber = lineNumber - 1;
+		lineNumber = lineNumber - 1
 	end
 
 	if isColorBlindModeEnabled() then
 		-- Colorblind mode shifts the line down by one.
-		lineNumber = lineNumber + 1;
+		lineNumber = lineNumber + 1
 	end
 
-	local masterLine = lines[lineNumber];
+	local masterLine = lines[lineNumber]
 	if masterLine then
-		local master;
+		local master
 		for _, matchingPattern in pairs(BATTLE_PET_OWNER_MATCHING_LINES) do
-			master = masterLine:match(matchingPattern);
+			master = masterLine:match(matchingPattern)
 			if master then
 				-- Hack for "Mascotte de niveau xxx" in French ...
 				if IS_FRENCH_LOCALE and master:find("%s") then
-					master = nil;
+					master = nil
 				else
 					break
 				end
 			end
 		end
-		return master;
+		return master
 	end
 end
 
 -- Backward compatibility locale = Locale
-TRP3_API.locale = TRP3_API.Locale;
+TRP3_API.locale = TRP3_API.Locale
 
 --- Backward compatibility layer for third party mods
 --- This will create a proxy meta table that third party mods can use
 --- to insert new localization keys inside a locale.
 function TRP3_API.locale.getLocale(localeID)
 	---@type Locale
-	local locale = TRP3_API.loc:GetLocale(localeID);
+	local locale = TRP3_API.loc:GetLocale(localeID)
 
-	TRP3_API.utils.log.log([[DEPRECATED USAGE OF TRP3_API.locale.getLocale(localeID) TO ADD LOCALIZATION KEYS.
-Please use TRP3_API.loc:GetLocale(localeID) and locale:AddText(key, value) to insert localization strings.]], TRP3_API.utils.log.level.WARNING)
+	TRP3_API.utils.log.log(
+		[[DEPRECATED USAGE OF TRP3_API.locale.getLocale(localeID) TO ADD LOCALIZATION KEYS.
+Please use TRP3_API.loc:GetLocale(localeID) and locale:AddText(key, value) to insert localization strings.]],
+		TRP3_API.utils.log.level.WARNING
+	)
 
 	return {
 		localeContent = setmetatable({}, {
 			__newindex = function(_, key, value)
-				locale:AddText(key, value);
+				locale:AddText(key, value)
 			end,
-		})
+		}),
 	}
 end
 
@@ -1969,4 +1974,4 @@ end
 -- Long term we should look at fixing those things; primary area being module
 -- names and descriptions which are looked up in script bodies.
 
-TRP3_API.loc:SetCurrentLocale(GetLocale(), true);
+TRP3_API.loc:SetCurrentLocale(GetLocale(), true)

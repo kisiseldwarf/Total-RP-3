@@ -1,12 +1,12 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Strings.interpolate then
 	return
 end
 
 ---@type Ellyb_Strings
-local Strings = Ellyb.Strings;
+local Strings = Ellyb.Strings
 
 --- Cache used by the Interpolator class that takes a format specifier without its preceeding "%" and gives it one.
 --- This cache exists because we treat the replacement as a hot loop, and string concatenation is not very performant.
@@ -14,26 +14,26 @@ local Strings = Ellyb.Strings;
 local replacementCache = setmetatable({}, {
 	__mode = "k",
 	__index = function(self, specifier)
-		self[specifier] = "%" .. specifier;
-		return self[specifier];
+		self[specifier] = "%" .. specifier
+		return self[specifier]
 	end,
-});
+})
 
 --- Class that manages the replacement of named references in a format string.
 --- It exists purely because we don't necessarily want to allocate a garbage
 --- closure each time String.interpolate() is called.
 ---
 --- This class should be treated as an implementation detail and not exported.
-local Interpolator = Ellyb.Class("Interpolator");
-Interpolator:include(Ellyb.PooledObjectMixin);
+local Interpolator = Ellyb.Class("Interpolator")
+Interpolator:include(Ellyb.PooledObjectMixin)
 
 function Interpolator:initialize()
 	-- Ensure the replacements and offset are reset on each re-init.
-	self.replacements = nil;
-	self.offset = 1;
+	self.replacements = nil
+	self.offset = 1
 
 	-- We'll need a closure to forward the actual replacement to our method. This should be cached across each init.
-	self.onReplacement = self.onReplacement or Ellyb.Functions.bind(self.Replace, self);
+	self.onReplacement = self.onReplacement or Ellyb.Functions.bind(self.Replace, self)
 end
 
 --- Formats the given format string against the given table of replacements.
@@ -42,8 +42,8 @@ end
 --- @return string
 function Interpolator:Format(formatString, replacements)
 	-- Store the replacements and reset the offset, if present.
-	self.replacements = replacements;
-	self.offset = 1;
+	self.replacements = replacements
+	self.offset = 1
 
 	-- This monstrosity below is a foul and arcane incantation that basically
 	-- matches the subset of C's printf that Lua actually implements, as
@@ -52,8 +52,8 @@ function Interpolator:Format(formatString, replacements)
 	-- If you're going to change this, please consult these references:
 	--   - http://www.cplusplus.com/reference/cstdio/printf/
 	--   - http://pgl.yoyo.org/luai/i/string.format
-	local MATCH_STRING = "(%%((%d?)[%w_]*)$?([-+ #0]-%d*%.?%d*[diuoxXfFeEgGcsq]))";
-	return formatString:gsub(MATCH_STRING, self.onReplacement);
+	local MATCH_STRING = "(%%((%d?)[%w_]*)$?([-+ #0]-%d*%.?%d*[diuoxXfFeEgGcsq]))"
+	return formatString:gsub(MATCH_STRING, self.onReplacement)
 end
 
 --- Internal handler invoked by string.gsub when it finds a specifier match.
@@ -63,27 +63,27 @@ end
 ---@param specifier string
 function Interpolator:Replace(full, key, keyFirstChar, specifier)
 	-- Try converting the key to a number if anything.
-	key = tonumber(key) or key;
+	key = tonumber(key) or key
 
 	-- No key? Standard replacement. Increment our internal offset with it.
 	if not key or key == "" then
-		local offset = self.offset;
-		local output = full:format(self.replacements[offset]);
+		local offset = self.offset
+		local output = full:format(self.replacements[offset])
 
-		self.offset = offset + 1;
-		return output;
+		self.offset = offset + 1
+		return output
 	end
 
 	-- Our documentation claims we only support Lua identifiers as keys, or fully numeric ones.
 	-- If the first character is numeric but the full key isn't,
 	-- then you're being mean by giving us something that isn't actually a Lua identifier.
 	if tonumber(keyFirstChar) and not tonumber(key) then
-		return;
+		return
 	end
 
 	-- Keyed/named replacement. The one catch here is specifier lacks the preceeding "%",
 	-- and we can't use the full match because it has the key. Good thing we made that cache table, right?
-	return replacementCache[specifier]:format(self.replacements[key]);
+	return replacementCache[specifier]:format(self.replacements[key])
 end
 
 --- Formats the given format string against the given table of replacements.
@@ -103,8 +103,8 @@ end
 ---  @param formatString string The template string to format.
 ---  @param replacements string[] Table of replacements to make.
 function Strings.interpolate(formatString, replacements)
-	local replacer = Interpolator();
-	local formatted = replacer:Format(formatString, replacements);
-	replacer:ReleasePooledObject();
-	return formatted;
+	local replacer = Interpolator()
+	local formatted = replacer:Format(formatString, replacements)
+	replacer:ReleasePooledObject()
+	return formatted
 end

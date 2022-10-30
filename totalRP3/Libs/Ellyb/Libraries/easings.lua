@@ -68,7 +68,7 @@ local function outInQuad(t, b, c, d)
 	end
 end
 
-local function inCubic (t, b, c, d)
+local function inCubic(t, b, c, d)
 	t = t / d
 	return c * pow(t, 3) + b
 end
@@ -408,7 +408,7 @@ local function inOutBounce(t, b, c, d)
 	if t < d / 2 then
 		return inBounce(t * 2, 0, c, d) * 0.5 + b
 	else
-		return outBounce(t * 2 - d, 0, c, d) * 0.5 + c * .5 + b
+		return outBounce(t * 2 - d, 0, c, d) * 0.5 + c * 0.5 + b
 	end
 end
 
@@ -424,7 +424,7 @@ end
 --- Ellypse's modifications to make easings available to Ellyb
 ------------------------------------------------------------------------------------------------------------------------
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Easings then
 	return
@@ -472,7 +472,7 @@ Ellyb.Easings = {
 	outBounce = outBounce,
 	inOutBounce = inOutBounce,
 	outInBounce = outInBounce,
-};
+}
 
 ------------------------------------------------------------------------------------------------------------------------
 --- End of Ellypse's modifications

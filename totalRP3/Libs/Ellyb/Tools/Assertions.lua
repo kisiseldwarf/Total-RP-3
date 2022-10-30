@@ -44,10 +44,22 @@ end
 function Assertions.isType(variable, expectedType, variableName)
 	if isUIObject(variable) then
 		if not variable:IsObjectType(expectedType) then
-			throw(([[Invalid Widget type "%s" for variable "%s", expected a "%s".]]):format(variable:GetObjectType(), variableName, expectedType))
+			throw(
+				([[Invalid Widget type "%s" for variable "%s", expected a "%s".]]):format(
+					variable:GetObjectType(),
+					variableName,
+					expectedType
+				)
+			)
 		end
 	elseif type(variable) ~= expectedType then
-		throw(([[Invalid variable type "%s" for variable "%s", expected "%s".]]):format(type(variable), variableName, expectedType))
+		throw(
+			([[Invalid variable type "%s" for variable "%s", expected "%s".]]):format(
+				type(variable),
+				variableName,
+				expectedType
+			)
+		)
 	end
 	return true
 end
@@ -60,10 +72,22 @@ end
 ---@return boolean, string Returns true if the variable was of the expected type, or false with an error message if it wasn't.
 function Assertions.isOfTypes(variable, expectedTypes, variableName)
 	if isUIObject(variable) and not tContains(expectedTypes, variable:GetObjectType()) then
-		throw(([[Invalid Widget type "%s" for variable "%s", expected one of {%s}.]]):format(variable:GetObjectType(), variableName, list(expectedTypes)))
+		throw(
+			([[Invalid Widget type "%s" for variable "%s", expected one of {%s}.]]):format(
+				variable:GetObjectType(),
+				variableName,
+				list(expectedTypes)
+			)
+		)
 	end
 	if not tContains(expectedTypes, type(variable)) then
-		throw(([[Invalid variable type "%s" for variable "%s", expected one of {%s}.]]):format(type(variable), variableName, list(expectedTypes)))
+		throw(
+			([[Invalid variable type "%s" for variable "%s", expected one of {%s}.]]):format(
+				type(variable),
+				variableName,
+				list(expectedTypes)
+			)
+		)
 	end
 	return true
 end
@@ -105,14 +129,25 @@ end
 ---@param variableName string The name of the variable being tested, will be visible in the error message
 function Assertions.isInstanceOf(variable, class, variableName)
 	if not isAClass(variable) then
-		throw(([[Invalid type "%s" for variable "%s", expected a "%s".]]):format(type(variable), variableName, tostring(class)))
+		throw(
+			([[Invalid type "%s" for variable "%s", expected a "%s".]]):format(
+				type(variable),
+				variableName,
+				tostring(class)
+			)
+		)
 	end
 	if not variable:isInstanceOf(class) then
-		throw(([[Invalid Class "%s" for variable "%s", expected "%s".]]):format(tostring(variable.class), variableName, tostring(class)))
+		throw(
+			([[Invalid Class "%s" for variable "%s", expected "%s".]]):format(
+				tostring(variable.class),
+				variableName,
+				tostring(class)
+			)
+		)
 	end
 	return true
 end
-
 
 --- Check if a variable value is one of the possible values.
 ---@param variable any Any kind of variable, will be checked if it's value is in the list of possible values
@@ -120,7 +155,13 @@ end
 ---@param variableName string The name of the variable being tested, will be visible in the error message
 function Assertions.isOneOf(variable, possibleValues, variableName)
 	if not tContains(possibleValues, variable) then
-		throw(([[Unexpected variable value %s for variable "%s", expected to be one of {%s}.]]):format(tostring(variable), variableName, list(possibleValues)))
+		throw(
+			([[Unexpected variable value %s for variable "%s", expected to be one of {%s}.]]):format(
+				tostring(variable),
+				variableName,
+				list(possibleValues)
+			)
+		)
 	end
 	return true
 end
@@ -131,17 +172,25 @@ end
 ---@param maximum number The maximum value for the number
 ---@param variableName string The name of the variable being tested, will be visible in the error message
 function Assertions.numberIsBetween(variable, minimum, maximum, variableName)
-
 	-- Variable has to be a number to do comparison
 	if type(variable) ~= "number" then
-		throw(([[Invalid variable type "%s" for variable "%s", expected "number".]]):format(type(variable), variableName))
+		throw(
+			([[Invalid variable type "%s" for variable "%s", expected "number".]]):format(type(variable), variableName)
+		)
 	end
 
 	if variable < minimum or variable > maximum then
-		throw(([[Invalid variable value "%s" for variable "%s". Expected the value to be between "%s" and "%s"]]):format(variable, variableName, minimum, maximum))
+		throw(
+			([[Invalid variable value "%s" for variable "%s". Expected the value to be between "%s" and "%s"]]):format(
+				variable,
+				variableName,
+				minimum,
+				maximum
+			)
+		)
 	end
 
 	return true
 end
 
-Ellyb.Assertions = Assertions;
+Ellyb.Assertions = Assertions

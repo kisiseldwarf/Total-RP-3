@@ -1,8 +1,8 @@
 -- Copyright The Total RP 3 Authors
 -- SPDX-License-Identifier: Apache-2.0
 
-local Ellyb = Ellyb(...);
-local AddOn_TotalRP3 = AddOn_TotalRP3;
+local Ellyb = Ellyb(...)
+local AddOn_TotalRP3 = AddOn_TotalRP3
 
 local Icon = Ellyb.Icon
 
@@ -12,8 +12,8 @@ local LANGUAGES_ICONS = {
 	[35] = Icon(TRP3_InterfaceIcons.LanguageDraenei), -- Draenei
 	[2] = Icon(TRP3_InterfaceIcons.LanguageDarnassian), -- Dranassian
 	[6] = Icon(TRP3_InterfaceIcons.LanguageDwarvish), -- Dwarvish
-	[7] = Icon(TRP3_InterfaceIcons.LanguageCommon),-- Common
-	[13] = Icon(TRP3_InterfaceIcons.LanguageGnomish),-- Gnomish
+	[7] = Icon(TRP3_InterfaceIcons.LanguageCommon), -- Common
+	[13] = Icon(TRP3_InterfaceIcons.LanguageGnomish), -- Gnomish
 
 	-- Horde
 	[1] = Icon(TRP3_InterfaceIcons.LanguageOrcish), -- Orcish
@@ -44,7 +44,6 @@ local LANGUAGES_ICONS = {
 	[9] = Icon(TRP3_InterfaceIcons.LanguageTitan), -- Titan
 	[36] = Icon(TRP3_InterfaceIcons.LanguageZombie), -- Zombie (in your head)
 	[168] = Icon(TRP3_InterfaceIcons.LanguageSprite), -- Sprite (Faerie dragon)
-
 }
 
 local TEMP_ICON = Icon(TRP3_InterfaceIcons.Default)
@@ -104,7 +103,8 @@ function Language:GetPlayerProficiency()
 end
 
 --- Apply custom language modifications to given text
---[[ Override ]] function Language:Apply(text)
+--[[ Override ]]
+function Language:Apply(text)
 	return text
 end
 

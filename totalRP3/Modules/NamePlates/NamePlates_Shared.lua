@@ -1,68 +1,68 @@
 -- Copyright The Total RP 3 Authors
 -- SPDX-License-Identifier: Apache-2.0
 
-local TRP3_API = select(2, ...);
-local L = TRP3_API.loc;
+local TRP3_API = select(2, ...)
+local L = TRP3_API.loc
 
-local TRP3_NamePlatesUtil = {};
+local TRP3_NamePlatesUtil = {}
 
-TRP3_NamePlatesUtil.MAX_NAME_CHARS = 30;
-TRP3_NamePlatesUtil.MAX_TITLE_CHARS = 30;
-TRP3_NamePlatesUtil.OOC_ICON = "|TInterface\\COMMON\\Indicator-Red:15:15|t";
+TRP3_NamePlatesUtil.MAX_NAME_CHARS = 30
+TRP3_NamePlatesUtil.MAX_TITLE_CHARS = 30
+TRP3_NamePlatesUtil.OOC_ICON = "|TInterface\\COMMON\\Indicator-Red:15:15|t"
 
 function TRP3_NamePlatesUtil.GetPreferredOOCIndicatorStyle()
-	return TRP3_API.configuration.getValue("NamePlates_PreferredOOCIndicator");
+	return TRP3_API.configuration.getValue("NamePlates_PreferredOOCIndicator")
 end
 
 function TRP3_NamePlatesUtil.GetPreferredIconSize()
-	local size = tonumber(TRP3_API.configuration.getValue("NamePlates_IconSize")) or 16;
-	return size, size;
+	local size = tonumber(TRP3_API.configuration.getValue("NamePlates_IconSize")) or 16
+	return size, size
 end
 
 function TRP3_NamePlatesUtil.PrependRoleplayStatusToText(text, roleplayStatus)
 	if roleplayStatus ~= AddOn_TotalRP3.Enums.ROLEPLAY_STATUS.OUT_OF_CHARACTER then
-		return text;
+		return text
 	end
 
-	local preferredStyle = TRP3_NamePlatesUtil.GetPreferredOOCIndicatorStyle();
+	local preferredStyle = TRP3_NamePlatesUtil.GetPreferredOOCIndicatorStyle()
 
 	if preferredStyle == "ICON" then
-		return string.join(" ", TRP3_NamePlatesUtil.OOC_ICON, text);
+		return string.join(" ", TRP3_NamePlatesUtil.OOC_ICON, text)
 	else
-		return string.format("|cffff0000[%1$s]|r %2$s", TRP3_API.loc.CM_OOC, text);
+		return string.format("|cffff0000[%1$s]|r %2$s", TRP3_API.loc.CM_OOC, text)
 	end
 end
 
 function TRP3_NamePlatesUtil.PrependRoleplayStatusToFontString(fontstring, roleplayStatus)
 	if roleplayStatus ~= AddOn_TotalRP3.Enums.ROLEPLAY_STATUS.OUT_OF_CHARACTER then
-		return;
+		return
 	end
 
-	local preferredStyle = TRP3_NamePlatesUtil.GetPreferredOOCIndicatorStyle();
+	local preferredStyle = TRP3_NamePlatesUtil.GetPreferredOOCIndicatorStyle()
 
 	if preferredStyle == "ICON" then
-		fontstring:SetFormattedText("%s %s", TRP3_NamePlatesUtil.OOC_ICON, fontstring:GetText());
+		fontstring:SetFormattedText("%s %s", TRP3_NamePlatesUtil.OOC_ICON, fontstring:GetText())
 	else
-		fontstring:SetFormattedText("|cffff0000[%1$s]|r %2$s", TRP3_API.loc.CM_OOC, fontstring:GetText());
+		fontstring:SetFormattedText("|cffff0000[%1$s]|r %2$s", TRP3_API.loc.CM_OOC, fontstring:GetText())
 	end
 end
 
 function TRP3_NamePlatesUtil.GetUnitCharacterID(unitToken)
-	local unitType = TRP3_API.ui.misc.getTargetType(unitToken);
-	local characterID;
+	local unitType = TRP3_API.ui.misc.getTargetType(unitToken)
+	local characterID
 
 	if unitType == AddOn_TotalRP3.Enums.UNIT_TYPE.CHARACTER then
-		characterID = TRP3_API.utils.str.getUnitID(unitToken);
+		characterID = TRP3_API.utils.str.getUnitID(unitToken)
 	elseif unitType == AddOn_TotalRP3.Enums.UNIT_TYPE.PET then
-		characterID = TRP3_API.ui.misc.getCompanionFullID(unitToken, unitType);
+		characterID = TRP3_API.ui.misc.getCompanionFullID(unitToken, unitType)
 	end
 
 	if characterID and string.find(characterID, UNKNOWNOBJECT, 1, true) == 1 then
 		-- The player that owns this profile isn't yet known to the client.
-		characterID = nil;
+		characterID = nil
 	end
 
-	return characterID;
+	return characterID
 end
 
 --
@@ -149,7 +149,7 @@ TRP3_NamePlatesUtil.Configuration = {
 		key = "NamePlates_EnableClassColorFallback",
 		default = true,
 	},
-};
+}
 
 function TRP3_NamePlatesUtil.GenerateConfigurationPage()
 	return {
@@ -166,22 +166,25 @@ function TRP3_NamePlatesUtil.GenerateConfigurationPage()
 				title = L.NAMEPLATES_CONFIG_ENABLE_MODULE,
 				text = DISABLE,
 				OnShow = function(button)
-					local element = button:GetParent();
-					local title = _G[element:GetName() .. "Title"];
-					local addon = TRP3_NAMEPLATES_ADDON;
+					local element = button:GetParent()
+					local title = _G[element:GetName() .. "Title"]
+					local addon = TRP3_NAMEPLATES_ADDON
 
 					if addon then
-						title:SetFormattedText(L.NAMEPLATES_MODULE_ACTIVE_STATUS, (select(2, GetAddOnInfo(addon)) or addon));
+						title:SetFormattedText(
+							L.NAMEPLATES_MODULE_ACTIVE_STATUS,
+							(select(2, GetAddOnInfo(addon)) or addon)
+						)
 					else
-						title:SetText(L.NAMEPLATES_MODULE_INACTIVE_STATUS);
+						title:SetText(L.NAMEPLATES_MODULE_INACTIVE_STATUS)
 					end
 				end,
 				OnClick = function()
 					TRP3_API.popup.showConfirmPopup(L.NAMEPLATES_MODULE_DISABLE_WARNING, function()
-						local current = TRP3_Configuration.MODULE_ACTIVATION["trp3_nameplates"];
-						TRP3_Configuration.MODULE_ACTIVATION["trp3_nameplates"] = not current;
-						ReloadUI();
-					end);
+						local current = TRP3_Configuration.MODULE_ACTIVATION["trp3_nameplates"]
+						TRP3_Configuration.MODULE_ACTIVATION["trp3_nameplates"] = not current
+						ReloadUI()
+					end)
 				end,
 			},
 			{
@@ -306,20 +309,20 @@ function TRP3_NamePlatesUtil.GenerateConfigurationPage()
 				title = L.NAMEPLATES_CONFIG_BLIZZARD_NAME_ONLY,
 				help = L.NAMEPLATES_CONFIG_BLIZZARD_NAME_ONLY_HELP,
 				OnShow = function(button)
-					button:SetChecked(GetCVar("nameplateShowOnlyNames") ~= "0");
+					button:SetChecked(GetCVar("nameplateShowOnlyNames") ~= "0")
 				end,
 				OnClick = function(button)
-					local value = button:GetChecked() and "1" or "0";
-					local current = GetCVar("nameplateShowOnlyNames");
+					local value = button:GetChecked() and "1" or "0"
+					local current = GetCVar("nameplateShowOnlyNames")
 
 					if current ~= value then
-						SetCVar("nameplateShowOnlyNames", value);
-						TRP3_API.popup.showConfirmPopup(L.CO_UI_RELOAD_WARNING, ReloadUI);
+						SetCVar("nameplateShowOnlyNames", value)
+						TRP3_API.popup.showConfirmPopup(L.CO_UI_RELOAD_WARNING, ReloadUI)
 					end
 				end,
 			},
-		}
-	};
+		},
+	}
 end
 
-_G.TRP3_NamePlatesUtil = TRP3_NamePlatesUtil;
+_G.TRP3_NamePlatesUtil = TRP3_NamePlatesUtil

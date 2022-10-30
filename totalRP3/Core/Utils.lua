@@ -2,9 +2,9 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
-local Ellyb = Ellyb(...);
-local LibRPMedia = LibStub:GetLibrary("LibRPMedia-1.0");
+local _, TRP3_API = ...
+local Ellyb = Ellyb(...)
+local LibRPMedia = LibStub:GetLibrary("LibRPMedia-1.0")
 
 -- Public accessor
 TRP3_API.utils = {
@@ -19,25 +19,26 @@ TRP3_API.utils = {
 	texture = {},
 	message = {},
 	resources = {},
-};
+}
 -- TRP3 imports
-local Globals = TRP3_API.globals;
-local Utils = TRP3_API.utils;
-local Log = Utils.log;
-local loc = TRP3_API.loc;
+local Globals = TRP3_API.globals
+local Utils = TRP3_API.utils
+local Log = Utils.log
+local loc = TRP3_API.loc
 
 -- WOW imports
-local pcall, tostring, pairs, type, print, string, date, math, strconcat, wipe, tonumber = pcall, tostring, pairs, type, print, string, date, math, strconcat, wipe, tonumber;
-local strsplit, strtrim = strsplit, strtrim;
-local tinsert, assert, _G, tremove, next = tinsert, assert, _G, tremove, next;
-local UnitFullName = UnitFullName;
-local UNKNOWNOBJECT = UNKNOWNOBJECT;
-local SetPortraitToTexture = SetPortraitToTexture;
-local getZoneText, getSubZoneText = GetZoneText, GetSubZoneText;
+local pcall, tostring, pairs, type, print, string, date, math, strconcat, wipe, tonumber =
+	pcall, tostring, pairs, type, print, string, date, math, strconcat, wipe, tonumber
+local strsplit, strtrim = strsplit, strtrim
+local tinsert, assert, _G, tremove, next = tinsert, assert, _G, tremove, next
+local UnitFullName = UnitFullName
+local UNKNOWNOBJECT = UNKNOWNOBJECT
+local SetPortraitToTexture = SetPortraitToTexture
+local getZoneText, getSubZoneText = GetZoneText, GetSubZoneText
 
 function Utils.pcall(func, ...)
 	if func then
-		return {pcall(func, ...)};
+		return { pcall(func, ...) }
 	end
 end
 
@@ -46,7 +47,7 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 Utils.print = function(...)
-	print(...);
+	print(...)
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -54,31 +55,33 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 -- Default logger.
-local logger = Ellyb.Logger("TRP3");
+local logger = Ellyb.Logger("TRP3")
 
 -- Alias the log level constants for backwards compatibility.
 -- The log level defines the prefix color and serves as filter
-Log.level = Ellyb.Logger.LEVELS;
+Log.level = Ellyb.Logger.LEVELS
 
 -- Print a log message to the chatFrame.
 local function log(message, level)
-	if not level then level = Log.level.INFO; end
+	if not level then
+		level = Log.level.INFO
+	end
 	if not Globals.DEBUG_MODE then
-		return;
+		return
 	end
 
-	logger:Log(level, message);
+	logger:Log(level, message)
 end
-Log.log = log;
+Log.log = log
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- Messaging
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-local MESSAGE_PREFIX = "[|cffffaa00TRP3|r] ";
+local MESSAGE_PREFIX = "[|cffffaa00TRP3|r] "
 
 local function getChatFrame()
-	return DEFAULT_CHAT_FRAME;
+	return DEFAULT_CHAT_FRAME
 end
 
 -- CHAT_FRAME : ChatFrame (given by chatFrameIndex or default if nil)
@@ -88,25 +91,25 @@ Utils.message.type = {
 	CHAT_FRAME = 1,
 	ALERT_POPUP = 2,
 	RAID_ALERT = 3,
-	ALERT_MESSAGE = 4
-};
-local messageTypes = Utils.message.type;
+	ALERT_MESSAGE = 4,
+}
+local messageTypes = Utils.message.type
 
 -- Display a simple message. Nil free.
 Utils.message.displayMessage = function(message, messageType, noPrefix, chatFrameIndex)
 	if not messageType or messageType == messageTypes.CHAT_FRAME then
-		local chatFrame = _G["ChatFrame"..tostring(chatFrameIndex)] or getChatFrame();
+		local chatFrame = _G["ChatFrame" .. tostring(chatFrameIndex)] or getChatFrame()
 		if noPrefix then
-			chatFrame:AddMessage(tostring(message), 1, 1, 1);
+			chatFrame:AddMessage(tostring(message), 1, 1, 1)
 		else
-			chatFrame:AddMessage(MESSAGE_PREFIX..tostring(message), 1, 1, 1);
+			chatFrame:AddMessage(MESSAGE_PREFIX .. tostring(message), 1, 1, 1)
 		end
 	elseif messageType == messageTypes.ALERT_POPUP then
-		TRP3_API.popup.showAlertPopup(tostring(message));
+		TRP3_API.popup.showAlertPopup(tostring(message))
 	elseif messageType == messageTypes.RAID_ALERT then
-		RaidNotice_AddMessage(RaidWarningFrame, tostring(message), ChatTypeInfo["RAID_WARNING"]);
+		RaidNotice_AddMessage(RaidWarningFrame, tostring(message), ChatTypeInfo["RAID_WARNING"])
 	elseif messageType == messageTypes.ALERT_MESSAGE then
-		UIErrorsFrame:AddMessage(message, 1.0, 0.0, 0.0);
+		UIErrorsFrame:AddMessage(message, 1.0, 0.0, 0.0)
 	end
 end
 
@@ -117,70 +120,87 @@ end
 -- Print all table content (resursively)
 -- Debug purpose
 -- Better than /dump as it prints one message per line (avoid chat show limit)
-local dumpColor1, dumpColor2, dumpColor3, dumpColor4 = "|cffffaa00", "|cff00ff00", "|cffffff00", "|cffff9900";
+local dumpColor1, dumpColor2, dumpColor3, dumpColor4 = "|cffffaa00", "|cff00ff00", "|cffffff00", "|cffff9900"
 local function tableDump(table, level, withCount)
-	local i = 0;
-	local dumpIndent = "";
+	local i = 0
+	local dumpIndent = ""
 
 	for _ = 1, level, 1 do
-		dumpIndent = dumpIndent .. "    ";
+		dumpIndent = dumpIndent .. "    "
 	end
 
 	if type(table) == "table" then
 		for key, value in pairs(table) do
 			if type(key) == "string" then
-				key = "[\"" .. key .. "\"]"
+				key = '["' .. key .. '"]'
 			end
 			if type(value) == "table" then
-				log(dumpIndent .. dumpColor2 .. key .. "|r=".. dumpColor3 .. "{", Log.level.DEBUG);
-				tableDump(value, level + 1);
-				log(dumpIndent .. dumpColor3 .. "}", Log.level.DEBUG);
+				log(dumpIndent .. dumpColor2 .. key .. "|r=" .. dumpColor3 .. "{", Log.level.DEBUG)
+				tableDump(value, level + 1)
+				log(dumpIndent .. dumpColor3 .. "}", Log.level.DEBUG)
 			elseif type(value) == "function" then
-				log(dumpIndent .. dumpColor2 .. key .. "|r=" .. dumpColor4 .. " <" .. type(value) ..">", Log.level.DEBUG);
+				log(
+					dumpIndent .. dumpColor2 .. key .. "|r=" .. dumpColor4 .. " <" .. type(value) .. ">",
+					Log.level.DEBUG
+				)
 			else
-				log(dumpIndent .. dumpColor2 .. key .. "|r=" .. dumpColor3 .. tostring(value) .. dumpColor4 .. " <" .. type(value) ..">", Log.level.DEBUG);
+				log(
+					dumpIndent
+						.. dumpColor2
+						.. key
+						.. "|r="
+						.. dumpColor3
+						.. tostring(value)
+						.. dumpColor4
+						.. " <"
+						.. type(value)
+						.. ">",
+					Log.level.DEBUG
+				)
 			end
-			i = i + 1;
+			i = i + 1
 		end
 	end
 
 	if withCount then
-		log(dumpIndent .. dumpColor1 .. ("Level %s size: %s elements"):format(level, i), Log.level.DEBUG);
+		log(dumpIndent .. dumpColor1 .. ("Level %s size: %s elements"):format(level, i), Log.level.DEBUG)
 	end
 end
 
 Utils.table.dump = function(table, withCount)
-	log(dumpColor1 .. "Dump: ".. tostring(table), Log.level.DEBUG);
+	log(dumpColor1 .. "Dump: " .. tostring(table), Log.level.DEBUG)
 	if table then
-		tableDump(table, 1, withCount);
+		tableDump(table, 1, withCount)
 	end
 end
 
 -- Recursively copy all content from a table to another one.
 -- Argument "destination" must be a non nil table reference.
 local function tableCopy(destination, source)
-	if destination == nil or source == nil then return end
-	for k,v in pairs(source) do
-		if(type(v)=="table") then
-			destination[k] = {};
-			tableCopy(destination[k], v);
+	if destination == nil or source == nil then
+		return
+	end
+	for k, v in pairs(source) do
+		if type(v) == "table" then
+			destination[k] = {}
+			tableCopy(destination[k], v)
 		else
-			destination[k] = v;
+			destination[k] = v
 		end
 	end
 end
-Utils.table.copy = tableCopy;
+Utils.table.copy = tableCopy
 
 -- Return the table size.
 -- Less effective than #table but works for hash table as well (#hashtable don't).
 local function tableSize(table)
-	local count = 0;
-	for _,_ in pairs(table) do
-		count = count + 1;
+	local count = 0
+	for _, _ in pairs(table) do
+		count = count + 1
 	end
-	return count;
+	return count
 end
-Utils.table.size = tableSize;
+Utils.table.size = tableSize
 
 -- Remove an object from table
 -- Return true if the object is found.
@@ -188,38 +208,38 @@ Utils.table.size = tableSize;
 Utils.table.remove = function(table, object)
 	for index, value in pairs(table) do
 		if value == object then
-			tremove(table, index);
-			return true;
+			tremove(table, index)
+			return true
 		end
 	end
-	return false;
+	return false
 end
 
 function Utils.table.keys(table)
-	local keys = {};
+	local keys = {}
 	for key, _ in pairs(table) do
-		tinsert(keys, key);
+		tinsert(keys, key)
 	end
-	return keys;
+	return keys
 end
 
 -- Create a weak tables pool.
-local TABLE_POOL = setmetatable( {}, { __mode = "k" } );
+local TABLE_POOL = setmetatable({}, { __mode = "k" })
 
 -- Return an already created table, or a new one if the pool is empty
 -- It ultra mega important to release the table once you finished using it !
 function Utils.table.getTempTable()
-	local t = next( TABLE_POOL );
+	local t = next(TABLE_POOL)
 	if t then
-		TABLE_POOL[t] = nil;
-		return wipe(t);
+		TABLE_POOL[t] = nil
+		return wipe(t)
 	end
-	return {};
+	return {}
 end
 
 -- Release a temp table.
 function Utils.table.releaseTempTable(table)
-	TABLE_POOL[ table ] = true;
+	TABLE_POOL[table] = true
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -229,37 +249,37 @@ end
 -- A secure way to check if a String matches a pattern.
 -- This is useful when using user-given pattern, as malformed pattern would produce lua error.
 Utils.str.match = function(stringToCheck, pattern)
-	local ok, result = pcall(string.find, string.lower(stringToCheck), string.lower(pattern));
+	local ok, result = pcall(string.find, string.lower(stringToCheck), string.lower(pattern))
 	if not ok then
-		return false; -- Syntax error.
+		return false -- Syntax error.
 	end
 	-- string.find should return a number if the string matches the pattern
-	return string.find(tostring(result), "%d");
+	return string.find(tostring(result), "%d")
 end
 
-local ID_CHARS = {};
-for i=48, 57 do
-	tinsert(ID_CHARS, string.char(i));
+local ID_CHARS = {}
+for i = 48, 57 do
+	tinsert(ID_CHARS, string.char(i))
 end
-for i=65, 90 do
-	tinsert(ID_CHARS, string.char(i));
+for i = 65, 90 do
+	tinsert(ID_CHARS, string.char(i))
 end
-for i=97, 122 do
-	tinsert(ID_CHARS, string.char(i));
+for i = 97, 122 do
+	tinsert(ID_CHARS, string.char(i))
 end
-local sID_CHARS = #ID_CHARS;
+local sID_CHARS = #ID_CHARS
 
 --- Generate a pseudo-unique random ID.
 --  If you encounter a collision, you really should playing lottery
 --- ID's have a id_length characters length
 local function generateID()
-	local ID = date("%m%d%H%M%S");
-	for _=1, 5 do
-		ID = ID .. ID_CHARS[math.random(1, sID_CHARS)];
+	local ID = date("%m%d%H%M%S")
+	for _ = 1, 5 do
+		ID = ID .. ID_CHARS[math.random(1, sID_CHARS)]
 	end
-	return ID;
+	return ID
 end
-Utils.str.id = generateID;
+Utils.str.id = generateID
 
 -- Create a unit ID from a unit name and unit realm. If realm = nil then we use current realm.
 -- This method ALWAYS return a nil free UnitName-RealmShortName string.
@@ -269,99 +289,99 @@ Utils.str.unitInfoToID = function(unitName, unitRealmID)
 	if not unitRealmID or unitRealmID == "" then
 		unitRealmID = Globals.player_realm_id
 	end
-	return strconcat(unitName or "_", '-', unitRealmID or "_");
+	return strconcat(unitName or "_", "-", unitRealmID or "_")
 end
 
 -- Separates the unit name and realm from an unit ID
 Utils.str.unitIDToInfo = function(unitID)
-	if not unitID:find('-') then
-		return unitID, Globals.player_realm_id;
+	if not unitID:find("-") then
+		return unitID, Globals.player_realm_id
 	end
-	return unitID:sub(1, unitID:find('-') - 1), unitID:sub(unitID:find('-') + 1);
+	return unitID:sub(1, unitID:find("-") - 1), unitID:sub(unitID:find("-") + 1)
 end
 
 -- Separates the owner ID and companion name from a companion ID
 Utils.str.companionIDToInfo = function(companionID)
-	if not companionID:find('_') then
-		return companionID, nil;
+	if not companionID:find("_") then
+		return companionID, nil
 	end
-	return companionID:sub(1, companionID:find('_') - 1), companionID:sub(companionID:find('_') + 1);
+	return companionID:sub(1, companionID:find("_") - 1), companionID:sub(companionID:find("_") + 1)
 end
 
 -- Create a unit ID based on a targetType (target, player, mouseover ...)
 -- The returned id can be nil.
 function Utils.str.getUnitID(unit)
-	local playerName, realm = UnitFullName(unit);
+	local playerName, realm = UnitFullName(unit)
 	if not playerName or playerName:len() == 0 or playerName == UNKNOWNOBJECT then
-		return nil;
+		return nil
 	end
 	if not realm then
-		realm = Globals.player_realm_id;
+		realm = Globals.player_realm_id
 	end
-	return playerName .. "-" .. realm;
+	return playerName .. "-" .. realm
 end
 
-local UnitGUID = UnitGUID;
+local UnitGUID = UnitGUID
 
 function Utils.str.getUnitDataFromGUIDDirect(GUID)
-	local unitType, _, _, _, _, npcID = strsplit("-", GUID or "");
-	return unitType, npcID;
+	local unitType, _, _, _, _, npcID = strsplit("-", GUID or "")
+	return unitType, npcID
 end
 
 function Utils.str.getUnitDataFromGUID(unitID)
-	return Utils.str.getUnitDataFromGUIDDirect(UnitGUID(unitID));
+	return Utils.str.getUnitDataFromGUIDDirect(UnitGUID(unitID))
 end
 
 function Utils.str.getUnitNPCID(unitID)
-	local _, npcID = Utils.str.getUnitDataFromGUID(unitID);
-	return npcID;
+	local _, npcID = Utils.str.getUnitDataFromGUID(unitID)
+	return npcID
 end
 
 function Utils.str.GetGuildName(unitID)
-	local guildName = GetGuildInfo(unitID);
-	return guildName;
+	local guildName = GetGuildInfo(unitID)
+	return guildName
 end
 
 function Utils.str.GetGuildRank(unitID)
-	local _, rank = GetGuildInfo(unitID);
-	return rank;
+	local _, rank = GetGuildInfo(unitID)
+	return rank
 end
 
 function Utils.str.GetRace(unitID)
-	local _, race = UnitRace(unitID);
-	return race;
+	local _, race = UnitRace(unitID)
+	return race
 end
 
 function Utils.str.GetClass(unitID)
-	local _, class = UnitClass(unitID);
-	return class;
+	local _, class = UnitClass(unitID)
+	return class
 end
 
 function Utils.str.GetFaction(unitID)
-	local faction = UnitFactionGroup(unitID);
-	return faction;
+	local faction = UnitFactionGroup(unitID)
+	return faction
 end
 
 -- Return an texture text tag based on the given image url and size.
 function Utils.str.texture(iconPath, iconSize)
-	assert(iconPath, "Icon path is nil.");
-	iconSize = iconSize or 15;
+	assert(iconPath, "Icon path is nil.")
+	iconSize = iconSize or 15
 
 	-- Removing extra sizes
 	if type(iconPath) == "string" then
-		local sanitizeIndex = iconPath:find(":");
+		local sanitizeIndex = iconPath:find(":")
 		if sanitizeIndex then
-			iconPath = iconPath:sub(1, sanitizeIndex - 1);
+			iconPath = iconPath:sub(1, sanitizeIndex - 1)
 		end
 	end
 
-	return strconcat("|T", iconPath, ":", iconSize, ":", iconSize, "|t");
+	return strconcat("|T", iconPath, ":", iconSize, ":", iconSize, "|t")
 end
 
 -- Return an texture text tag based on the given icon url and size. Nil safe.
 function Utils.str.icon(iconPath, iconSize)
-	iconPath = iconPath or TRP3_InterfaceIcons.Default;
-	return Utils.str.texture(Utils.getIconTexture(iconPath), iconSize);
+	iconPath = iconPath or TRP3_InterfaceIcons.Default
+	return Utils.str.texture(Utils.getIconTexture(iconPath), iconSize)
 end
 
 --- Gives the full texture path of an individual icon.
@@ -380,47 +400,65 @@ end
 
 -- Return a color tag based on a letter
 function Utils.str.color(color)
-	color = color or "w"; -- default color if bad argument
-	if color == "r" then return "|cffff0000" end -- red
-	if color == "g" then return "|cff00ff00" end -- green
-	if color == "b" then return "|cff0000ff" end -- blue
-	if color == "y" then return "|cffffff00" end -- yellow
-	if color == "p" then return "|cffff00ff" end -- purple
-	if color == "c" then return "|cff00ffff" end -- cyan
-	if color == "w" then return "|cffffffff" end -- white
-	if color == "0" then return "|cff000000" end -- black
-	if color == "o" then return "|cffffaa00" end -- orange
+	color = color or "w" -- default color if bad argument
+	if color == "r" then
+		return "|cffff0000"
+	end -- red
+	if color == "g" then
+		return "|cff00ff00"
+	end -- green
+	if color == "b" then
+		return "|cff0000ff"
+	end -- blue
+	if color == "y" then
+		return "|cffffff00"
+	end -- yellow
+	if color == "p" then
+		return "|cffff00ff"
+	end -- purple
+	if color == "c" then
+		return "|cff00ffff"
+	end -- cyan
+	if color == "w" then
+		return "|cffffffff"
+	end -- white
+	if color == "0" then
+		return "|cff000000"
+	end -- black
+	if color == "o" then
+		return "|cffffaa00"
+	end -- orange
 end
 
 -- If the given string is empty, return nil
 function Utils.str.emptyToNil(text)
 	if text and #text > 0 then
-		return text;
+		return text
 	end
-	return nil;
+	return nil
 end
 
 -- Assure that the given string will not be nil
 function Utils.str.nilToEmpty(text)
-	return text or "";
+	return text or ""
 end
 
 function Utils.str.buildZoneText()
-	local text = getZoneText() or ""; -- assuming that there is ALWAYS a zone text. Don't know if it's true.
+	local text = getZoneText() or "" -- assuming that there is ALWAYS a zone text. Don't know if it's true.
 	if getSubZoneText():len() > 0 then
-		text = strconcat(text, " - ", getSubZoneText());
+		text = strconcat(text, " - ", getSubZoneText())
 	end
-	return text;
+	return text
 end
 
 -- Search if the string matches the pattern in error-safe way.
 -- Useful if the pattern his user writen.
 function Utils.str.safeMatch(text, pattern)
-	local trace = Utils.pcall(string.find, text, pattern);
+	local trace = Utils.pcall(string.find, text, pattern)
 	if trace[1] then
-		return type(trace[2]) == "number";
+		return type(trace[2]) == "number"
 	end
-	return nil; -- Pattern error
+	return nil -- Pattern error
 end
 
 local escapes = {
@@ -434,38 +472,46 @@ local escapes = {
 	["|W(.-)|w"] = "%1", -- word wrapping
 }
 function Utils.str.sanitize(text)
-	if not text then return end
+	if not text then
+		return
+	end
 	-- Repeat until nested tags are eliminated.
 	repeat
-		local originalText = text;
+		local originalText = text
 		for k, v in pairs(escapes) do
-			text = text:gsub(k, v);
+			text = text:gsub(k, v)
 		end
-	until originalText == text;
+	until originalText == text
 	return text
 end
 
 local validSuffixes = {
-	"^a", "^b", -- MRP
-	"^%-alpha", "^%-beta" -- TRP3
-};
+	"^a",
+	"^b", -- MRP
+	"^%-alpha",
+	"^%-beta", -- TRP3
+}
 
 function Utils.str.sanitizeVersion(text)
-	if not text then return end
+	if not text then
+		return
+	end
 	-- Dev version
-	if text == "-dev" or text == "v-dev" then return text end
+	if text == "-dev" or text == "v-dev" then
+		return text
+	end
 
-	text = Utils.str.sanitize(text);
+	text = Utils.str.sanitize(text)
 
-	local version, suffix = text:match("^(v?[%d%.]+)(.*)$");
+	local version, suffix = text:match("^(v?[%d%.]+)(.*)$")
 	if not version then
-		version = "0";
+		version = "0"
 	end
 
 	-- Looking for testing version suffix
 	if suffix then
 		for _, str in pairs(validSuffixes) do
-			local validSuffix = suffix:match(str);
+			local validSuffix = suffix:match(str)
 			if validSuffix then
 				version = version .. validSuffix
 				break
@@ -473,17 +519,17 @@ function Utils.str.sanitizeVersion(text)
 		end
 	end
 
-	return version;
+	return version
 end
 
 function Utils.str.crop(text, size)
-	text = string.trim(text or "");
+	text = string.trim(text or "")
 
 	if strlenutf8(text) > size then
-		text = string.utf8sub(text, 1, size - 1) .. "…";
+		text = string.utf8sub(text, 1, size - 1) .. "…"
 	end
 
-	return text;
+	return text
 end
 
 local tableAccents = {
@@ -549,14 +595,13 @@ local tableAccents = {
 	["ý"] = "y",
 	["þ"] = "p",
 	["ÿ"] = "y",
-};
+}
 
 -- Convert special characters into regular a-z characters for alphabetical order purposes
 function Utils.str.convertSpecialChars(text)
-	local convertedText = text:gsub("[%z\1-\127\194-\244][\128-\191]*", tableAccents);
-	return convertedText;
+	local convertedText = text:gsub("[%z\1-\127\194-\244][\128-\191]*", tableAccents)
+	return convertedText
 end
-
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- GUID
@@ -571,7 +616,7 @@ For creatures, pets, objects, and vehicles: [Unit type]-0-[server ID]-[instance 
 Unit Type Names: "Creature", "Pet", "GameObject", and "Vehicle"
 For vignettes: Vignette-0-[server ID]-[instance ID]-[zone UID]-0-[spawn UID] (Example: "Vignette-0-970-1116-7-0-0017CAE465" for rare mob Sulfurious)
 ]]
-Utils.guid = {};
+Utils.guid = {}
 
 local GUID_TYPES = {
 	PLAYER = "Player",
@@ -579,14 +624,14 @@ local GUID_TYPES = {
 	PET = "Pet",
 	GAME_OBJECT = "GameObject",
 	VEHICLE = "Vehicle",
-	VIGNETTE = "Vignette"
+	VIGNETTE = "Vignette",
 }
 
 --- Check that the given GUID is correctly formatted to be a player GUID
 -- @param GUID
 --
 function Utils.guid.getUnitType(GUID)
-	return GUID:match("%a+");
+	return GUID:match("%a+")
 end
 
 --- Check that the given GUID is correctly formatted to be a player GUID
@@ -594,7 +639,7 @@ end
 -- @param GUID
 --
 function Utils.guid.isAPlayerGUID(GUID)
-	return Utils.guid.getUnitType(GUID) == GUID_TYPES.PLAYER;
+	return Utils.guid.getUnitType(GUID) == GUID_TYPES.PLAYER
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -603,50 +648,50 @@ end
 
 --- Value must be 256 based
 local function numberToHexa(number)
-	number = string.format('%x', number);
+	number = string.format("%x", number)
 	if number:len() == 1 then
-		number = '0' .. number;
+		number = "0" .. number
 	end
-	return number;
+	return number
 end
-Utils.color.numberToHexa = numberToHexa;
+Utils.color.numberToHexa = numberToHexa
 
 --- Value must be a string with hexa decimal representation
 -- Return 256 based
 local function hexaToNumber(hexa)
 	if not hexa then
-		return nil, nil, nil;
+		return nil, nil, nil
 	end
 	local redH = tonumber(hexa:sub(1, 2), 16)
 	local greenH = tonumber(hexa:sub(3, 4), 16)
 	local blueH = tonumber(hexa:sub(5, 6), 16)
-	return redH, greenH, blueH;
+	return redH, greenH, blueH
 end
-Utils.color.hexaToNumber = hexaToNumber;
+Utils.color.hexaToNumber = hexaToNumber
 
 local function hexaToFloat(hexa)
-	local r, g, b = hexaToNumber(hexa);
-	return r / 255, g / 255, b / 255;
+	local r, g, b = hexaToNumber(hexa)
+	return r / 255, g / 255, b / 255
 end
-Utils.color.hexaToFloat = hexaToFloat;
+Utils.color.hexaToFloat = hexaToFloat
 
 --- Values must be 256 based
 local function colorCode(red, green, blue)
-	local redH = numberToHexa(red);
-	local greenH = numberToHexa(green);
-	local blueH = numberToHexa(blue);
-	return strconcat("|cff", redH, greenH, blueH);
+	local redH = numberToHexa(red)
+	local greenH = numberToHexa(green)
+	local blueH = numberToHexa(blue)
+	return strconcat("|cff", redH, greenH, blueH)
 end
-Utils.color.colorCode = colorCode;
+Utils.color.colorCode = colorCode
 
 --- Values must be 0..1 based
 Utils.color.colorCodeFloat = function(red, green, blue)
-	return colorCode(math.ceil(red*255), math.ceil(green*255), math.ceil(blue*255));
+	return colorCode(math.ceil(red * 255), math.ceil(green * 255), math.ceil(blue * 255))
 end
 
 --- From r, g, b tab
 Utils.color.colorCodeFloatTab = function(tab)
-	return colorCode(math.ceil(tab.r*255), math.ceil(tab.g*255), math.ceil(tab.b*255));
+	return colorCode(math.ceil(tab.r * 255), math.ceil(tab.g * 255), math.ceil(tab.b * 255))
 end
 
 ---
@@ -661,47 +706,53 @@ end
 -- @return True if the text will be readable
 --
 local textColorIsReadableOnBackground = function(textColor)
-	return ((0.299 * textColor.r + 0.587 * textColor.g + 0.114 * textColor.b)) >= 0.5;
+	return (0.299 * textColor.r + 0.587 * textColor.g + 0.114 * textColor.b) >= 0.5
 end
 
-Utils.color.textColorIsReadableOnBackground = textColorIsReadableOnBackground;
+Utils.color.textColorIsReadableOnBackground = textColorIsReadableOnBackground
 
 Utils.color.lightenColorUntilItIsReadable = function(textColor)
 	-- If the color is too dark to be displayed in the tooltip, we will ligthen it up a notch
 	while not textColorIsReadableOnBackground(textColor) do
-		textColor.r = textColor.r + 0.01;
-		textColor.g = textColor.g + 0.01;
-		textColor.b = textColor.b + 0.01;
+		textColor.r = textColor.r + 0.01
+		textColor.g = textColor.g + 0.01
+		textColor.b = textColor.b + 0.01
 	end
 
-	if textColor.r > 1 then textColor.r = 1 end
-	if textColor.g > 1 then textColor.g = 1 end
-	if textColor.b > 1 then textColor.b = 1 end
+	if textColor.r > 1 then
+		textColor.r = 1
+	end
+	if textColor.g > 1 then
+		textColor.g = 1
+	end
+	if textColor.b > 1 then
+		textColor.b = 1
+	end
 
-	return textColor;
+	return textColor
 end
 
 local function mixinColor(color)
 	-- Backward compatibility
-	color.LightenColorUntilItIsReadable = color.LightenColorUntilItIsReadableOnDarkBackgrounds;
-	return color;
+	color.LightenColorUntilItIsReadable = color.LightenColorUntilItIsReadableOnDarkBackgrounds
+	return color
 end
 
 ---@return ColorMixin
 local function CreateColor(...)
-	return mixinColor(Ellyb.Color(...));
+	return mixinColor(Ellyb.Color(...))
 end
-Utils.color.CreateColor = CreateColor;
+Utils.color.CreateColor = CreateColor
 
 -- Backward compatibility
 function Utils.color.getColorFromHexadecimalCode(...)
-	return mixinColor(Ellyb.Color.CreateFromHexa(...));
+	return mixinColor(Ellyb.Color.CreateFromHexa(...))
 end
 
 --- Returns a Color using Blizzard's ColorMixin for a given class (english, not localized)
 -- @see ColorMixin
 function Utils.color.getClassColor(englishClass)
-	return mixinColor(Ellyb.ColorManager.getClassColor(englishClass));
+	return mixinColor(Ellyb.ColorManager.getClassColor(englishClass))
 end
 
 --- Returns the custom color defined in the unitID's profile as a Color using Blizzard's ColorMixing.
@@ -709,27 +760,27 @@ end
 -- @return Color
 -- @see ColorMixin
 function Utils.color.getUnitCustomColor(unitID)
-	local info = TRP3_API.register.getUnitIDCurrentProfileSafe(unitID);
+	local info = TRP3_API.register.getUnitIDCurrentProfileSafe(unitID)
 
 	if info.characteristics and info.characteristics.CH then
-		return CreateColor(info.characteristics.CH);
+		return CreateColor(info.characteristics.CH)
 	end
 end
 
 function Utils.color.getChatColorForChannel(channel)
-	return mixinColor(Ellyb.ColorManager.getChatColorForChannel(channel));
+	return mixinColor(Ellyb.ColorManager.getChatColorForChannel(channel))
 end
 
-local GetPlayerInfoByGUID = GetPlayerInfoByGUID;
+local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 
 ---GetClassColorByGUID
 ---@param GUID string
 ---@return ColorMixin
 function TRP3_API.utils.color.GetClassColorByGUID(GUID)
-	local _, englishClass, _, _, _, _, _ = GetPlayerInfoByGUID(GUID);
-	local classColorTable = RAID_CLASS_COLORS[englishClass];
+	local _, englishClass, _, _, _, _, _ = GetPlayerInfoByGUID(GUID)
+	local classColorTable = RAID_CLASS_COLORS[englishClass]
 	if classColorTable then
-		return CreateColor(classColorTable.r, classColorTable.g, classColorTable.b, 1);
+		return CreateColor(classColorTable.r, classColorTable.g, classColorTable.b, 1)
 	end
 end
 
@@ -737,9 +788,9 @@ end
 ---@param GUID string
 ---@return ColorMixin
 function TRP3_API.utils.color.GetCustomColorByGUID(GUID)
-	local _, _, _, _, _, name, realm = GetPlayerInfoByGUID(GUID);
+	local _, _, _, _, _, name, realm = GetPlayerInfoByGUID(GUID)
 
-	local unitID = Utils.str.unitInfoToID(name, realm);
+	local unitID = Utils.str.unitInfoToID(name, realm)
 	return Utils.color.getUnitCustomColor(unitID)
 end
 
@@ -750,35 +801,37 @@ end
 -- @param lightenColorUntilItIsReadable If we should increase the color so it is readable on dark background (usually defined in settings)
 --
 function Utils.color.getUnitColorByGUID(GUID, useCustomColors, lightenColorUntilItIsReadable)
-	assert(GUID, "Invalid GUID given to Utils.color.getUnitColorByGUID(GUID)");
-	local _, englishClass, _, _, _, name, realm = GetPlayerInfoByGUID(GUID);
-	local color;
+	assert(GUID, "Invalid GUID given to Utils.color.getUnitColorByGUID(GUID)")
+	local _, englishClass, _, _, _, name, realm = GetPlayerInfoByGUID(GUID)
+	local color
 
-	if not englishClass then return end
+	if not englishClass then
+		return
+	end
 
-	color = Utils.color.getClassColor(englishClass);
+	color = Utils.color.getClassColor(englishClass)
 
 	if useCustomColors then
-		local unitID = Utils.str.unitInfoToID(name, realm);
-		color = Utils.color.getUnitCustomColor(unitID) or color;
+		local unitID = Utils.str.unitInfoToID(name, realm)
+		color = Utils.color.getUnitCustomColor(unitID) or color
 
 		if lightenColorUntilItIsReadable then
-			color:LightenColorUntilItIsReadable();
+			color:LightenColorUntilItIsReadable()
 		end
 	end
 
-	return color ;
+	return color
 end
 
 function Utils.color.extractColorFromText(text)
-	local r, g, b = 1, 1, 1;
-	local rgb = text:match("|c%x%x(%x%x%x%x%x%x)");
+	local r, g, b = 1, 1, 1
+	local rgb = text:match("|c%x%x(%x%x%x%x%x%x)")
 
 	if rgb then
-		r, g, b = hexaToFloat(rgb);
+		r, g, b = hexaToFloat(rgb)
 	end
 
-	return CreateColor(r, g, b, 1);
+	return CreateColor(r, g, b, 1)
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -786,34 +839,34 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 local function incrementNumber(version, figures)
-	local incremented = version + 1;
+	local incremented = version + 1
 	if incremented >= math.pow(10, figures) then
-		incremented = 1;
+		incremented = 1
 	end
-	return incremented;
+	return incremented
 end
-Utils.math.incrementNumber = incrementNumber;
+Utils.math.incrementNumber = incrementNumber
 
 --- Return the interpolation.
 -- delta is a number between 0 and 1;
 local function lerp(delta, from, to)
-	local diff = to - from;
-	return from + (delta * diff);
+	local diff = to - from
+	return from + (delta * diff)
 end
-Utils.math.lerp = lerp;
+Utils.math.lerp = lerp
 
 Utils.math.color = function(delta, fromR, fromG, fromB, toR, toG, toB)
-	return lerp(delta, fromR, toR), lerp(delta, fromG, toG), lerp(delta, fromB, toB);
+	return lerp(delta, fromR, toR), lerp(delta, fromG, toG), lerp(delta, fromB, toB)
 end
 
 --- Values must be 256 based
 Utils.math.colorCode = function(delta, fromR, fromG, fromB, toR, toG, toB)
-	return colorCode(lerp(delta, fromR, toR), lerp(delta, fromG, toG), lerp(delta, fromB, toB));
+	return colorCode(lerp(delta, fromR, toR), lerp(delta, fromG, toG), lerp(delta, fromB, toB))
 end
 
 function Utils.math.round(value, decimals)
 	local mult = 10 ^ (decimals or 0)
-	return math.floor(value * mult) / mult;
+	return math.floor(value * mult) / mult
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -822,49 +875,48 @@ end
 
 local directReplacements = {
 	["/col"] = "|r",
-};
+}
 
 local function convertTextTag(tag)
-
 	if directReplacements[tag] then -- Direct replacement
-		return directReplacements[tag];
+		return directReplacements[tag]
 	elseif tag:match("^col%:%a$") then -- Color replacement
-		return Utils.str.color(tag:match("^col%:(%a)$"));
+		return Utils.str.color(tag:match("^col%:(%a)$"))
 	elseif tag:match("^col:%x%x%x%x%x%x$") then -- Hexa color replacement
-		return "|cff"..tag:match("^col:(%x%x%x%x%x%x)$");
+		return "|cff" .. tag:match("^col:(%x%x%x%x%x%x)$")
 	elseif tag:match("^icon%:[^:]+%:%d+$") then -- Icon
-		local icon, size = tag:match("^icon%:([^:]+)%:(%d+)$");
-		return Utils.str.icon(icon, size);
+		local icon, size = tag:match("^icon%:([^:]+)%:(%d+)$")
+		return Utils.str.icon(icon, size)
 	end
 
-	return "{"..tag.."}";
+	return "{" .. tag .. "}"
 end
 
 local function convertTextTags(text)
 	if text then
-		text = text:gsub("%{(.-)%}", convertTextTag);
-		return text;
+		text = text:gsub("%{(.-)%}", convertTextTag)
+		return text
 	end
 end
-Utils.str.convertTextTags = convertTextTags;
+Utils.str.convertTextTags = convertTextTags
 
 local escapedHTMLCharacters = {
 	["<"] = "&lt;",
 	[">"] = "&gt;",
-	["\""] = "&quot;",
-};
+	['"'] = "&quot;",
+}
 
 local structureTags = {
 	["{h(%d)}"] = "<h%1>",
-	["{h(%d):c}"] = "<h%1 align=\"center\">",
-	["{h(%d):r}"] = "<h%1 align=\"right\">",
+	["{h(%d):c}"] = '<h%1 align="center">',
+	["{h(%d):r}"] = '<h%1 align="right">',
 	["{/h(%d)}"] = "</h%1>",
 
 	["{p}"] = "<P>",
-	["{p:c}"] = "<P align=\"center\">",
-	["{p:r}"] = "<P align=\"right\">",
+	["{p:c}"] = '<P align="center">',
+	["{p:r}"] = '<P align="right">',
 	["{/p}"] = "</P>",
-};
+}
 
 --- alignmentAttributes is a conversion table for taking a single-character
 --  alignment specifier and getting a value suitable for use in the HTML
@@ -873,7 +925,7 @@ local alignmentAttributes = {
 	["c"] = "center",
 	["l"] = "left",
 	["r"] = "right",
-};
+}
 
 --- IMAGE_PATTERN is the string pattern used for performing image replacements
 --  in strings that should be rendered as HTML.
@@ -887,129 +939,126 @@ local alignmentAttributes = {
 --- Optional segments should of course have the "?" modifer attached to
 --- their preceeding colon, and should use * for the content match rather
 --- than +.
-local IMAGE_PATTERN = [[{img%:([^:]+)%:([^:]+)%:([^:}]+)%:?([^:}]*)%}]];
+local IMAGE_PATTERN = [[{img%:([^:]+)%:([^:]+)%:([^:}]+)%:?([^:}]*)%}]]
 
 --- Note that the image tag has to be outside a <P> tag.
 ---@language HTML
-local IMAGE_TAG = [[</P><img src="%s" width="%s" height="%s" align="%s"/><P>]];
+local IMAGE_TAG = [[</P><img src="%s" width="%s" height="%s" align="%s"/><P>]]
 
 local function GenerateLinkFormatter(line, defaultLinkColor, includeBraces, isMarkdown)
 	local function FormatLink(position, url, text)
 		-- If a link is preceeded by a "{col}" tag then we won't insert any
 		-- coloring for this link to allow users to customize things more.
 
-		local linkColor;
+		local linkColor
 
-		local shortColor = string.sub(line, position - 7, position - 1);
-		local hexColor   = string.sub(line, position - 12, position - 1);
+		local shortColor = string.sub(line, position - 7, position - 1)
+		local hexColor = string.sub(line, position - 12, position - 1)
 
 		if string.find(shortColor, "^{col:%w}$") then
-			linkColor = nil;  -- Preceeded by a short color tag, ignore.
+			linkColor = nil -- Preceeded by a short color tag, ignore.
 		elseif string.find(hexColor, "^{col:%x%x%x%x%x%x}$") then
-			linkColor = nil;  -- Preceeded by a hexadecimal color tag, ignore.
+			linkColor = nil -- Preceeded by a hexadecimal color tag, ignore.
 		else
-			linkColor = defaultLinkColor;  -- No preceeding color, use default.
+			linkColor = defaultLinkColor -- No preceeding color, use default.
 		end
 
 		if isMarkdown then
 			-- Markdown style links invert the order of the text/url components.
-			url, text = text, url;
+			url, text = text, url
 		end
 
 		if includeBraces then
-			text = "[" .. text .. "]";
+			text = "[" .. text .. "]"
 		end
 
 		if linkColor then
-			text = WrapTextInColorCode(text, "ff" .. linkColor);
+			text = WrapTextInColorCode(text, "ff" .. linkColor)
 		end
 
-		return string.format([[<a href="%1$s">%2$s</a>]], url, text);
+		return string.format([[<a href="%1$s">%2$s</a>]], url, text)
 	end
 
-	return FormatLink;
+	return FormatLink
 end
 
 -- Convert the given text by his HTML representation
 Utils.str.toHTML = function(text, noColor, noBrackets)
-
-	local linkColor = "00ff00";
+	local linkColor = "00ff00"
 	if noColor then
-		linkColor = nil;
+		linkColor = nil
 	end
 
 	-- 1) Replacement : & character
-	text = text:gsub("&", "&amp;");
+	text = text:gsub("&", "&amp;")
 
 	-- 2) Replacement : escape HTML characters
 	for pattern, replacement in pairs(escapedHTMLCharacters) do
-		text = text:gsub(pattern, replacement);
+		text = text:gsub(pattern, replacement)
 	end
 
 	-- 3) Replace Markdown
 	local titleFunction = function(titleChars, title)
-		local titleLevel = #titleChars;
-		return "\n<h" .. titleLevel .. ">" .. strtrim(title) .. "</h" .. titleLevel .. ">";
-	end;
+		local titleLevel = #titleChars
+		return "\n<h" .. titleLevel .. ">" .. strtrim(title) .. "</h" .. titleLevel .. ">"
+	end
 
-	text = text:gsub("^(#+)(.-)\n", titleFunction);
-	text = text:gsub("\n(#+)(.-)\n", titleFunction);
-	text = text:gsub("\n(#+)(.-)$", titleFunction);
-	text = text:gsub("^(#+)(.-)$", titleFunction);
+	text = text:gsub("^(#+)(.-)\n", titleFunction)
+	text = text:gsub("\n(#+)(.-)\n", titleFunction)
+	text = text:gsub("\n(#+)(.-)$", titleFunction)
+	text = text:gsub("^(#+)(.-)$", titleFunction)
 
 	-- 4) Replacement : text tags
 	for pattern, replacement in pairs(structureTags) do
-		text = text:gsub(pattern, replacement);
+		text = text:gsub(pattern, replacement)
 	end
 
-	local tab = {};
-	local i=1;
-	while text:find("<") and i<500 do
-
-		local before;
-		before = text:sub(1, text:find("<") - 1);
+	local tab = {}
+	local i = 1
+	while text:find("<") and i < 500 do
+		local before
+		before = text:sub(1, text:find("<") - 1)
 		if #before > 0 then
-			tinsert(tab, before);
+			tinsert(tab, before)
 		end
 
-		local tagText;
+		local tagText
 
-		local tag = text:match("</(.-)>");
+		local tag = text:match("</(.-)>")
 		if tag then
-			tagText = text:sub( text:find("<"), text:find("</") + #tag + 2);
+			tagText = text:sub(text:find("<"), text:find("</") + #tag + 2)
 			if #tagText == #tag + 3 then
-				return loc.PATTERN_ERROR;
+				return loc.PATTERN_ERROR
 			end
-			tinsert(tab, tagText);
+			tinsert(tab, tagText)
 		else
-			return loc.PATTERN_ERROR;
+			return loc.PATTERN_ERROR
 		end
 
-		local after;
-		after = text:sub(#before + #tagText + 1);
-		text = after;
+		local after
+		after = text:sub(#before + #tagText + 1)
+		text = after
 
 		--- 	Log.log("Iteration "..i);
 		--- 	Log.log("before ("..(#before).."): "..before);
 		--- 	Log.log("tagText ("..(#tagText).."): "..tagText);
 		--- 	Log.log("after ("..(#before).."): "..after);
 
-		i = i+1;
+		i = i + 1
 		if i == 500 then
-			log("HTML overfloooow !", Log.level.SEVERE);
+			log("HTML overfloooow !", Log.level.SEVERE)
 		end
 	end
 	if #text > 0 then
-		tinsert(tab, text); -- Rest of the text
+		tinsert(tab, text) -- Rest of the text
 	end
 
 	--- log("Parts count "..(#tab));
 
-	local finalText = "";
+	local finalText = ""
 	for _, line in pairs(tab) do
-
 		if not line:find("<") then
-			line = "<P>" .. line .. "</P>";
+			line = "<P>" .. line .. "</P>"
 		end
 
 		-- Replace newlines with <br/> tags unless following the immediate
@@ -1017,252 +1066,277 @@ Utils.str.toHTML = function(text, noColor, noBrackets)
 		-- have been added yet (namely - images).
 		line = line:gsub("()>?()\n", function(pos1, pos2)
 			if pos1 ~= pos2 then
-				return ">";
+				return ">"
 			else
-				return "<br/>";
+				return "<br/>"
 			end
-		end);
+		end)
 
 		-- Image tag. Specifiers after the height are optional, so they
 		-- must be suitably defaulted and validated.
 		line = line:gsub(IMAGE_PATTERN, function(img, width, height, align)
 			-- If you've not given an alignment, or it's entirely invalid,
 			-- you'll get the old default of center.
-			align = alignmentAttributes[align] or "center";
+			align = alignmentAttributes[align] or "center"
 
 			-- Don't blow up on non-numeric inputs. They won't display properly
 			-- but that's a separate issue.
-			width = tonumber(width) or 128;
-			height = tonumber(height) or 128;
+			width = tonumber(width) or 128
+			height = tonumber(height) or 128
 
 			-- Width and height should be absolute.
 			-- The tag accepts negative value but people used that to fuck up their profiles
-			return string.format(IMAGE_TAG, img, math.abs(width), math.abs(height), align);
-		end);
+			return string.format(IMAGE_TAG, img, math.abs(width), math.abs(height), align)
+		end)
 
 		line = line:gsub("%!%[(.-)%]%((.-)%)", function(icon, size)
 			if icon:find("\\") then
 				-- If icon text contains \ we have a full texture path
-				local width, height;
+				local width, height
 				if size:find("%,") then
-					width, height = strsplit(",", size);
+					width, height = strsplit(",", size)
 				else
-					width = tonumber(size) or 128;
-					height = width;
+					width = tonumber(size) or 128
+					height = width
 				end
 				-- Width and height should be absolute.
 				-- The tag accepts negative value but people used that to fuck up their profiles
-				return string.format(IMAGE_TAG, icon, math.abs(width), math.abs(height), "center");
+				return string.format(IMAGE_TAG, icon, math.abs(width), math.abs(height), "center")
 			end
-			return Utils.str.icon(icon, tonumber(size) or 25);
-		end);
+			return Utils.str.icon(icon, tonumber(size) or 25)
+		end)
 
-		do  -- Markdown Links
-			local includeBraces = true;
-			local isMarkdown    = true;
-			local formatter     = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown);
+		do -- Markdown Links
+			local includeBraces = true
+			local isMarkdown = true
+			local formatter = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown)
 
-			line = line:gsub("()%[(.-)%]%((.-)%)", formatter);
+			line = line:gsub("()%[(.-)%]%((.-)%)", formatter)
 		end
 
-		do  -- Link tags with embedded icons
-			local includeBraces = false;
-			local isMarkdown    = false;
-			local formatter     = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown);
+		do -- Link tags with embedded icons
+			local includeBraces = false
+			local isMarkdown = false
+			local formatter = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown)
 
-			line = line:gsub("(){link%*([^*]+)%*({icon:[^}]+})}", formatter);
+			line = line:gsub("(){link%*([^*]+)%*({icon:[^}]+})}", formatter)
 		end
 
-		do  -- Link tags
-			local includeBraces = not noBrackets;
-			local isMarkdown    = false;
-			local formatter     = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown);
+		do -- Link tags
+			local includeBraces = not noBrackets
+			local isMarkdown = false
+			local formatter = GenerateLinkFormatter(line, linkColor, includeBraces, isMarkdown)
 
-			line = line:gsub("(){link%*([^*]+)%*([^}]+)}", formatter);
+			line = line:gsub("(){link%*([^*]+)%*([^}]+)}", formatter)
 		end
 
-		line = line:gsub("{twitter%*(.-)%*(.-)}", "<a href=\"twitter%1\">|cff61AAEE%2|r</a>");
+		line = line:gsub("{twitter%*(.-)%*(.-)}", '<a href="twitter%1">|cff61AAEE%2|r</a>')
 
-		finalText = finalText .. line;
+		finalText = finalText .. line
 	end
 
-	finalText = convertTextTags(finalText);
+	finalText = convertTextTags(finalText)
 
-	return "<HTML><BODY>" .. finalText .. "</BODY></HTML>";
+	return "<HTML><BODY>" .. finalText .. "</BODY></HTML>"
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- COMPRESSION / Serialization / HASH
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-local libCompress = LibStub:GetLibrary("LibCompress");
-local libCompressEncoder = libCompress:GetAddonEncodeTable();
-local libSerializer = LibStub:GetLibrary("AceSerializer-3.0");
+local libCompress = LibStub:GetLibrary("LibCompress")
+local libCompressEncoder = libCompress:GetAddonEncodeTable()
+local libSerializer = LibStub:GetLibrary("AceSerializer-3.0")
 
 local function serialize(structure)
-	return libSerializer:Serialize(structure);
+	return libSerializer:Serialize(structure)
 end
-Utils.serial.serialize = serialize;
+Utils.serial.serialize = serialize
 
 local function deserialize(structure)
-	local status, data = libSerializer:Deserialize(structure);
-	assert(status, "Deserialization error:\n" .. tostring(structure) .. "\n" .. tostring(data));
-	return data;
+	local status, data = libSerializer:Deserialize(structure)
+	assert(status, "Deserialization error:\n" .. tostring(structure) .. "\n" .. tostring(data))
+	return data
 end
-Utils.serial.deserialize = deserialize;
+Utils.serial.deserialize = deserialize
 
-Utils.serial.errorCount = 0;
+Utils.serial.errorCount = 0
 local function safeDeserialize(structure, default)
-	local status, data = libSerializer:Deserialize(structure);
+	local status, data = libSerializer:Deserialize(structure)
 	if not status then
-		Log.log("Deserialization error:\n" .. tostring(structure) .. "\n" .. tostring(data), Log.level.WARNING);
-		return default;
+		Log.log("Deserialization error:\n" .. tostring(structure) .. "\n" .. tostring(data), Log.level.WARNING)
+		return default
 	end
-	return data;
+	return data
 end
-Utils.serial.safeDeserialize = safeDeserialize;
+Utils.serial.safeDeserialize = safeDeserialize
 
 local function encodeCompressMessage(message)
-	return libCompressEncoder:Encode(libCompress:Compress(message));
+	return libCompressEncoder:Encode(libCompress:Compress(message))
 end
-Utils.serial.encodeCompressMessage = encodeCompressMessage;
+Utils.serial.encodeCompressMessage = encodeCompressMessage
 
 Utils.serial.decompressCodedMessage = function(message)
-	return libCompress:Decompress(libCompressEncoder:Decode(message));
+	return libCompress:Decompress(libCompressEncoder:Decode(message))
 end
 
 Utils.serial.safeEncodeCompressMessage = function(serial)
-	local encoded = encodeCompressMessage(serial);
+	local encoded = encodeCompressMessage(serial)
 	-- Rollback test
-	local decoded = Utils.serial.decompressCodedMessage(encoded);
+	local decoded = Utils.serial.decompressCodedMessage(encoded)
 	if decoded == serial then
-		return encoded;
+		return encoded
 	else
-		Log.log("safeEncodeCompressStructure error:\n" .. tostring(serial), Log.level.WARNING);
-		return nil;
+		Log.log("safeEncodeCompressStructure error:\n" .. tostring(serial), Log.level.WARNING)
+		return nil
 	end
 end
 
 Utils.serial.decompressCodedStructure = function(message)
-	return deserialize(libCompress:Decompress(libCompressEncoder:Decode(message)));
+	return deserialize(libCompress:Decompress(libCompressEncoder:Decode(message)))
 end
 
 Utils.serial.safeDecompressCodedStructure = function(message)
-	return safeDeserialize(libCompress:Decompress(libCompressEncoder:Decode(message)));
+	return safeDeserialize(libCompress:Decompress(libCompressEncoder:Decode(message)))
 end
 
 Utils.serial.encodeCompressStructure = function(structure)
-	return encodeCompressMessage(serialize(structure));
+	return encodeCompressMessage(serialize(structure))
 end
 
 Utils.serial.hashCode = function(str)
-	return libCompress:fcs32final(libCompress:fcs32update(libCompress:fcs32init(), str));
+	return libCompress:fcs32final(libCompress:fcs32update(libCompress:fcs32init(), str))
 end
-
-
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- EVENT HANDLING
 -- Handles WOW events
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-Utils.event.registerHandler = TRP3_API.Ellyb.GameEvents.registerCallback;
+Utils.event.registerHandler = TRP3_API.Ellyb.GameEvents.registerCallback
 
-Utils.event.unregisterHandler = TRP3_API.Ellyb.GameEvents.unregisterCallback;
+Utils.event.unregisterHandler = TRP3_API.Ellyb.GameEvents.unregisterCallback
 
-Utils.event.fireEvent = TRP3_API.Ellyb.GameEvents.triggerEvent;
+Utils.event.fireEvent = TRP3_API.Ellyb.GameEvents.triggerEvent
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- MUSIC / SOUNDS
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-local soundHandlers = {};
+local soundHandlers = {}
 
 function Utils.music.getHandlers()
-	return soundHandlers;
+	return soundHandlers
 end
 
 function Utils.music.clearHandlers()
-	return wipe(soundHandlers);
+	return wipe(soundHandlers)
 end
 
 function Utils.music.playSoundID(soundID, channel, source)
 	assert(soundID, "soundID can't be nil.")
-	local willPlay, handlerID = PlaySound(soundID, channel, false);
+	local willPlay, handlerID = PlaySound(soundID, channel, false)
 	if willPlay then
-		tinsert(soundHandlers, {channel = channel, id = soundID, handlerID = handlerID, source = source, date = date("%H:%M:%S"), stopped = false});
+		tinsert(soundHandlers, {
+			channel = channel,
+			id = soundID,
+			handlerID = handlerID,
+			source = source,
+			date = date("%H:%M:%S"),
+			stopped = false,
+		})
 		if TRP3_SoundsHistoryFrame then
-			TRP3_SoundsHistoryFrame.onSoundPlayed();
+			TRP3_SoundsHistoryFrame.onSoundPlayed()
 		end
 	end
-	return willPlay, handlerID;
+	return willPlay, handlerID
 end
 
 function Utils.music.playSoundFileID(soundFileID, channel, source)
 	assert(soundFileID, "soundFileID can't be nil.")
-	local willPlay, handlerID = PlaySoundFile(soundFileID, channel);
+	local willPlay, handlerID = PlaySoundFile(soundFileID, channel)
 	if willPlay then
-		tinsert(soundHandlers, {channel = channel, id = soundFileID, handlerID = handlerID, source = source, date = date("%H:%M:%S"), stopped = false, soundFile = true});
+		tinsert(soundHandlers, {
+			channel = channel,
+			id = soundFileID,
+			handlerID = handlerID,
+			source = source,
+			date = date("%H:%M:%S"),
+			stopped = false,
+			soundFile = true,
+		})
 		if TRP3_SoundsHistoryFrame then
-			TRP3_SoundsHistoryFrame.onSoundPlayed();
+			TRP3_SoundsHistoryFrame.onSoundPlayed()
 		end
 	end
-	return willPlay, handlerID;
+	return willPlay, handlerID
 end
 
 function Utils.music.stopSound(handlerID, fadeoutDuration)
-	StopSound(handlerID, fadeoutDuration);
+	StopSound(handlerID, fadeoutDuration)
 end
 
 function Utils.music.stopSoundID(soundID, channel, source, fadeoutDuration)
 	for _, handler in pairs(soundHandlers) do
-		if (not handler.stopped) and (not soundID or soundID == "0" or handler.id == soundID) and (not channel or handler.channel == channel) and (not source or handler.source == source) then
-			if (handler.channel == "Music" and handler.handlerID == 0) then
-				StopMusic();
+		if
+			not handler.stopped
+			and (not soundID or soundID == "0" or handler.id == soundID)
+			and (not channel or handler.channel == channel)
+			and (not source or handler.source == source)
+		then
+			if handler.channel == "Music" and handler.handlerID == 0 then
+				StopMusic()
 			else
-				Utils.music.stopSound(handler.handlerID, fadeoutDuration);
+				Utils.music.stopSound(handler.handlerID, fadeoutDuration)
 			end
-			handler.stopped = true;
+			handler.stopped = true
 		end
 	end
 end
 
 function Utils.music.stopChannel(channel)
-	Utils.music.stopSoundID(nil, channel, nil);
+	Utils.music.stopSoundID(nil, channel, nil)
 end
 
 function Utils.music.stopMusic()
-	Utils.music.stopChannel("Music");
-	StopMusic();
+	Utils.music.stopChannel("Music")
+	StopMusic()
 end
 
 function Utils.music.playMusic(music, source)
 	assert(music, "Music can't be nil.")
-	Utils.music.stopMusic();
-	Log.log("Playing music: " .. music);
-	PlayMusic(music);
-	tinsert(soundHandlers, {channel = "Music", id = Utils.music.getTitle(music), handlerID = 0, source = source or Globals.player_id, date = date("%H:%M:%S"), stopped = false});
+	Utils.music.stopMusic()
+	Log.log("Playing music: " .. music)
+	PlayMusic(music)
+	tinsert(soundHandlers, {
+		channel = "Music",
+		id = Utils.music.getTitle(music),
+		handlerID = 0,
+		source = source or Globals.player_id,
+		date = date("%H:%M:%S"),
+		stopped = false,
+	})
 	if TRP3_SoundsHistoryFrame then
-		TRP3_SoundsHistoryFrame.onSoundPlayed();
+		TRP3_SoundsHistoryFrame.onSoundPlayed()
 	end
 end
 
 function Utils.music.getTitle(musicURL)
 	if type(musicURL) == "number" then
-		musicURL = LibRPMedia:GetMusicNameByFile(musicURL);
+		musicURL = LibRPMedia:GetMusicNameByFile(musicURL)
 	end
 
-	local musicTitle;
+	local musicTitle
 	if musicURL then
-		musicTitle = musicURL:match("[%/]?([^%/]+)$");
+		musicTitle = musicURL:match("[%/]?([^%/]+)$")
 	end
 
-	return musicTitle or musicURL;
+	return musicTitle or musicURL
 end
 
 function Utils.music.convertPathToID(musicURL)
 	assert(musicURL, "Music path can't be nil.")
-	return LibRPMedia:GetMusicFileByName(musicURL);
+	return LibRPMedia:GetMusicFileByName(musicURL)
 end
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1270,20 +1344,20 @@ end
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 Utils.texture.applyRoundTexture = function(textureFrame, texturePath, failTexture)
-	local ok, errorMess = pcall(SetPortraitToTexture, textureFrame, texturePath);
+	local ok, errorMess = pcall(SetPortraitToTexture, textureFrame, texturePath)
 	if not ok then
-		Log.log("Fail to round texture: " .. tostring(errorMess));
+		Log.log("Fail to round texture: " .. tostring(errorMess))
 		if failTexture then
-			SetPortraitToTexture(textureFrame, failTexture);
+			SetPortraitToTexture(textureFrame, failTexture)
 		elseif _G[textureFrame] then
-			_G[textureFrame]:SetTexture(texturePath);
+			_G[textureFrame]:SetTexture(texturePath)
 		end
 	end
 end
 
 local function Rainbow(value, max)
-	local movedValue = value - 1;    -- screw Lua lmao
-	local fifth = (max - 1) / 5;
+	local movedValue = value - 1 -- screw Lua lmao
+	local fifth = (max - 1) / 5
 	if movedValue < fifth then
 		return TRP3_API.Ellyb.Color(1, 0.3 + 0.7 * movedValue / fifth, 0.3)
 	elseif movedValue < 2 * fifth then
@@ -1303,7 +1377,7 @@ local function Rainbowify(text)
 	local finalText = ""
 	local i = 1
 
-	local characterCount = 0;
+	local characterCount = 0
 	for _ in string.gmatch(text, "([%z\1-\127\194-\244][\128-\191]*)") do
 		characterCount = characterCount + 1
 	end
@@ -1316,11 +1390,11 @@ local function Rainbowify(text)
 	end
 	return finalText
 end
-TRP3_API.utils.Rainbowify = Rainbowify;
+TRP3_API.utils.Rainbowify = Rainbowify
 
 local function OldgodCharacterColor(value, max)
-	local movedValue = value - 1;    -- screw Lua lmao
-	local third = (max - 1) / 3;
+	local movedValue = value - 1 -- screw Lua lmao
+	local third = (max - 1) / 3
 	if movedValue < 2 * third then
 		return TRP3_API.Ellyb.Color(0.5 + 0.5 * movedValue / (2 * third), 0.3, 1 - 0.7 * movedValue / (2 * third))
 	elseif movedValue ~= max - 1 then
@@ -1334,7 +1408,7 @@ local function Oldgodify(text)
 	local finalText = ""
 	local i = 1
 
-	local characterCount = 0;
+	local characterCount = 0
 	for _ in string.gmatch(text, "([%z\1-\127\194-\244][\128-\191]*)") do
 		characterCount = characterCount + 1
 	end
@@ -1347,4 +1421,4 @@ local function Oldgodify(text)
 	end
 	return finalText
 end
-TRP3_API.utils.Oldgodify = Oldgodify;
+TRP3_API.utils.Oldgodify = Oldgodify

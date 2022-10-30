@@ -2,97 +2,107 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
-local Ellyb = TRP3_API.Ellyb;
+local _, TRP3_API = ...
+local Ellyb = TRP3_API.Ellyb
 
 -- Total RP 3 imports
-local loc = TRP3_API.loc;
-local tcopy = TRP3_API.utils.table.copy;
-local Utils = TRP3_API.utils;
+local loc = TRP3_API.loc
+local tcopy = TRP3_API.utils.table.copy
+local Utils = TRP3_API.utils
 
 TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
-
-	local RegisterCompanionChatLinksModule = TRP3_API.ChatLinks:InstantiateModule(loc.CL_DIRECTORY_COMPANION_PROFILE, "DIR_COMPANION_PROFILE");
+	local RegisterCompanionChatLinksModule =
+		TRP3_API.ChatLinks:InstantiateModule(loc.CL_DIRECTORY_COMPANION_PROFILE, "DIR_COMPANION_PROFILE")
 
 	--- Get a copy of the data for the link, using the information provided when using RegisterChatLinkModule:InsertLink
 	function RegisterCompanionChatLinksModule:GetLinkData(profileID, canBeImported)
-		Ellyb.Assertions.isType(profileID, "string", "profileID");
+		Ellyb.Assertions.isType(profileID, "string", "profileID")
 
-		local profile = TRP3_API.companions.register.getProfiles()[profileID];
-		local linkText = UNKNOWN;
+		local profile = TRP3_API.companions.register.getProfiles()[profileID]
+		local linkText = UNKNOWN
 		if profile.data and profile.data.NA then
-			linkText = profile.data.NA;
+			linkText = profile.data.NA
 		end
 
 		local tooltipData = {
 			profile = {},
-		};
+		}
 
-		tcopy(tooltipData.profile, profile);
-		tooltipData.profileID = profileID;
-		tooltipData.canBeImported = canBeImported == true;
+		tcopy(tooltipData.profile, profile)
+		tooltipData.profileID = profileID
+		tooltipData.canBeImported = canBeImported == true
 
-		return linkText, tooltipData;
+		return linkText, tooltipData
 	end
 
 	--- Creates and decorates tooltip lines for the given data
 	---@return ChatLinkTooltipLines
 	function RegisterCompanionChatLinksModule:GetTooltipLines(tooltipData)
-		assert(tooltipData.profile, "Invalid tooltipData");
+		assert(tooltipData.profile, "Invalid tooltipData")
 
-		local profile = tooltipData.profile;
+		local profile = tooltipData.profile
 
-		local tooltipLines = TRP3_API.ChatLinkTooltipLines();
+		local tooltipLines = TRP3_API.ChatLinkTooltipLines()
 
-		local dataTab = profile.data;
-		local name = dataTab.NA;
+		local dataTab = profile.data
+		local name = dataTab.NA
 		if dataTab.IC then
-			name = Utils.str.icon(dataTab.IC, 30) .. " " .. name;
+			name = Utils.str.icon(dataTab.IC, 30) .. " " .. name
 		end
-		tooltipLines:SetTitle(name, TRP3_API.Ellyb.ColorManager.WHITE);
+		tooltipLines:SetTitle(name, TRP3_API.Ellyb.ColorManager.WHITE)
 		if dataTab.TI then
-			tooltipLines:AddLine("< " .. dataTab.TI .. " >", TRP3_API.Ellyb.ColorManager.ORANGE);
+			tooltipLines:AddLine("< " .. dataTab.TI .. " >", TRP3_API.Ellyb.ColorManager.ORANGE)
 		end
-		return tooltipLines;
+		return tooltipLines
 	end
 
 	-- Open profile in directory button
-	local OpenRegisterCompanionProfileButton = RegisterCompanionChatLinksModule:NewActionButton("OPEN_REG_COMPANION", loc.CL_OPEN_COMPANION, "REG_C_O_Q","REG_C_O_A");
+	local OpenRegisterCompanionProfileButton = RegisterCompanionChatLinksModule:NewActionButton(
+		"OPEN_REG_COMPANION",
+		loc.CL_OPEN_COMPANION,
+		"REG_C_O_Q",
+		"REG_C_O_A"
+	)
 
 	function OpenRegisterCompanionProfileButton:OnAnswerCommandReceived(profileData)
-		local profileID, profile = profileData.profileID, profileData.profileData;
+		local profileID, profile = profileData.profileID, profileData.profileData
 		-- Check profile exists
 		if not TRP3_API.companions.register.getProfiles()[profileID] then
-			TRP3_API.companions.register.registerCreateProfile(profileID);
+			TRP3_API.companions.register.registerCreateProfile(profileID)
 		end
-		TRP3_API.companions.register.setProfileData(profileID, profile);
+		TRP3_API.companions.register.setProfileData(profileID, profile)
 
-		TRP3_API.companions.register.openPage(profileID);
-		TRP3_API.navigation.openMainFrame();
+		TRP3_API.companions.register.openPage(profileID)
+		TRP3_API.navigation.openMainFrame()
 	end
 
 	-- Import profile action button
-	local ImportRegisterCompanionProfileButton = RegisterCompanionChatLinksModule:NewActionButton("IMPORT_REG_COMPANION", loc.CL_IMPORT_COMPANION, "REG_C_I_Q", "REG_C_I_A");
+	local ImportRegisterCompanionProfileButton = RegisterCompanionChatLinksModule:NewActionButton(
+		"IMPORT_REG_COMPANION",
+		loc.CL_IMPORT_COMPANION,
+		"REG_C_I_Q",
+		"REG_C_I_A"
+	)
 
 	function ImportRegisterCompanionProfileButton:IsVisible(tooltipData)
-		return tooltipData.canBeImported;
+		return tooltipData.canBeImported
 	end
 
 	function ImportRegisterCompanionProfileButton:OnAnswerCommandReceived(profileData)
-		local profile = profileData.profileData;
-		local newName = UNKNOWN;
+		local profile = profileData.profileData
+		local newName = UNKNOWN
 		if profile.data and profile.data.NA then
-			newName = profile.data.NA;
+			newName = profile.data.NA
 		end
-		local i = 1;
+		local i = 1
 		while not TRP3_API.companions.player.isProfileNameAvailable(newName) and i < 500 do
-			i = i + 1;
-			newName = newName .. " " .. i;
+			i = i + 1
+			newName = newName .. " " .. i
 		end
-		local profileID = TRP3_API.companions.player.duplicateProfile(profile, newName);
-		TRP3_API.companions.openPage(profileID);
-		TRP3_API.navigation.openMainFrame();
+		local profileID = TRP3_API.companions.player.duplicateProfile(profile, newName)
+		TRP3_API.companions.openPage(profileID)
+		TRP3_API.navigation.openMainFrame()
 	end
 
-	TRP3_API.RegisterCompanionChatLinksModule = RegisterCompanionChatLinksModule;
-end);
+	TRP3_API.RegisterCompanionChatLinksModule = RegisterCompanionChatLinksModule
+end)

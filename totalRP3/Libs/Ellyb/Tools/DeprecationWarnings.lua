@@ -1,17 +1,17 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.DeprecationWarnings then
 	return
 end
 
 -- Ellyb imports
-local ORANGE, GREEN, GREY = Ellyb.ColorManager.ORANGE, Ellyb.ColorManager.GREEN, Ellyb.ColorManager.GREY;
+local ORANGE, GREEN, GREY = Ellyb.ColorManager.ORANGE, Ellyb.ColorManager.GREEN, Ellyb.ColorManager.GREY
 
-local DeprecationWarnings = {};
-Ellyb.DeprecationWarnings = DeprecationWarnings;
+local DeprecationWarnings = {}
+Ellyb.DeprecationWarnings = DeprecationWarnings
 
-local logger = Ellyb.Logger("Deprecation warnings");
+local logger = Ellyb.Logger("Deprecation warnings")
 
 --- Wraps an old API table so it throws deprecation warning when accessed.
 --- It will indicate the name of the new API and map the method calls to the new API.
@@ -30,15 +30,15 @@ function DeprecationWarnings.wrapAPI(newAPITable, oldAPIName, newAPIName, oldAPI
 		__index = function(_, key)
 			logger:Warning(([[DEPRECATED USAGE OF API %s.
 Please use %s instead.
-Stack: %s]]):format(ORANGE(oldAPIName), GREEN(newAPIName), GREY(debugstack(2, 3, 0))));
-			return newAPITable[key];
+Stack: %s]]):format(ORANGE(oldAPIName), GREEN(newAPIName), GREY(debugstack(2, 3, 0))))
+			return newAPITable[key]
 		end,
 		__newindex = function(_, key, value)
 			logger:Warning(([[DEPRECATED USAGE OF API %s.
 Please use %s instead.
-Stack: %s]]):format(ORANGE(oldAPIName), GREEN(newAPIName), GREY(debugstack(2, 3, 0))));
-			newAPITable[key] = value;
-		end
+Stack: %s]]):format(ORANGE(oldAPIName), GREEN(newAPIName), GREY(debugstack(2, 3, 0))))
+			newAPITable[key] = value
+		end,
 	})
 end
 
@@ -56,8 +56,8 @@ function DeprecationWarnings.wrapFunction(newFunction, oldFunctionName, newFunct
 	return function(...)
 		logger:Warning(([[DEPRECATED USAGE OF FUNCTION %s.
 Please use %s instead.
-Stack: %s]]):format(ORANGE(oldFunctionName), GREEN(newFunctionName), GREY(debugstack(2, 3, 0))));
-		return newFunction(...);
+Stack: %s]]):format(ORANGE(oldFunctionName), GREEN(newFunctionName), GREY(debugstack(2, 3, 0))))
+		return newFunction(...)
 	end
 end
 
@@ -66,5 +66,5 @@ function DeprecationWarnings.warn(customWarning)
 	Ellyb.Assertions.isType(customWarning, "string", "customWarning")
 
 	logger:Warning(([[%s
-Stack: %s]]):format(customWarning, debugstack(2, 3, 0)));
+Stack: %s]]):format(customWarning, debugstack(2, 3, 0)))
 end

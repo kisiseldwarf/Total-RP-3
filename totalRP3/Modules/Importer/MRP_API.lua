@@ -2,16 +2,15 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOAD, function()
-
 	if not mrpSaved then
-		return;
+		return
 	end
 
-	local tcopy, getDefaultProfile = TRP3_API.utils.table.copy, TRP3_API.profile.getDefaultProfile;
-	local loc = TRP3_API.loc;
+	local tcopy, getDefaultProfile = TRP3_API.utils.table.copy, TRP3_API.profile.getDefaultProfile
+	local loc = TRP3_API.loc
 
-	local MRP = {};
-	local L = mrp.L;
+	local MRP = {}
+	local L = mrp.L
 	local importableData = {
 		HH = L.HH,
 		HI = L.HI,
@@ -29,103 +28,102 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOAD, function()
 		NT = L.NT,
 		MO = L.MO,
 		FR = L.FR,
-		CU = L.CU
-	};
-	local profilesList;
+		CU = L.CU,
+	}
+	local profilesList
 
 	local function initProfilesList()
-		profilesList = {};
+		profilesList = {}
 		for name, profile in pairs(mrpSaved.Profiles) do
 			if name == "Default" then
-				name = TRP3_API.globals.player_id;
+				name = TRP3_API.globals.player_id
 			end
-			local profileName = MRP.addOnVersion().."-"..name;
-			profilesList[profileName] = { name = name, info = {}};
+			local profileName = MRP.addOnVersion() .. "-" .. name
+			profilesList[profileName] = { name = name, info = {} }
 			for field, value in pairs(profile) do
-				profilesList[profileName]["info"][field] = value;
+				profilesList[profileName]["info"][field] = value
 			end
 		end
 	end
 
 	MRP.isAvailable = function()
-		return mrpSaved ~= nil;
+		return mrpSaved ~= nil
 	end
 
 	MRP.addOnVersion = function()
-		return "MyRolePlay - " .. GetAddOnMetadata("MyRolePlay", "Version");
+		return "MyRolePlay - " .. GetAddOnMetadata("MyRolePlay", "Version")
 	end
 
-
 	MRP.getProfile = function(profileID)
-		return profilesList[profileID];
+		return profilesList[profileID]
 	end
 
 	MRP.getFormatedProfile = function(profileID)
-		assert(profilesList[profileID], "Given profileID does not exist.");
+		assert(profilesList[profileID], "Given profileID does not exist.")
 
-		local profile = {};
-		local importedProfile = profilesList[profileID].info;
+		local profile = {}
+		local importedProfile = profilesList[profileID].info
 
-		tcopy(profile, getDefaultProfile());
-		profile.player.characteristics.FN = importedProfile.NA;
-		profile.player.characteristics.FT = importedProfile.NT;
-		profile.player.characteristics.RA = importedProfile.RA;
-		profile.player.characteristics.AG = importedProfile.AG;
-		profile.player.characteristics.RE = importedProfile.HH;
-		profile.player.characteristics.BP = importedProfile.HB;
-		profile.player.characteristics.EC = importedProfile.AE;
-		profile.player.characteristics.HE = importedProfile.AH;
-		profile.player.characteristics.WE = importedProfile.AW;
+		tcopy(profile, getDefaultProfile())
+		profile.player.characteristics.FN = importedProfile.NA
+		profile.player.characteristics.FT = importedProfile.NT
+		profile.player.characteristics.RA = importedProfile.RA
+		profile.player.characteristics.AG = importedProfile.AG
+		profile.player.characteristics.RE = importedProfile.HH
+		profile.player.characteristics.BP = importedProfile.HB
+		profile.player.characteristics.EC = importedProfile.AE
+		profile.player.characteristics.HE = importedProfile.AH
+		profile.player.characteristics.WE = importedProfile.AW
 		if importedProfile.MO then
 			tinsert(profile.player.characteristics.MI, {
-				NA = loc.REG_PLAYER_MSP_MOTTO;
-				VA = "\"" .. importedProfile.MO .. "\"";
-				IC = TRP3_InterfaceIcons.MiscInfoMotto;
-			});
+				NA = loc.REG_PLAYER_MSP_MOTTO,
+				VA = '"' .. importedProfile.MO .. '"',
+				IC = TRP3_InterfaceIcons.MiscInfoMotto,
+			})
 		end
 		if importedProfile.NI then
 			tinsert(profile.player.characteristics.MI, {
-				NA = loc.REG_PLAYER_MSP_NICK;
-				VA = importedProfile.NI;
-				IC = TRP3_InterfaceIcons.MiscInfoNickname;
-			});
+				NA = loc.REG_PLAYER_MSP_NICK,
+				VA = importedProfile.NI,
+				IC = TRP3_InterfaceIcons.MiscInfoNickname,
+			})
 		end
 		if importedProfile.NH then
 			tinsert(profile.player.characteristics.MI, {
-				NA = loc.REG_PLAYER_MSP_HOUSE;
-				VA = importedProfile.NH;
-				IC = TRP3_InterfaceIcons.MiscInfoHouse;
-			});
+				NA = loc.REG_PLAYER_MSP_HOUSE,
+				VA = importedProfile.NH,
+				IC = TRP3_InterfaceIcons.MiscInfoHouse,
+			})
 		end
 		if importedProfile.PN then
 			tinsert(profile.player.characteristics.MI, {
-				NA = loc.REG_PLAYER_MISC_PRESET_PRONOUNS;
-				VA = importedProfile.PN;
-				IC = TRP3_InterfaceIcons.MiscInfoPronouns;
-			});
+				NA = loc.REG_PLAYER_MISC_PRESET_PRONOUNS,
+				VA = importedProfile.PN,
+				IC = TRP3_InterfaceIcons.MiscInfoPronouns,
+			})
 		end
-		profile.player.character.CU = importedProfile.CU;
-		profile.player.about.T3.PH.TX = importedProfile.DE;
-		profile.player.about.T3.HI.TX = importedProfile.HI;
-		profile.player.about.TE = 3;
+		profile.player.character.CU = importedProfile.CU
+		profile.player.about.T3.PH.TX = importedProfile.DE
+		profile.player.about.T3.HI.TX = importedProfile.HI
+		profile.player.about.TE = 3
 
 		-- TODO Custom RP styles
 
-		return profile;
+		return profile
 	end
 
 	MRP.listAvailableProfiles = function()
 		initProfilesList()
-		local list = {};
+		local list = {}
 		for key, _ in pairs(profilesList) do
-			list[key] = MRP.addOnVersion();
+			list[key] = MRP.addOnVersion()
 		end
-		return list;
+		return list
 	end
 
 	MRP.getImportableData = function()
-		return importableData;
+		return importableData
 	end
 
-	TRP3_API.importer.addAddOn(MRP.addOnVersion(), MRP);
-end);
+	TRP3_API.importer.addAddOn(MRP.addOnVersion(), MRP)
+end)

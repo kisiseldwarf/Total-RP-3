@@ -1,43 +1,43 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Tooltips then
 	return
 end
 
-local Tooltips = {};
-Ellyb.Tooltips = Tooltips;
+local Tooltips = {}
+Ellyb.Tooltips = Tooltips
 
 Tooltips.ANCHORS = {
 	--- Align the top right of the tooltip with the bottom left of the owner
-	BOTTOMLEFT= "BOTTOMLEFT",
+	BOTTOMLEFT = "BOTTOMLEFT",
 	--- Align the top left of the tooltip with the bottom right of the owner
-	BOTTOMRIGHT= "BOTTOMRIGHT",
+	BOTTOMRIGHT = "BOTTOMRIGHT",
 	--- Toolip follows the mouse cursor
-	CURSOR= "CURSOR",
+	CURSOR = "CURSOR",
 	--- Align the bottom right of the tooltip with the top left of the owner
-	LEFT= "LEFT",
+	LEFT = "LEFT",
 	--- Tooltip appears in the default position
-	NONE= "NONE",
+	NONE = "NONE",
 	--- Tooltip's position is saved between sessions (useful if the tooltip is made user-movable)
-	PRESERVE= "PRESERVE",
+	PRESERVE = "PRESERVE",
 	--- Align the bottom left of the tooltip with the top right of the owner
-	RIGHT= "RIGHT",
+	RIGHT = "RIGHT",
 	--- Align the top of the tooltip with the bottom of the owner
 	BOTTOM = "BOTTOM",
 	--- Align to bottom of the tooltip with the top of the owner
 	TOP = "TOP",
 	--- Align the bottom left of the tooltip with the top left of the owner
-	TOPLEFT= "TOPLEFT",
+	TOPLEFT = "TOPLEFT",
 	--- Align the bottom right of the tooltip with the top right of the owner
-	TOPRIGHT= "TOPRIGHT",
+	TOPRIGHT = "TOPRIGHT",
 }
 
 local function showFrameTooltip(self)
-	self.Tooltip:Show();
+	self.Tooltip:Show()
 end
 local function hideFrameTooltip(self)
-	self.Tooltip:Hide();
+	self.Tooltip:Hide()
 end
 
 ---GetTooltip
@@ -45,10 +45,10 @@ end
 ---@return Tooltip
 function Tooltips.getTooltip(frame)
 	if not frame.Tooltip then
-		frame.Tooltip = Ellyb.Tooltip:new(frame);
+		frame.Tooltip = Ellyb.Tooltip:new(frame)
 		frame:HookScript("OnEnter", showFrameTooltip)
 		frame:HookScript("OnLeave", hideFrameTooltip)
 	end
 
-	return frame.Tooltip;
+	return frame.Tooltip
 end

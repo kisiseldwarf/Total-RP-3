@@ -2,26 +2,25 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
-local loc = TRP3_API.loc;
+local _, TRP3_API = ...
+local loc = TRP3_API.loc
 
 TRP3_API.module.registerModule({
 	["name"] = "ElvUI",
 	["id"] = "trp3_elvui",
 	["description"] = loc.MO_TOOLTIP_CUSTOMIZATIONS_DESCRIPTION:format("ElvUI"),
 	["requiredDeps"] = {
-		{ "trp3_tooltips", 1.0 }
+		{ "trp3_tooltips", 1.0 },
 	},
 	["version"] = 1.000,
 	["minVersion"] = 45,
 	["onStart"] = function()
-
 		-- Stop right here if ElvUI is not installed
 		if not ElvUI then
-			return false, loc.MO_ADDON_NOT_INSTALLED:format("ElvUI");
+			return false, loc.MO_ADDON_NOT_INSTALLED:format("ElvUI")
 		end
 
-		local skinTargetFrame, skinTooltips;
+		local skinTargetFrame, skinTooltips
 
 		local CONFIG = {
 			SKIN_TOOLTIPS = "elvui_skin_tooltips",
@@ -36,7 +35,7 @@ TRP3_API.module.registerModule({
 			"TRP3_CompanionTooltip",
 			-- Total RP 3: Extended
 			"TRP3_ItemTooltip",
-			"TRP3_NPCTooltip"
+			"TRP3_NPCTooltip",
 		}
 
 		local SKINNABLE_FRAMES = {
@@ -52,8 +51,8 @@ TRP3_API.module.registerModule({
 
 		TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 			-- Register configurations options
-			TRP3_API.configuration.registerConfigKey(CONFIG.SKIN_TOOLTIPS, true);
-			TRP3_API.configuration.registerConfigKey(CONFIG.SKIN_TARGET_FRAME, true);
+			TRP3_API.configuration.registerConfigKey(CONFIG.SKIN_TOOLTIPS, true)
+			TRP3_API.configuration.registerConfigKey(CONFIG.SKIN_TARGET_FRAME, true)
 
 			-- Build configuration page
 			TRP3_API.configuration.registerConfigurationPage({
@@ -78,46 +77,51 @@ TRP3_API.module.registerModule({
 						title = loc.TT_ELVUI_SKIN_ENABLE_TARGET_FRAME,
 						configKey = CONFIG.SKIN_TARGET_FRAME,
 					},
-				}
-			});
+				},
+			})
 
 			-- Register configuration handlers to apply the changes
 			TRP3_API.configuration.registerHandler(CONFIG.SKIN_TOOLTIPS, function()
 				if TRP3_API.configuration.getValue(CONFIG.SKIN_TOOLTIPS) then
 					skinTooltips()
 				else
-					TRP3_API.popup.showConfirmPopup(loc.CO_UI_RELOAD_WARNING, ReloadUI);
+					TRP3_API.popup.showConfirmPopup(loc.CO_UI_RELOAD_WARNING, ReloadUI)
 				end
-			end);
+			end)
 			TRP3_API.configuration.registerHandler(CONFIG.SKIN_TARGET_FRAME, function()
 				if TRP3_API.configuration.getValue(CONFIG.SKIN_TARGET_FRAME) then
 					skinTargetFrame()
 				else
-					TRP3_API.popup.showConfirmPopup(loc.CO_UI_RELOAD_WARNING, ReloadUI);
+					TRP3_API.popup.showConfirmPopup(loc.CO_UI_RELOAD_WARNING, ReloadUI)
 				end
-			end);
+			end)
 		end)
 
 		-- Wait for the add-on to be fully loaded so all the tooltips are available
 		TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_FINISH, function()
-
-			local TT = _G["ElvUI"][1]:GetModule('Tooltip');
+			local TT = _G["ElvUI"][1]:GetModule("Tooltip")
 
 			function skinTooltips()
 				-- Go through each tooltips from our table
 				for _, tooltip in pairs(TOOLTIPS) do
 					if _G[tooltip] then
 						-- We check that the tooltip exists and then add it to ElvUI
-						TT:SecureHookScript(_G[tooltip], 'OnShow', 'SetStyle')
+						TT:SecureHookScript(_G[tooltip], "OnShow", "SetStyle")
 					end
 				end
 			end
 
 			-- 9.2 changed Tooltips to use NineSlice but TargetFrame doesn't use it, therefore we need to use the old styling function
 			local function SetStyleForTargetFrame(tt)
-				if not tt or (tt == _G["ElvUI"][1].ScanTooltip or tt.IsEmbedded or not tt.SetTemplate or not tt.SetBackdrop) or tt:IsForbidden() then return end
+				if
+					not tt
+					or (tt == _G["ElvUI"][1].ScanTooltip or tt.IsEmbedded or not tt.SetTemplate or not tt.SetBackdrop)
+					or tt:IsForbidden()
+				then
+					return
+				end
 				tt.customBackdropAlpha = TT.db.colorAlpha
-				tt:SetTemplate('Transparent')
+				tt:SetTemplate("Transparent")
 			end
 
 			function skinTargetFrame()
@@ -125,18 +129,18 @@ TRP3_API.module.registerModule({
 				for _, frame in pairs(SKINNABLE_FRAMES) do
 					if _G[frame] then
 						-- We check that the frame exists and then add it to ElvUI
-						TT:SecureHookScript(_G[frame], 'OnShow', SetStyleForTargetFrame)
+						TT:SecureHookScript(_G[frame], "OnShow", SetStyleForTargetFrame)
 					end
 				end
 			end
 
 			-- Apply the skinning if the settings are enabled
 			if TRP3_API.configuration.getValue(CONFIG.SKIN_TOOLTIPS) then
-				skinTooltips();
+				skinTooltips()
 			end
 			if TRP3_API.configuration.getValue(CONFIG.SKIN_TARGET_FRAME) then
-				skinTargetFrame();
+				skinTargetFrame()
 			end
-		end);
+		end)
 	end,
-});
+})

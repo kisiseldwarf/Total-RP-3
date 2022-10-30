@@ -1,32 +1,32 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Log then
 	return
 end
 
 -- Lua imports
-local time = time;
+local time = time
 
 ---@class Log
-local Log, _private = Ellyb.Class("Log");
-Ellyb.Log = Log;
+local Log, _private = Ellyb.Class("Log")
+Ellyb.Log = Log
 
 function Log:initialize(level, ...)
-	_private[self] = {};
-	_private[self].date = time();
-	_private[self].level = level;
-	_private[self].args = { ... };
+	_private[self] = {}
+	_private[self].date = time()
+	_private[self].level = level
+	_private[self].args = { ... }
 end
 
 function Log:GetText()
-	return Ellyb.Strings.convertTableToString(_private[self].args);
+	return Ellyb.Strings.convertTableToString(_private[self].args)
 end
 
 function Log:GetLevel()
-	return _private[self].level;
+	return _private[self].level
 end
 
 function Log:GetTimestamp()
-	return _private[self].date;
+	return _private[self].date
 end

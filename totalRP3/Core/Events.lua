@@ -2,8 +2,8 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local _, TRP3_API = ...;
-local Ellyb = Ellyb(...);
+local _, TRP3_API = ...
+local Ellyb = Ellyb(...)
 
 local Events = {
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -60,53 +60,53 @@ local Events = {
 	-- Arg1 : Target ID
 	-- Arg2 : Target mode (Character, pet, battle pet ...)
 	MOUSE_OVER_CHANGED = "MOUSE_OVER_CHANGED",
-};
+}
 
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- EVENT HANDLING
 -- Handles Total RP 3 events system
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-local log = TRP3_API.Ellyb.Logger("TRP3 Events");
-local eventsDispatcher = TRP3_API.Ellyb.EventsDispatcher();
+local log = TRP3_API.Ellyb.Logger("TRP3 Events")
+local eventsDispatcher = TRP3_API.Ellyb.EventsDispatcher()
 
 function Events.registerEvent()
-	log:Warning("DEPRECATED: Registering events is not longer required with the new events system.");
+	log:Warning("DEPRECATED: Registering events is not longer required with the new events system.")
 end
 
 function Events.unregisterCallback(handlerID)
-	Ellyb.Assertions.isType(handlerID, "string", "handlerID");
-	return eventsDispatcher:UnregisterCallback(handlerID);
+	Ellyb.Assertions.isType(handlerID, "string", "handlerID")
+	return eventsDispatcher:UnregisterCallback(handlerID)
 end
 
 ---@overload fun(event:string, handler:function)
 function Events.registerCallback(event, handler, handlerID)
-	Ellyb.Assertions.isType(event, "string", "event");
-	Ellyb.Assertions.isType(handler, "function", "handler");
-	return eventsDispatcher:RegisterCallback(event, handler, handlerID);
+	Ellyb.Assertions.isType(event, "string", "event")
+	Ellyb.Assertions.isType(handler, "function", "handler")
+	return eventsDispatcher:RegisterCallback(event, handler, handlerID)
 end
 
-Events.listenToEvent = Events.registerCallback;
+Events.listenToEvent = Events.registerCallback
 
 function Events.registerCallbacks(events, handler)
-	Ellyb.Assertions.isType(events, "table", "events");
-	Ellyb.Assertions.isType(handler, "function", "handler");
+	Ellyb.Assertions.isType(events, "table", "events")
+	Ellyb.Assertions.isType(handler, "function", "handler")
 
-	local handlerID;
+	local handlerID
 	for _, event in pairs(events) do
-		handlerID = Events.registerCallback(event, handler, handlerID);
+		handlerID = Events.registerCallback(event, handler, handlerID)
 	end
 
-	return handlerID;
+	return handlerID
 end
-Events.listenToEvents = Events.registerCallback;
+Events.listenToEvents = Events.registerCallback
 
 function Events.triggerEvent(event, ...)
-	Ellyb.Assertions.isType(event, "string", "event");
-	eventsDispatcher:TriggerEvent(event, ...);
+	Ellyb.Assertions.isType(event, "string", "event")
+	eventsDispatcher:TriggerEvent(event, ...)
 end
 
-Events.fireEvent = Events.triggerEvent;
+Events.fireEvent = Events.triggerEvent
 
-TRP3_API.Events = Events;
-TRP3_API.events = Events;
+TRP3_API.Events = Events
+TRP3_API.events = Events

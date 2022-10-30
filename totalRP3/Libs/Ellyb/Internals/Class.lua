@@ -1,5 +1,5 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Class then
 	return
@@ -12,7 +12,7 @@ end
 --- > `local myClassInstance = MyClass()`
 --- > `privateStore[myClassInstance].privateProperty = someValue`
 ---@type table
-local privateStorage = setmetatable({},{
+local privateStorage = setmetatable({}, {
 	__index = function(store, instance) -- Remove need to initialize the private table for each instance, we lazy instantiate it
 		store[instance] = {}
 		return store[instance]
@@ -32,5 +32,5 @@ end
 ---@overload fun(name:string):MiddleClass_Class, table
 ---@return MiddleClass_Class, table Returns the class newly created and a private table with a weak metatable
 function Ellyb.Class(name, super)
-	return Ellyb.middleclass.class(name, super), privateStorage;
+	return Ellyb.middleclass.class(name, super), privateStorage
 end

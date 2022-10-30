@@ -2,22 +2,22 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 ---@type TRP3_API
-local addonName, TRP3_API = ...;
-local Ellyb = Ellyb(addonName);
+local addonName, TRP3_API = ...
+local Ellyb = Ellyb(addonName)
 
 -- Lua imports
-local assert = assert;
+local assert = assert
 
 -- Ellyb imports
-local Class = Ellyb.Class;
+local Class = Ellyb.Class
 
 -- Total RP 3 imports
-local Dashboard = TRP3_API.dashboard;
+local Dashboard = TRP3_API.dashboard
 
 --- The TabView class represents a view that can be embedded into a TabFrame
 -- - instance on the dashboard. All views must subclass this.
-local TabView = Class("TRP3_TabView");
-Dashboard.TabView = TabView;
+local TabView = Class("TRP3_TabView")
+Dashboard.TabView = TabView
 
 --- Returns the localised title of the tab that should manage this view.
 ---  This function must be implemented by subclasses.
@@ -27,7 +27,7 @@ end
 
 --- Returns the width of the tab that should manage this view.
 function TabView.static.getTabWidth()
-	return 150;
+	return 150
 end
 
 --- Initialises the content view for this tab. Subclasses should not implement
@@ -39,23 +39,23 @@ end
 ---
 ---  @param dashboard The dashboard instance that owns this view.
 function TabView:initialize(dashboard)
-	self.dashboard = dashboard;
-	self.isShown = false;
+	self.dashboard = dashboard
+	self.isShown = false
 end
 
 --- Returns true if this tab view is currently showing.
 function TabView:IsShown()
-	return self.isShown;
+	return self.isShown
 end
 
 --- Hides this view. Called by the owning tab frame when the user changes
 ---  away from this tab.
 function TabView:Hide()
-	self.isShown = false;
+	self.isShown = false
 end
 
 --- Shows this view. Called by the owning tab frame when the user changes
 ---  to this tab.
 function TabView:Show()
-	self.isShown = true;
+	self.isShown = true
 end

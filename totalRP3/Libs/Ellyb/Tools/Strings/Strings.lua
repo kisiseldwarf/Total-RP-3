@@ -1,79 +1,124 @@
 ---@type Ellyb
-local Ellyb = Ellyb(...);
+local Ellyb = Ellyb(...)
 
 if Ellyb.Strings then
 	return
 end
 
 ---@class Ellyb_Strings
-local Strings = {};
-Ellyb.Strings = Strings;
+local Strings = {}
+Ellyb.Strings = Strings
 
 ---@param tableToConvert table A table of element
 ---@param customSeparator string A custom separator to use to when concatenating the table (default is " ").
 ---@overload fun(table: table):string
 ---@return string
 function Strings.convertTableToString(tableToConvert, customSeparator)
-	Ellyb.Assertions.isType(tableToConvert, "table", "table");
+	Ellyb.Assertions.isType(tableToConvert, "table", "table")
 	-- If the table is empty we will just return empty string
 	if Ellyb.Tables.size(tableToConvert) < 1 then
 		return ""
 	end
 	-- If no custom separator was indicated we use " " as default
 	if not customSeparator or type(customSeparator) ~= "string" then
-		customSeparator = " ";
+		customSeparator = " "
 	end
 	-- Create a table of string values
-	local toStringedMessages = {};
+	local toStringedMessages = {}
 	for _, v in pairs(tableToConvert) do
-		table.insert(toStringedMessages, tostring(v));
+		table.insert(toStringedMessages, tostring(v))
 	end
 	-- Concat the table of string values with the separator
-	return table.concat(toStringedMessages, customSeparator);
+	return table.concat(toStringedMessages, customSeparator)
 end
 
 -- Only used for French related stuff, it's okay if non-latin characters are not here
 -- Note: We have a list of lowercase and uppercase letters here, because string.lower doesn't
 -- like accentuated uppercase letters at all, so we can't have just lowercase letters and apply a string.lower.
-local VOWELS = { "a", "e", "i", "o", "u", "y", "A"; "E", "I", "O", "U", "Y", "À", "Â", "Ä", "Æ", "È", "É", "Ê", "Ë", "Î", "Ï", "Ô", "Œ", "Ù", "Û", "Ü", "Ÿ", "à", "â", "ä", "æ", "è", "é", "ê", "ë", "î", "ï", "ô", "œ", "ù", "û", "ü", "ÿ" };
-VOWELS = tInvert(VOWELS); -- Invert the table so it is easier to check if something is a vowel
+local VOWELS = {
+	"a",
+	"e",
+	"i",
+	"o",
+	"u",
+	"y",
+	"A",
+	"E",
+	"I",
+	"O",
+	"U",
+	"Y",
+	"À",
+	"Â",
+	"Ä",
+	"Æ",
+	"È",
+	"É",
+	"Ê",
+	"Ë",
+	"Î",
+	"Ï",
+	"Ô",
+	"Œ",
+	"Ù",
+	"Û",
+	"Ü",
+	"Ÿ",
+	"à",
+	"â",
+	"ä",
+	"æ",
+	"è",
+	"é",
+	"ê",
+	"ë",
+	"î",
+	"ï",
+	"ô",
+	"œ",
+	"ù",
+	"û",
+	"ü",
+	"ÿ",
+}
+VOWELS = tInvert(VOWELS) -- Invert the table so it is easier to check if something is a vowel
 
 ---@param letter string A single letter as a string (can be uppercase or lowercase)
 ---@return boolean  True if the letter is a vowel
 function Strings.isAVowel(letter)
-	Ellyb.Assertions.isType(letter, "string", "letter");
-	return VOWELS[letter] ~= nil;
+	Ellyb.Assertions.isType(letter, "string", "letter")
+	return VOWELS[letter] ~= nil
 end
 
 ---@param text string
 ---@return string The first letter in the string that was passed
 function Strings.getFirstLetter(text)
-	Ellyb.Assertions.isType(text, "string", "text");
-	return text:sub(1, 1);
+	Ellyb.Assertions.isType(text, "string", "text")
+	return text:sub(1, 1)
 end
 
 -- Build a list of characters that can be used to generate IDs
-local ID_CHARS = {};
+local ID_CHARS = {}
 for i = 48, 57 do
-	table.insert(ID_CHARS, string.char(i));
+	table.insert(ID_CHARS, string.char(i))
 end
 for i = 65, 90 do
-	table.insert(ID_CHARS, string.char(i));
+	table.insert(ID_CHARS, string.char(i))
 end
 for i = 97, 122 do
-	table.insert(ID_CHARS, string.char(i));
+	table.insert(ID_CHARS, string.char(i))
 end
-local sID_CHARS = #ID_CHARS;
+local sID_CHARS = #ID_CHARS
 
 --- Generate a pseudo-unique random ID.
 --- If you encounter a collision, you really should playing lottery
 ---@return string ID @ Generated ID
 function Strings.generateID()
-	local ID = date("%m%d%H%M%S");
+	local ID = date("%m%d%H%M%S")
 	for _ = 1, 5 do
-		ID = ID .. ID_CHARS[random(1, sID_CHARS)];
+		ID = ID .. ID_CHARS[random(1, sID_CHARS)]
 	end
-	return ID;
+	return ID
 end
 
 --- A secure way to check if a String matches a pattern.
@@ -82,12 +127,12 @@ end
 ---@param pattern string Lua matching pattern
 ---@return number The index at which the string was found
 function Strings.safeMatch(stringToCheck, pattern)
-	local ok, result = pcall(string.find, string.lower(stringToCheck), string.lower(pattern));
+	local ok, result = pcall(string.find, string.lower(stringToCheck), string.lower(pattern))
 	if not ok then
-		return false; -- Syntax error.
+		return false -- Syntax error.
 	end
 	-- string.find should return a number if the string matches the pattern
-	return string.find(tostring(result), "%d");
+	return string.find(tostring(result), "%d")
 end
 
 --- Search if the string has the pattern in error-safe way.
@@ -96,22 +141,22 @@ end
 ---@param pattern string The pattern to match
 ---@return boolean Returns true if the pattern was matched in the given text
 function Strings.safeFind(text, pattern)
-	local trace = { pcall(string.find, text, pattern) };
+	local trace = { pcall(string.find, text, pattern) }
 	if trace[1] then
-		return type(trace[2]) == "number";
+		return type(trace[2]) == "number"
 	end
-	return false; -- Pattern error
+	return false -- Pattern error
 end
 
 --- Generate a pseudo-random unique ID while checking a table for possible collisions.
 ---@param table table A table where indexes are IDs generated via Strings.generateID
 ---@return string ID An ID that is not already used inside this table
 function Strings.generateUniqueID(table)
-	local ID = Strings.generateID();
+	local ID = Strings.generateID()
 	while table[ID] ~= nil do
-		ID = Strings.generateID();
+		ID = Strings.generateID()
 	end
-	return ID;
+	return ID
 end
 
 --- Generate a unique name by checking in a table indexed by names if a given exists and iterate to find a suitable non-taken name
@@ -123,13 +168,13 @@ end
 ---For example if "My name" is already taken and "My name (1)" is already taken, will return "My name (2)"
 function Strings.generateUniqueName(table, name, customSuffixPattern)
 	local suffix = customSuffixPattern or "(%s)"
-	local originalName = name;
-	local tries = 1;
+	local originalName = name
+	local tries = 1
 	while table[name] ~= nil do
-		name = originalName .. " " .. suffix:format(tries);
-		tries = tries + 1;
+		name = originalName .. " " .. suffix:format(tries)
+		tries = tries + 1
 	end
-	return name;
+	return name
 end
 
 --- Check if a text is an empty string and returns nil instead
@@ -137,16 +182,16 @@ end
 ---@return string|nil text @ Returns nil if the given text was empty
 function Strings.emptyToNil(text)
 	if text and #text > 0 then
-		return text;
+		return text
 	end
-	return nil;
+	return nil
 end
 
 --- Assure that the given string will not be nil
 ---@param text string|nil @ A string that could be nil
 ---@return string text @ Always return a string, empty string if the given text was nil
 function Strings.nilToEmpty(text)
-	return text or "";
+	return text or ""
 end
 
 local SANITIZATION_PATTERNS = {
@@ -165,9 +210,9 @@ function Strings.sanitize(text)
 		return
 	end
 	for k, v in pairs(SANITIZATION_PATTERNS) do
-		text = text:gsub(k, v);
+		text = text:gsub(k, v)
 	end
-	return text;
+	return text
 end
 
 ---Crop a string of text if it is longer than the given size, and append … to indicate that the text has been cropped by default.
@@ -181,18 +226,18 @@ function Strings.crop(text, size, appendEllipsisAtTheEnd)
 		return
 	end
 
-	Ellyb.Assertions.isType(size, "number", "size");
-	assert(size > 0, "Size has to be a positive number.");
+	Ellyb.Assertions.isType(size, "number", "size")
+	assert(size > 0, "Size has to be a positive number.")
 
 	if appendEllipsisAtTheEnd == nil then
-		appendEllipsisAtTheEnd = true;
+		appendEllipsisAtTheEnd = true
 	end
 
-	text = strtrim(text or "");
+	text = strtrim(text or "")
 	if text:len() > size then
-		text = text:sub(1, size);
+		text = text:sub(1, size)
 		if appendEllipsisAtTheEnd then
-			text = text .. "…";
+			text = text .. "…"
 		end
 	end
 	return text
@@ -203,27 +248,29 @@ end
 ---@param text string
 ---@return string
 function Strings.clickInstruction(click, text)
-	return Ellyb.ColorManager.YELLOW("[" .. click .. "]") .. ": " .. Ellyb.ColorManager.WHITE(text);
+	return Ellyb.ColorManager.YELLOW("[" .. click .. "]") .. ": " .. Ellyb.ColorManager.WHITE(text)
 end
 
-local BYTES_MULTIPLES = { "byte", "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+local BYTES_MULTIPLES = { "byte", "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" }
 if GetLocale() == Ellyb.Enum.LOCALES.FRENCH then
 	-- French locales use the term "octet" instead of "byte" https://en.wikipedia.org/wiki/Octet_(computing)
-	BYTES_MULTIPLES = { "octet", "octets", "Ko", "Mo", "Go", "To", "Po", "Eo", "Zo", "Yo" };
+	BYTES_MULTIPLES = { "octet", "octets", "Ko", "Mo", "Go", "To", "Po", "Eo", "Zo", "Yo" }
 end
 --- Format a size in bytes into a human readable size string.
 ---@param bytes number A numeric value representing a size in bytes.
 ---@return string A string representation of the size (example: `"8 bytes"`, `"23GB"`)
 function Strings.formatBytes(bytes)
-	Ellyb.Assertions.isType(bytes, "number", "bytes");
+	Ellyb.Assertions.isType(bytes, "number", "bytes")
 
 	if bytes < 2 then
-		return bytes .. Ellyb.Enum.CHARS.NON_BREAKING_SPACE .. BYTES_MULTIPLES[1];
+		return bytes .. Ellyb.Enum.CHARS.NON_BREAKING_SPACE .. BYTES_MULTIPLES[1]
 	end
 
-	local i = tonumber(math.floor(math.log(bytes) / math.log(1024)));
+	local i = tonumber(math.floor(math.log(bytes) / math.log(1024)))
 
-	return Ellyb.Maths.round(bytes / math.pow(1024, i), 2) .. Ellyb.Enum.CHARS.NON_BREAKING_SPACE .. BYTES_MULTIPLES[i + 2];
+	return Ellyb.Maths.round(bytes / math.pow(1024, i), 2)
+		.. Ellyb.Enum.CHARS.NON_BREAKING_SPACE
+		.. BYTES_MULTIPLES[i + 2]
 end
 
 --- Split a string into a table using a given separator
@@ -232,8 +279,8 @@ end
 ---@param separator string @ A separator
 ---@return string[] textContent @ A table of strings
 function Strings.split(text, separator)
-	Ellyb.Assertions.isType(text, "string", "text");
-	Ellyb.Assertions.isType(separator, "string", "separator");
+	Ellyb.Assertions.isType(text, "string", "text")
+	Ellyb.Assertions.isType(separator, "string", "separator")
 
 	local t = {}
 	local fpat = "(.-)" .. separator
