@@ -14,12 +14,9 @@ local loc = TRP3_API.loc;
 local unitIDToInfo = Utils.str.unitIDToInfo;
 local strsplit, tinsert, pairs, type, assert, _G, table, tostring, error, wipe = strsplit, tinsert, pairs, type, assert, _G, table, tostring, error, wipe;
 local displayDropDown = TRP3_API.ui.listbox.displayDropDown;
-local handleMouseWheel = TRP3_API.ui.list.handleMouseWheel;
-local initList = TRP3_API.ui.list.initList;
 local setTooltipForSameFrame = TRP3_API.ui.tooltip.setTooltipForSameFrame;
 local registerPage = TRP3_API.navigation.page.registerPage;
 local setupIconButton = TRP3_API.ui.frame.setupIconButton;
-local playUISound = TRP3_API.ui.misc.playUISound;
 local playAnimation = TRP3_API.ui.misc.playAnimation;
 local displayMessage = TRP3_API.utils.message.displayMessage;
 local getPlayerCurrentProfile;
@@ -225,35 +222,6 @@ local function decorateProfileList(widget, index)
 	end
 end
 
-local function profileSortingByProfileName(profileID1, profileID2)
-	return profiles[profileID1].profileName < profiles[profileID2].profileName;
-end
-
--- Refresh list display
-local function uiInitProfileList()
-	wipe(profileListID);
-	local defaultProfileID = getConfigValue("default_profile_id");
-	local profileSearch = Utils.str.emptyToNil(TRP3_ProfileManagerSearch:GetText());
-	for profileID, _ in pairs(profiles) do
-		if profileID ~= defaultProfileID and (not profileSearch or string.find(profiles[profileID].profileName:lower(), profileSearch:lower(), 1, true)) then
-			tinsert(profileListID, profileID);
-		end
-	end
-
-	table.sort(profileListID, profileSortingByProfileName);
-
-	local size = #profileListID;
-	TRP3_ProfileManagerListEmpty:Hide();
-	if profileSearch then
-		if size == 0 then
-			TRP3_ProfileManagerListEmpty:Show();
-		end
-	else
-		tinsert(profileListID, 1, defaultProfileID);
-	end
-	initList(TRP3_ProfileManagerList, profileListID, TRP3_ProfileManagerListSlider);
-end
-
 local showTextInputPopup, showConfirmPopup = TRP3_API.popup.showTextInputPopup, TRP3_API.popup.showConfirmPopup;
 
 local function uiCheckNameAvailability(profileName)
@@ -270,7 +238,7 @@ local function uiCreateProfile()
 		if newName and #newName ~= 0 then
 			if not uiCheckNameAvailability(newName) then return end
 			createProfile(newName);
-			uiInitProfileList();
+			TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 		end
 	end,
 	nil,
@@ -283,7 +251,7 @@ local function uiDeleteProfile(profileID)
 	showConfirmPopup(loc.PR_PROFILEMANAGER_DELETE_WARNING:format(Utils.str.color("g")..profiles[profileID].profileName.."|r"),
 	function()
 		deleteProfile(profileID);
-		uiInitProfileList();
+		TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 	end);
 end
 
@@ -294,7 +262,7 @@ local function uiEditProfile(profileID)
 		if newName and #newName ~= 0 then
 			if not uiCheckNameAvailability(newName) then return end
 			editProfile(profileID, newName);
-			uiInitProfileList();
+			TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 		end
 	end,
 	nil,
@@ -307,7 +275,7 @@ local function uiSelectProfile(profileID)
 		return;
 	end
 	selectProfile(profileID);
-	uiInitProfileList();
+	TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 end
 
 local function uiDuplicateProfile(profileID)
@@ -317,7 +285,7 @@ local function uiDuplicateProfile(profileID)
 		if newName and #newName ~= 0 then
 			if not uiCheckNameAvailability(newName) then return end
 			duplicateProfile(profiles[profileID], newName);
-			uiInitProfileList();
+			TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 		end
 	end,
 	nil,
@@ -403,7 +371,7 @@ local function createTutorialStructure()
 	TUTORIAL_STRUCTURE = {
 		{
 			box = {
-				allPoints = TRP3_ProfileManagerList
+				allPoints = TRP3_ProfileManager.ListFrame
 			},
 			button = {
 				x = 0, y = -110, anchor = "CENTER",
@@ -460,59 +428,57 @@ function TRP3_API.profile.init()
 
 	-- UI
 	local tabGroup; -- Reference to the tab panel tabs group
-	handleMouseWheel(TRP3_ProfileManagerList, TRP3_ProfileManagerListSlider);
-	TRP3_ProfileManagerListSlider:SetValue(0);
-	local widgetTab = {};
-	for i=1,5 do
-		local widget = _G["TRP3_ProfileManagerListLine"..i];
-		widget:SetScript("OnMouseUp",function (self)
-			if IsShiftKeyDown() then
-				TRP3_API.ChatLinks:OpenMakeImportablePrompt(loc.CL_PLAYER_PROFILE, function(canBeImported)
-					TRP3_API.ProfilesChatLinkModule:InsertLink(self.profileID, canBeImported);
-				end);
-			else
-				if currentProfileId ~= self.profileID then
-					onProfileSelected(widget);
-					playAnimation(_G[self:GetName() .. "HighlightAnimate"]);
-					playAnimation(_G[self:GetName() .. "Animate"]);
-					playUISound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end
+	-- local widgetTab = {};
+	-- for i=1,5 do
+	-- 	local widget = _G["TRP3_ProfileManagerListLine"..i];
+	-- 	widget:SetScript("OnMouseUp",function (self)
+	-- 		if IsShiftKeyDown() then
+	-- 			TRP3_API.ChatLinks:OpenMakeImportablePrompt(loc.CL_PLAYER_PROFILE, function(canBeImported)
+	-- 				TRP3_API.ProfilesChatLinkModule:InsertLink(self.profileID, canBeImported);
+	-- 			end);
+	-- 		else
+	-- 			if currentProfileId ~= self.profileID then
+	-- 				onProfileSelected(widget);
+	-- 				playAnimation(_G[self:GetName() .. "HighlightAnimate"]);
+	-- 				playAnimation(_G[self:GetName() .. "Animate"]);
+	-- 				playUISound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	-- 			end
 
-			end
-		end);
-		_G[widget:GetName().."Action"]:SetScript("OnClick", onActionClicked);
-		_G[widget:GetName().."Current"]:SetText(loc.PR_PROFILEMANAGER_CURRENT);
-		table.insert(widgetTab, widget);
+	-- 		end
+	-- 	end);
+	-- 	_G[widget:GetName().."Action"]:SetScript("OnClick", onActionClicked);
+	-- 	_G[widget:GetName().."Current"]:SetText(loc.PR_PROFILEMANAGER_CURRENT);
+	-- 	table.insert(widgetTab, widget);
 
-		Ellyb.Tooltips.getTooltip(_G[widget:GetName().."Action"])
-			:SetAnchor(Ellyb.Tooltips.ANCHORS.TOP)
-			:SetTitle(loc.PR_PROFILEMANAGER_ACTIONS);
+	-- 	Ellyb.Tooltips.getTooltip(_G[widget:GetName().."Action"])
+	-- 		:SetAnchor(Ellyb.Tooltips.ANCHORS.TOP)
+	-- 		:SetTitle(loc.PR_PROFILEMANAGER_ACTIONS);
 
-		-- Display indications in the tooltip on how to create a chat link
-		Ellyb.Tooltips.getTooltip(widget)
-			:AddLine(
-				Ellyb.Strings.clickInstruction(Ellyb.System.CLICKS.CLICK, loc.CM_OPEN)
-			)
-			:AddLine(
-				Ellyb.Strings.clickInstruction(
-						Ellyb.System:FormatKeyboardShortcut(Ellyb.System.MODIFIERS.SHIFT, Ellyb.System.CLICKS.CLICK),
-						loc.CL_TOOLTIP
-				)
-			);
+	-- 	-- Display indications in the tooltip on how to create a chat link
+	-- 	Ellyb.Tooltips.getTooltip(widget)
+	-- 		:AddLine(
+	-- 			Ellyb.Strings.clickInstruction(Ellyb.System.CLICKS.CLICK, loc.CM_OPEN)
+	-- 		)
+	-- 		:AddLine(
+	-- 			Ellyb.Strings.clickInstruction(
+	-- 					Ellyb.System:FormatKeyboardShortcut(Ellyb.System.MODIFIERS.SHIFT, Ellyb.System.CLICKS.CLICK),
+	-- 					loc.CL_TOOLTIP
+	-- 			)
+	-- 		);
 
-	end
-	TRP3_ProfileManagerList.widgetTab = widgetTab;
-	TRP3_ProfileManagerList.decorate = decorateProfileList;
+	-- end
 	TRP3_ProfileManagerAdd:SetScript("OnClick", uiCreateProfile);
 
 	--Localization
 	TRP3_ProfileManagerAdd:SetText(loc.PR_CREATE_PROFILE);
-	TRP3_ProfileManagerListEmpty:SetText(loc.PR_PROFILEMANAGER_EMPTY);
 
 	TRP3_ProfileManagerInfo:Show();
 	setTooltipForSameFrame(TRP3_ProfileManagerInfo, "RIGHT", 0, 0, loc.PR_EXPORT_IMPORT_TITLE, loc.PR_EXPORT_IMPORT_HELP);
 
-	TRP3_ProfileManagerSearch:SetScript("OnEnterPressed", uiInitProfileList);
+	TRP3_ProfileManagerSearch:SetScript("OnEnterPressed", function()
+		TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
+	end);
+
 	TRP3_ProfileManagerSearchText:SetText(loc.PR_PROFILEMANAGER_SEARCH_PROFILE);
 
 	registerPage({
@@ -530,7 +496,7 @@ function TRP3_API.profile.init()
 	});
 
 	TRP3_ProfileManager.list.onTab = function()
-		uiInitProfileList();
+		TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 	end
 
 	local frame = CreateFrame("Frame", "TRP3_ProfileManagerTabBar", TRP3_ProfileManager);
@@ -598,7 +564,7 @@ function TRP3_API.profile.init()
 				end
 
 				TRP3_ProfileImport:Hide();
-				uiInitProfileList();
+				TRP3_API.events.triggerEvent("PROFILE_LIST_UPDATE");
 			end
 
 			if version ~= Globals.version then

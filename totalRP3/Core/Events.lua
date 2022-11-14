@@ -32,6 +32,9 @@ local Events = {
 	-- Fired when a config value is modified.
 	CONFIGURATION_CHANGED = "CONFIGURATION_CHANGED",
 
+	-- TODO: This event is temporary and is not part of the public API.
+	PROFILE_LIST_UPDATE = "PROFILE_LIST_UPDATE",
+
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 	-- Data changed
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

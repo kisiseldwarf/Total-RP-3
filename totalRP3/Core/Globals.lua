@@ -90,6 +90,7 @@ TRP3_ClientFeatures = {
 	WarMode = (LE_EXPANSION_LEVEL_CURRENT >= TRP3_EXPANSION_BATTLE_FOR_AZEROTH),
 	Transmogrification = (LE_EXPANSION_LEVEL_CURRENT >= TRP3_EXPANSION_CATACLYSM),
 	WaterElementalWorkaround = (WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE),
+	ScrollBox_10_0 = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE),
 };
 
 --- RELATIONS is a list of (backwards-compatible) relationship IDs.
