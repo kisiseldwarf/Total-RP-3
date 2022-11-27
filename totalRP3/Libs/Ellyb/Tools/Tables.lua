@@ -12,13 +12,6 @@ local tremove = table.remove;
 local Tables = {};
 Ellyb.Tables = Tables;
 
----Make use of WoW's shiny new table inspector window to inspect a table programatically
----@param table table @ The table we want to inspect in WoW's table inspector
-function Tables.inspect(table)
-	_G.UIParentLoadAddOn("Blizzard_DebugTools");
-	_G.DisplayTableInspectorWindow(table);
-end
-
 --- Recursively copy all content from a table to another one.
 --- Argument "destination" must be a non nil table reference.
 ---@param destination table The table that will receive the new content
