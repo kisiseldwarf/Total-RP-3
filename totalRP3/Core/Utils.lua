@@ -203,25 +203,6 @@ function Utils.table.keys(table)
 	return keys;
 end
 
--- Create a weak tables pool.
-local TABLE_POOL = setmetatable( {}, { __mode = "k" } );
-
--- Return an already created table, or a new one if the pool is empty
--- It ultra mega important to release the table once you finished using it !
-function Utils.table.getTempTable()
-	local t = next( TABLE_POOL );
-	if t then
-		TABLE_POOL[t] = nil;
-		return wipe(t);
-	end
-	return {};
-end
-
--- Release a temp table.
-function Utils.table.releaseTempTable(table)
-	TABLE_POOL[ table ] = true;
-end
-
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 -- String utils
 --*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

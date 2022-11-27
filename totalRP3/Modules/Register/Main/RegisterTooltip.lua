@@ -7,7 +7,6 @@ local _, TRP3_API = ...;
 -- imports
 local Globals = TRP3_API.globals;
 local Utils = TRP3_API.utils;
-local getTempTable, releaseTempTable = Utils.table.getTempTable, Utils.table.releaseTempTable;
 local loc = TRP3_API.loc;
 local getUnitIDCurrentProfile, isIDIgnored = TRP3_API.register.getUnitIDCurrentProfile, TRP3_API.register.isIDIgnored;
 local getIgnoreReason = TRP3_API.register.getIgnoreReason;
@@ -277,7 +276,7 @@ local BUILDER_TYPE_DOUBLELINE = 2;
 local BUILDER_TYPE_SPACE = 3;
 
 local function AddLine(self, text, color, lineSize, lineWrap)
-	local lineStructure = getTempTable();
+	local lineStructure = {};
 	lineStructure.type = BUILDER_TYPE_LINE;
 	lineStructure.text = text;
 	lineStructure.red = color.r;
@@ -289,7 +288,7 @@ local function AddLine(self, text, color, lineSize, lineWrap)
 end
 
 local function AddDoubleLine(self, textL, textR, colorL, colorR, lineSize)
-	local lineStructure = getTempTable();
+	local lineStructure = {};
 	lineStructure.type = BUILDER_TYPE_DOUBLELINE;
 	lineStructure.textL = textL;
 	lineStructure.redL = colorL.r;
@@ -307,7 +306,7 @@ local function AddSpace(self)
 	if #self._content > 0 and self._content[#self._content].type == BUILDER_TYPE_SPACE then
 		return; -- Don't add two spaces in a row.
 	end
-	local lineStructure = getTempTable();
+	local lineStructure = {};
 	lineStructure.type = BUILDER_TYPE_SPACE;
 	tinsert(self._content, lineStructure);
 end
@@ -348,9 +347,8 @@ local function Build(self)
 		end
 	end
 	self.tooltip:Show();
-	for index, tempTable in ipairs(self._content) do
+	for index in ipairs(self._content) do
 		self._content[index] = nil;
-		releaseTempTable(tempTable);
 	end
 end
 

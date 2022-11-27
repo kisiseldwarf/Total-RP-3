@@ -95,28 +95,6 @@ function Tables.isEmpty(table)
 	return not next(table);
 end
 
--- Create a weak tables pool.
-local TABLE_POOL = setmetatable( {}, { __mode = "k" } );
-
---- Return an already created table, or a new one if the pool is empty
---- It is super important to release the table once you are finished using it!
----@return table
-function Tables.getTempTable()
-	local t = next(TABLE_POOL);
-	if t then
-		TABLE_POOL[t] = nil;
-		return wipe(t);
-	end
-	return {};
-end
-
---- Release a temp table.
----@param table
-function Tables.releaseTempTable(table)
-	Ellyb.Assertions.isType(table, "table", "table");
-	TABLE_POOL[table] = true;
-end
-
 -- The %q format will automatically quote and escape some special characters (thanks Itarater for the tip)
 local VALUE_TO_STRING = "[%q]=%q,"
 -- We do not escape the string representation of a table (it was already escaped before!)
