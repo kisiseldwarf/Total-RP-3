@@ -590,11 +590,11 @@ local function convertTextTag(tag)
 
 	if directReplacements[tag] then -- Direct replacement
 		return directReplacements[tag];
-	elseif tag:match("^col%:%a$") then -- Color replacement
-		return Utils.str.color(tag:match("^col%:(%a)$"));
-	elseif tag:match("^col:%x%x%x%x%x%x$") then -- Hexa color replacement
-		return "|cff"..tag:match("^col:(%x%x%x%x%x%x)$");
-	elseif tag:match("^icon%:[^:]+%:%d+$") then -- Icon
+	elseif string.find(tag, "^col:") then -- Color replacement
+		local color = TRP3_API.GetColorFromString(string.match(tag, "^col:(.+)"));
+		color = color or TRP3_API.Colors.WHITE;
+		return color:GenerateHexColorMarkup();
+	elseif string.find(tag, "^icon%:[^:]+%:%d+$") then -- Icon
 		local icon, size = tag:match("^icon%:([^:]+)%:(%d+)$");
 		return Utils.str.icon(icon, size);
 	end
@@ -685,6 +685,7 @@ local function GenerateLinkFormatter(line, defaultLinkColor, includeBraces, isMa
 		local shortColor = string.sub(line, position - 7, position - 1);
 		local hexColor   = string.sub(line, position - 12, position - 1);
 
+		-- FIXME: Fix this logic to support variable length color tags!
 		if string.find(shortColor, "^{col:%w}$") then
 			linkColor = nil;  -- Preceeded by a short color tag, ignore.
 		elseif string.find(hexColor, "^{col:%x%x%x%x%x%x}$") then
