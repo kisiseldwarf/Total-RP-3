@@ -8,9 +8,6 @@ local Ellyb = TRP3_API.Ellyb;
 -- Lua imports
 local assert = assert;
 
--- Ellyb imports
-local YELLOW = Ellyb.ColorManager.YELLOW;
-
 -- Total RP 3 imports
 local loc = TRP3_API.loc;
 local tcopy = TRP3_API.utils.table.copy;
@@ -48,25 +45,25 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 
 		local tooltipLines = TRP3_API.ChatLinkTooltipLines();
 
-		local customColor = YELLOW;
+		local customColor = TRP3_API.Colors.YELLOW;
 		if info.characteristics.CH then
-			customColor = TRP3_API.Ellyb.Color(info.characteristics.CH);
+			customColor = TRP3_API.GetColorFromString(info.characteristics.CH);
 		end
 
 		tooltipLines:SetTitle(customColor(Utils.str.icon(info.characteristics.IC or TRP3_InterfaceIcons.ProfileDefault, 20) .. " " .. TRP3_API.register.getCompleteName(info.characteristics, profile.profileName, true)));
 
 		if info.characteristics.FT then
-			tooltipLines:AddLine("< " .. info.characteristics.FT .. " >", TRP3_API.Ellyb.ColorManager.ORANGE);
+			tooltipLines:AddLine("< " .. info.characteristics.FT .. " >", TRP3_API.Colors.ORANGE);
 		end
 		if info.character.CU and info.character.CU ~= "" then
 			tooltipLines:AddLine(" ");
 			tooltipLines:AddLine(loc.REG_PLAYER_CURRENT .. ": ");
-			tooltipLines:AddLine(info.character.CU, YELLOW);
+			tooltipLines:AddLine(info.character.CU, TRP3_API.Colors.YELLOW);
 		end
 		if info.character.CO and info.character.CO ~= "" then
 			tooltipLines:AddLine(" ");
 			tooltipLines:AddLine(loc.DB_STATUS_CURRENTLY_OOC .. ": ");
-			tooltipLines:AddLine(info.character.CO, YELLOW);
+			tooltipLines:AddLine(info.character.CO, TRP3_API.Colors.YELLOW);
 		end
 
 		return tooltipLines;

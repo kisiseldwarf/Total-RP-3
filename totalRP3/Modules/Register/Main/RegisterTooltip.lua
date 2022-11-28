@@ -32,7 +32,6 @@ local unitIDToInfo = Utils.str.unitIDToInfo;
 local isPlayerIC;
 local unitIDIsFilteredForMatureContent;
 local crop = Utils.str.crop;
-local ColorManager = TRP3_API.Ellyb.ColorManager;
 local TRP3_Enums = AddOn_TotalRP3.Enums;
 
 -- ICONS
@@ -199,9 +198,9 @@ end
 
 local function getTooltipTextColors()
 	local colors = {
-		TITLE = Ellyb.Color.CreateFromHexa(getConfigValue(CONFIG_TOOLTIP_TITLE_COLOR)),
-		MAIN = Ellyb.Color.CreateFromHexa(getConfigValue(CONFIG_TOOLTIP_MAIN_COLOR)),
-		SECONDARY = Ellyb.Color.CreateFromHexa(getConfigValue(CONFIG_TOOLTIP_SECONDARY_COLOR)),
+		TITLE = TRP3_API.GetColorFromString(getConfigValue(CONFIG_TOOLTIP_TITLE_COLOR)),
+		MAIN = TRP3_API.GetColorFromString(getConfigValue(CONFIG_TOOLTIP_MAIN_COLOR)),
+		SECONDARY = TRP3_API.GetColorFromString(getConfigValue(CONFIG_TOOLTIP_SECONDARY_COLOR)),
 	};
 
 	return colors;
@@ -419,9 +418,9 @@ local function getLevelIconOrText(targetType)
 	end
 end
 
-local TOOLTIP_BLOCKED_IGNORED_COLOR = Ellyb.ColorManager.RED;
-local TOOLTIP_BLOCKED_MATURE_COLOR = Ellyb.Color.CreateFromRGBA(1.00, 0.75, 0.86, 1.00);
-local TOOLTIP_BLOCKED_MAIN_COLOR = Ellyb.Color.CreateFromRGBA(1.00, 0.75, 0.00, 1.00);
+local TOOLTIP_BLOCKED_IGNORED_COLOR = TRP3_API.Colors.RED;
+local TOOLTIP_BLOCKED_MATURE_COLOR = TRP3_API.CreateColor(1, 0.75, 0.86);
+local TOOLTIP_BLOCKED_MAIN_COLOR = TRP3_API.CreateColor(1, 0.75, 0);
 
 --- The complete character's tooltip writing sequence.
 local function writeTooltipForCharacter(targetID, _, targetType)
@@ -461,7 +460,7 @@ local function writeTooltipForCharacter(targetID, _, targetType)
 	--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 	local localizedClass, englishClass = UnitClass(targetType);
-	local color = Utils.color.getClassColor(englishClass);
+	local color = TRP3_API.GetClassDisplayColor(englishClass);
 	local rightIcons = "";
 	local leftIcons = "";
 
@@ -483,7 +482,7 @@ local function writeTooltipForCharacter(targetID, _, targetType)
 	-- OOC
 	if info.character and info.character.RP ~= 1 then
 		if getConfigValue(CONFIG_PREFER_OOC_ICON) == "TEXT" then
-			completeName = strconcat(ColorManager.RED("[" .. loc.CM_OOC .. "] "), completeName);
+			completeName = strconcat(TRP3_API.Colors.RED("[" .. loc.CM_OOC .. "] "), completeName);
 		else
 			rightIcons = strconcat(rightIcons, OOC_ICON);
 		end
@@ -659,7 +658,7 @@ local function writeTooltipForCharacter(targetID, _, targetType)
 			local targetTarget = AddOn_TotalRP3.Player.static.CreateFromCharacterID(targetTargetID)
 			local _, targetEnglishClass = UnitClass(targetType .. "target");
 			local targetInfo = getCharacterInfoTab(targetTargetID);
-			local targetClassColor = targetEnglishClass and Utils.color.getClassColor(targetEnglishClass) or Utils.color.CreateColor(1, 1, 1, 1);
+			local targetClassColor = targetEnglishClass and TRP3_API.GetClassDisplayColor(targetEnglishClass) or CreateColor(1, 1, 1, 1);
 
 			if getConfigValue(CONFIG_CHARACT_COLOR) then
 				targetClassColor = targetTarget:GetCustomColorForDisplay() or targetClassColor;
@@ -868,10 +867,11 @@ local function writeCompanionTooltip(companionFullID, _, targetType, targetMode)
 		petName = crop(petName, FIELDS_TO_CROP.NAME);
 	end
 
-	---@type Ellyb_Color
-	local companionCustomColor = info.NH and TRP3_API.Ellyb.Color.CreateFromHexa(info.NH) or ColorManager.WHITE
+	---@type ColorMixin
+	local companionCustomColor = info.NH and TRP3_API.GetColorFromString(info.NH) or TRP3_API.Colors.WHITE
 	if AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast() then
-		companionCustomColor:LightenColorUntilItIsReadableOnDarkBackgrounds();
+		-- companionCustomColor:LightenColorUntilItIsReadableOnDarkBackgrounds();
+		companionCustomColor = TRP3_API.GenerateReadableColor(companionCustomColor, TRP3_API.Colors.BLACK);
 	end
 	tooltipBuilder:AddLine(leftIcons .. companionCustomColor:WrapTextInColorCode((petName or companionID)), colors.MAIN, getMainLineFontSize());
 
@@ -901,7 +901,7 @@ local function writeCompanionTooltip(companionFullID, _, targetType, targetMode)
 
 	if showCompanionOwner() then
 		local ownerName, ownerRealm = unitIDToInfo(ownerID);
-		local ownerFinalName, ownerColor = ownerName, Utils.color.CreateColor(1, 1, 1, 1);
+		local ownerFinalName, ownerColor = ownerName, TRP3_API.Colors.WHITE;
 		if ownerID == Globals.player_id or (IsUnitIDKnown(ownerID) and hasProfile(ownerID)) then
 			local ownerInfo = getCharacterInfoTab(ownerID);
 			if ownerInfo.characteristics then
@@ -912,7 +912,7 @@ local function writeCompanionTooltip(companionFullID, _, targetType, targetMode)
 				end
 
 				if getConfigValue(CONFIG_CHARACT_COLOR) and ownerInfo.characteristics.CH then
-					local customColor = Utils.color.getColorFromHexadecimalCode(ownerInfo.characteristics.CH);
+					local customColor = TRP3_API.GetColorFromString(ownerInfo.characteristics.CH);
 
 						if AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast() then
 							customColor:LightenColorUntilItIsReadable();
@@ -1047,10 +1047,11 @@ local function writeTooltipForMount(ownerID, companionFullID, mountName)
 		mountCustomName = crop(mountCustomName, FIELDS_TO_CROP.NAME);
 	end
 
-	---@type Ellyb_Color
-	local mountCustomColor = info.NH and TRP3_API.Ellyb.Color.CreateFromHexa(info.NH) or ColorManager.WHITE
+	---@type ColorMixin
+	local mountCustomColor = info.NH and TRP3_API.GetColorFromString(info.NH) or TRP3_API.Colors.WHITE
 	if AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast() then
-		mountCustomColor:LightenColorUntilItIsReadableOnDarkBackgrounds();
+		mountCustomColor = TRP3_API.GenerateReadableColor(mountCustomColor, TRP3_API.Colors.BLACK);
+		-- mountCustomColor:LightenColorUntilItIsReadableOnDarkBackgrounds();
 	end
 	tooltipCompanionBuilder:AddLine(leftIcons .. mountCustomColor:WrapTextInColorCode((mountCustomName or mountName)), colors.MAIN, getMainLineFontSize());
 
@@ -1349,7 +1350,7 @@ local function onModuleInit()
 	};
 
 	local OOC_INDICATOR_TYPES = {
-		{loc.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_TEXT .. ColorManager.RED("[" .. loc.CM_OOC .. "] "), "TEXT"},
+		{loc.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_TEXT .. TRP3_API.Colors.RED("[" .. loc.CM_OOC .. "] "), "TEXT"},
 		{loc.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_ICON .. OOC_ICON, "ICON"}
 	};
 

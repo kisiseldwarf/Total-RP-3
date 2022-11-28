@@ -9,9 +9,7 @@ TRP3_API.configuration = {};
 
 -- imports
 local loc = TRP3_API.loc;
-local Utils = TRP3_API.utils;
 local Config = TRP3_API.configuration;
-local numberToHexa, hexaToNumber = Utils.color.numberToHexa, Utils.color.hexaToNumber;
 local CreateFrame = CreateFrame;
 local setTooltipForFrame = TRP3_API.ui.tooltip.setTooltipForSameFrame;
 local setupListBox = TRP3_API.ui.listbox.setupListBox;
@@ -163,13 +161,12 @@ local function buildConfigurationPage(structure)
 			if element.configKey then
 				local button = _G[widget:GetName().."Picker"];
 				element.controller = button;
-				button.setColor(hexaToNumber(getValue(element.configKey)));
-				button.onSelection = function(red, green, blue)
-					if red and green and blue then
-						local hexa = strconcat(numberToHexa(red), numberToHexa(green), numberToHexa(blue))
-						setValue(element.configKey, hexa);
+				button.setColor(TRP3_API.GetColorFromString(getValue(element.configKey)));
+				button.onSelection = function(color)
+					if color then
+						setValue(element.configKey, color:GenerateHexColorOpaque());
 					else
-						button.setColor(hexaToNumber(defaultValues[element.configKey]));
+						button.setColor(TRP3_API.GetColorFromString(defaultValues[element.configKey]));
 					end
 				end;
 			end

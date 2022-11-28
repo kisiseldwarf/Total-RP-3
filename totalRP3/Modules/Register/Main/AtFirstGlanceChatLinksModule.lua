@@ -49,8 +49,8 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 			glanceTitle = crop(glanceTitle, GLANCE_TITLE_CROP);
 		end
 
-		tooltipLines:SetTitle(Utils.str.icon(icon, 30) .. " " .. glanceTitle, TRP3_API.Ellyb.ColorManager.WHITE);
-		tooltipLines:AddLine(TTText, TRP3_API.Ellyb.ColorManager.ORANGE);
+		tooltipLines:SetTitle(Utils.str.icon(icon, 30) .. " " .. glanceTitle, TRP3_API.Colors.WHITE);
+		tooltipLines:AddLine(TTText, TRP3_API.Colors.ORANGE);
 		return tooltipLines;
 	end
 

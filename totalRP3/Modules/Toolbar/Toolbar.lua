@@ -18,7 +18,6 @@ local function onStart()
 	-- imports
 	local Globals, Utils = TRP3_API.globals, TRP3_API.utils;
 	local loc = TRP3_API.loc;
-	local color = Utils.str.color;
 	local assert, pairs, tinsert, table, math  = assert, pairs, tinsert, table, math;
 	local toolbarContainer, mainTooltip = TRP3_ToolbarContainer, TRP3_MainTooltip;
 	local getConfigValue, registerConfigKey, registerConfigHandler, setConfigValue = TRP3_API.configuration.getValue, TRP3_API.configuration.registerConfigKey, TRP3_API.configuration.registerHandler, TRP3_API.configuration.setValue;
@@ -174,7 +173,7 @@ local function onStart()
 				tooltipSub = buttonStructure.tooltipSub,
 				OnTooltipShow = function(tooltip)
 					local LDBButton = LDBObjects[buttonStructure.id];
-					tooltip:AddLine(color("w") .. LDBButton.tooltipTitle);
+					tooltip:AddLine(TRP3_API.Colors.WHITE(LDBButton.tooltipTitle));
 					tooltip:AddLine(LDBButton.tooltipSub, nil, nil, nil, true);
 				end
 			});

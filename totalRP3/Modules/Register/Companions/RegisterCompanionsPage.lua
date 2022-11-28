@@ -8,11 +8,9 @@ local registerPage = TRP3_API.navigation.page.registerPage;
 local companionIDToInfo = TRP3_API.utils.str.companionIDToInfo;
 local setupFieldSet = TRP3_API.ui.frame.setupFieldPanel;
 local setTooltipForSameFrame = TRP3_API.ui.tooltip.setTooltipForSameFrame;
-local numberToHexa, hexaToNumber = Utils.color.numberToHexa, Utils.color.hexaToNumber;
 local getCurrentContext = TRP3_API.navigation.page.getCurrentContext;
 local setupIconButton = TRP3_API.ui.frame.setupIconButton;
 local getCurrentPageID = TRP3_API.navigation.page.getCurrentPageID;
-local assert, tostring, type, _G, wipe, strtrim, strconcat, pairs = assert, tostring, type, _G, wipe, strtrim, strconcat, pairs;
 local hidePopups = TRP3_API.popup.hidePopups;
 local displayConsult;
 local tcopy, tsize, tinsert, EMPTY = Utils.table.copy, Utils.table.size, tinsert, Globals.empty;
@@ -119,10 +117,9 @@ local function saveInDraft(profileName)
 	draftData.TX = stEtN(strtrim(TRP3_CompanionsPageInformationEdit_About_TextScrollText:GetText()));
 end
 
-local function onNameColorSelected(red, green, blue)
-	if red and green and blue then
-		local hexa = strconcat(numberToHexa(red), numberToHexa(green), numberToHexa(blue))
-		draftData.NH = hexa;
+local function onNameColorSelected(color)
+	if color then
+		draftData.NH = color:GenerateHexColorOpaque();
 	else
 		draftData.NH = nil;
 	end
@@ -174,7 +171,7 @@ local function displayEdit()
 	TRP3_CompanionsPageInformationEdit_NamePanel_NameField:SetText(draftData.NA or Globals.player);
 	TRP3_CompanionsPageInformationEdit_About_BckField:SetSelectedIndex(draftData.BK or 1);
 	TRP3_CompanionsPageInformationEdit_About_TextScrollText:SetText(draftData.TX or "");
-	TRP3_CompanionsPageInformationEdit_NamePanel_NameColor.setColor(hexaToNumber(draftData.NH));
+	TRP3_CompanionsPageInformationEdit_NamePanel_NameColor.setColor(TRP3_API.GetColorFromString(draftData.NH or ""));
 
 	TRP3_API.navigation.delayedRefresh();
 end

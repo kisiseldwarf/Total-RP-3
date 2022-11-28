@@ -63,6 +63,7 @@ read_globals = {
 	"xrpSaved",
 
 	-- Common protocol globals
+	"CUSTOM_CLASS_COLORS",
 	"GAME_LOCALE",
 
 	-- XRP Globals
@@ -409,6 +410,7 @@ stds.wow = {
 		"IsTrialAccount",
 		"IsVeteranTrialAccount",
 		"JoinChannelByName",
+		"Lerp",
 		"Mixin",
 		"MouseIsOver",
 		"nop",
@@ -428,6 +430,7 @@ stds.wow = {
 		"ScrollingEdit_OnLoad",
 		"ScrollingEdit_OnTextChanged",
 		"SecondsToClock",
+		"securecall",
 		"securecallfunction",
 		"SecureCmdOptionParse",
 		"SendChatMessage",
@@ -534,7 +537,6 @@ stds.wow = {
 		"COMBO_POINTS",
 		"DEFAULT_CHAT_FRAME",
 		"DISABLE",
-		"ENABLE_COLORBLIND_MODE",
 		"ENERGY",
 		"ERR_TOO_MANY_CHAT_CHANNELS",
 		"FOCUS_TOKEN_NOT_FOUND",
@@ -593,7 +595,6 @@ stds.wow = {
 		"POWER_TYPE_RUNIC_POWER",
 		"RAGE",
 		"RAID_CLASS_COLORS",
-		"RED_FONT_COLOR",
 		"RUNES",
 		"RUNIC_POWER",
 		"SAVE",
@@ -614,7 +615,6 @@ stds.wow = {
 		"UNKNOWNOBJECT",
 		"UNLOCK",
 		"VIDEO_QUALITY_LABEL6",
-		"WHITE_FONT_COLOR",
 		"WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
 		"WOW_PROJECT_CLASSIC",
 		"WOW_PROJECT_ID",

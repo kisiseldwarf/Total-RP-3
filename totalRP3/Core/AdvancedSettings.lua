@@ -3,7 +3,6 @@
 
 ---@type TRP3_API
 local _, TRP3_API = ...;
-local Ellyb = Ellyb(...);
 
 -- Total RP 3 imports
 local loc = TRP3_API.loc;
@@ -98,7 +97,7 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOAD, function()
 			end
 
 			Configuration.setValue("AddonLocale", newLocaleCode);
-			TRP3_API.popup.showConfirmPopup(loc.CO_GENERAL_CHANGELOCALE_ALERT:format(Ellyb.ColorManager.GREEN(loc:GetLocale(newLocaleCode):GetName())), ReloadUI);
+			TRP3_API.popup.showConfirmPopup(loc.CO_GENERAL_CHANGELOCALE_ALERT:format(TRP3_API.Colors.GREEN(loc:GetLocale(newLocaleCode):GetName())), ReloadUI);
 		end,
 		listDefault = loc:GetActiveLocale():GetName(),
 		listCancel = true,

@@ -25,16 +25,16 @@ Logger.LEVELS = {
 	SEVERE = "SEVERE",
 }
 
----@return Ellyb_Color
+---@return ColorMixin
 local function GetColorForLevel(level)
 	if level == Logger.LEVELS.SEVERE then
-		return Ellyb.ColorManager.RED;
+		return RED_FONT_COLOR;
 	elseif level == Logger.LEVELS.WARNING then
-		return Ellyb.ColorManager.ORANGE;
+		return ORANGE_FONT_COLOR;
 	elseif level == Logger.LEVELS.DEBUG then
-		return Ellyb.ColorManager.CYAN;
+		return LIGHTERBLUE_FONT_COLOR;
 	else
-		return Ellyb.ColorManager.WHITE;
+		return WHITE_FONT_COLOR;
 	end
 end
 
@@ -50,7 +50,7 @@ local function WriteToChatFrame(logger, level, message, ...)
 	local logText = log:GetText();
 	local logHeader = logger:GetLogHeader(log:GetLevel());
 	local timestamp = format("[%s]", date("%X", log:GetTimestamp()));
-	local message = Ellyb.ColorManager.GREY(timestamp) .. logHeader .. logText;
+	local message = GRAY_FONT_COLOR:WrapTextInColorCode(timestamp) .. logHeader .. logText;
 	if ChatFrame and log:GetLevel() ~= Logger.LEVELS.WARNING and log:GetLevel() ~= Logger.LEVELS.SEVERE then
 		ChatFrame:AddMessage(message)
 	else
@@ -90,7 +90,7 @@ end
 local LOG_HEADER_FORMAT = "[%s - %s]: ";
 function Logger:GetLogHeader(logLevel)
 	local color = GetColorForLevel(logLevel);
-	return format(LOG_HEADER_FORMAT, Ellyb.ColorManager.ORANGE(self:GetModuleName()), color(logLevel));
+	return format(LOG_HEADER_FORMAT, ORANGE_FONT_COLOR:WrapTextInColorCode(self:GetModuleName()), color:WrapTextInColorCode(logLevel));
 end
 
 function Logger:Log(level, message, ...)

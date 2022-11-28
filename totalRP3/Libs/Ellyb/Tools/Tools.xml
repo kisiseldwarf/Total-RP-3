@@ -8,7 +8,6 @@
 	<Script file="Localization.lua"/>
 	<Script file="../Locales.lua"/>
 	<Script file="System.lua"/>
-	<Script file="Colors.lua"/>
 	<Script file="Tables.lua"/>
 	<Script file="Functions.lua"/>
 	<Script file="Strings\Strings.lua"/>

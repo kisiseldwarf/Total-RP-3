@@ -12,10 +12,6 @@ local huge = math.huge;
 local loc = TRP3_API.loc;
 --}}}
 
---{{{ Ellyb imports
-local ORANGE = Ellyb.ColorManager.ORANGE;
----}}}
-
 -- Create the pin template, above group members
 ---@type BaseMapPoiPinMixin|MapCanvasPinMixin|{Texture: Texture, GetMap: fun():MapCanvasMixin}
 TRP3_PlayerMapPinMixin = AddOn_TotalRP3.MapPoiMixins.createPinTemplate(
@@ -47,15 +43,15 @@ function TRP3_PlayerMapPinMixin:GetDisplayDataFromPoiInfo(poiInfo)
 	if player:IsCurrentUser() then
 		-- Special case when seeing ourselves on the map (DEBUG)
 		displayData.iconAtlas = "PlayerPartyBlip";
-		displayData.iconColor = Ellyb.ColorManager.CYAN;
-		displayData.categoryName = loc.REG_RELATION .. ": " .. Ellyb.ColorManager.CYAN("SELF");
+		displayData.iconColor = TRP3_API.Colors.DEEPSKYBLUE;
+		displayData.categoryName = loc.REG_RELATION .. ": " .. TRP3_API.Colors.DEEPSKYBLUE("SELF");
 		displayData.categoryPriority = huge;
 	elseif shouldDifferentiateBetweenWarModes and not hasSameWarModeAsPlayer then
 		-- Swap out the atlas for this marker, show it in red, low opacity, and in a special category
 		displayData.iconAtlas = "PlayerPartyBlip";
-		displayData.iconColor = Ellyb.ColorManager.GREY;
+		displayData.iconColor = TRP3_API.Colors.GRAY;
 		displayData.opacity = 0.5
-		displayData.categoryName = Ellyb.ColorManager.RED(loc.REG_LOCATION_DIFFERENT_WAR_MODE);
+		displayData.categoryName = TRP3_API.Colors.RED(loc.REG_LOCATION_DIFFERENT_WAR_MODE);
 		displayData.categoryPriority = -1;
 	else
 		local relation = player:GetRelationshipWithPlayer()
@@ -108,7 +104,7 @@ function TRP3_PlayerMapPinMixin:Decorate(displayData)
 
 	self.Texture:SetAlpha(displayData.opacity or 1)
 
-	Ellyb.Tooltips.getTooltip(self):SetTitle(ORANGE(loc.REG_PLAYERS)):ClearLines();
+	Ellyb.Tooltips.getTooltip(self):SetTitle(TRP3_API.Colors.ORANGE(loc.REG_PLAYERS)):ClearLines();
 end
 
 function TRP3_PlayerMapPinMixin:OnMouseDown(button)
@@ -132,7 +128,7 @@ end
 
 function TRP3_PlayerMapPinMixin:OnTooltipAboutToShow(tooltip)
 	tooltip:AddTempLine([[|TInterface\Common\UI-TooltipDivider-Transparent:8:128:0:0:8:8:0:128:0:8:255:255:255|t]]);
-	tooltip:AddTempLine(Ellyb.Strings.clickInstruction(loc.CM_R_CLICK, loc.CL_OPEN_PROFILE), WHITE_FONT_COLOR);
+	tooltip:AddTempLine(Ellyb.Strings.clickInstruction(loc.CM_R_CLICK, loc.CL_OPEN_PROFILE), TRP3_API.Colors.WHITE);
 end
 
 TRP3_PlayerMapPinDropDownMixin = {};

@@ -262,7 +262,7 @@ function TRP3_API.popup.showCopyDropdownPopup(copyTexts, customText, customShort
 	if not customShortcutInstructions then
 		customShortcutInstructions = loc.COPY_DROPDOWN_POPUP_TEXT;
 	end
-	popupText = popupText .. customShortcutInstructions:format(Ellyb.ColorManager.ORANGE(Ellyb.System.SHORTCUTS.COPY), Ellyb.ColorManager.ORANGE(Ellyb.System.SHORTCUTS.PASTE));
+	popupText = popupText .. customShortcutInstructions:format(TRP3_API.Colors.ORANGE(Ellyb.System.SHORTCUTS.COPY), TRP3_API.Colors.ORANGE(Ellyb.System.SHORTCUTS.PASTE));
 	CopyTextPopup.Text:SetText(popupText);
 	CopyTextPopup.CopyText:SetText(copyTexts[1]);
 	if #copyTexts > 1 then
@@ -787,77 +787,76 @@ end
 
 local TRP3_ColorBrowser, TRP3_ColorBrowserColor = TRP3_ColorBrowser, TRP3_ColorBrowserColor;
 local toast = TRP3_API.ui.tooltip.toast;
-local Color, ColorManager = TRP3_API.Ellyb.Color, TRP3_API.Ellyb.ColorManager;
 
 local COLOR_PRESETS_BASIC = {
-	{ CO = ColorManager.RED, TX = loc.CM_RED},
-	{ CO = ColorManager.ORANGE, TX = loc.CM_ORANGE},
-	{ CO = ColorManager.YELLOW, TX = loc.CM_YELLOW},
-	{ CO = ColorManager.GREEN, TX = loc.CM_GREEN},
-	{ CO = ColorManager.CYAN, TX = loc.CM_CYAN},
-	{ CO = ColorManager.BLUE, TX = loc.CM_BLUE},
-	{ CO = ColorManager.PURPLE, TX = loc.CM_PURPLE},
-	{ CO = ColorManager.PINK, TX = loc.CM_PINK},
-	{ CO = ColorManager.WHITE, TX = loc.CM_WHITE},
-	{ CO = ColorManager.GREY, TX = loc.CM_GREY},
-	{ CO = ColorManager.BLACK, TX = loc.CM_BLACK},
+	{ CO = TRP3_API.Colors.RED, TX = loc.CM_RED},
+	{ CO = TRP3_API.Colors.ORANGE, TX = loc.CM_ORANGE},
+	{ CO = TRP3_API.Colors.YELLOW, TX = loc.CM_YELLOW},
+	{ CO = TRP3_API.Colors.GREEN, TX = loc.CM_GREEN},
+	{ CO = TRP3_API.Colors.CYAN, TX = loc.CM_CYAN},
+	{ CO = TRP3_API.Colors.BLUE, TX = loc.CM_BLUE},
+	{ CO = TRP3_API.Colors.PURPLE, TX = loc.CM_PURPLE},
+	{ CO = TRP3_API.Colors.PINK, TX = loc.CM_PINK},
+	{ CO = TRP3_API.Colors.WHITE, TX = loc.CM_WHITE},
+	{ CO = TRP3_API.Colors.GREY, TX = loc.CM_GREY},
+	{ CO = TRP3_API.Colors.BLACK, TX = loc.CM_BLACK},
 }
 
 local COLOR_PRESETS_CLASS = {
-	{ CO = ColorManager.HUNTER, TX = LOCALIZED_CLASS_NAMES_MALE.HUNTER },
-	{ CO = ColorManager.WARLOCK, TX = LOCALIZED_CLASS_NAMES_MALE.WARLOCK },
-	{ CO = ColorManager.PRIEST, TX = LOCALIZED_CLASS_NAMES_MALE.PRIEST },
-	{ CO = ColorManager.PALADIN, TX = LOCALIZED_CLASS_NAMES_MALE.PALADIN },
-	{ CO = ColorManager.MAGE, TX = LOCALIZED_CLASS_NAMES_MALE.MAGE },
-	{ CO = ColorManager.ROGUE, TX = LOCALIZED_CLASS_NAMES_MALE.ROGUE },
-	{ CO = ColorManager.DRUID, TX = LOCALIZED_CLASS_NAMES_MALE.DRUID },
-	{ CO = ColorManager.SHAMAN, TX = LOCALIZED_CLASS_NAMES_MALE.SHAMAN },
-	{ CO = ColorManager.WARRIOR, TX = LOCALIZED_CLASS_NAMES_MALE.WARRIOR },
-	{ CO = ColorManager.DEATHKNIGHT, TX = LOCALIZED_CLASS_NAMES_MALE.DEATHKNIGHT or loc.CM_CLASS_DEATHKNIGHT },
-	{ CO = ColorManager.MONK, TX = LOCALIZED_CLASS_NAMES_MALE.MONK or loc.CM_CLASS_MONK },
-	{ CO = ColorManager.DEMONHUNTER, TX = LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER or loc.CM_CLASS_DEMONHUNTER },
-	{ CO = ColorManager.EVOKER, TX = LOCALIZED_CLASS_NAMES_MALE.EVOKER or loc.CM_CLASS_EVOKER },
+	{ CO = TRP3_API.Colors.HUNTER, TX = LOCALIZED_CLASS_NAMES_MALE.HUNTER },
+	{ CO = TRP3_API.Colors.WARLOCK, TX = LOCALIZED_CLASS_NAMES_MALE.WARLOCK },
+	{ CO = TRP3_API.Colors.PRIEST, TX = LOCALIZED_CLASS_NAMES_MALE.PRIEST },
+	{ CO = TRP3_API.Colors.PALADIN, TX = LOCALIZED_CLASS_NAMES_MALE.PALADIN },
+	{ CO = TRP3_API.Colors.MAGE, TX = LOCALIZED_CLASS_NAMES_MALE.MAGE },
+	{ CO = TRP3_API.Colors.ROGUE, TX = LOCALIZED_CLASS_NAMES_MALE.ROGUE },
+	{ CO = TRP3_API.Colors.DRUID, TX = LOCALIZED_CLASS_NAMES_MALE.DRUID },
+	{ CO = TRP3_API.Colors.SHAMAN, TX = LOCALIZED_CLASS_NAMES_MALE.SHAMAN },
+	{ CO = TRP3_API.Colors.WARRIOR, TX = LOCALIZED_CLASS_NAMES_MALE.WARRIOR },
+	{ CO = TRP3_API.Colors.DEATHKNIGHT, TX = LOCALIZED_CLASS_NAMES_MALE.DEATHKNIGHT or loc.CM_CLASS_DEATHKNIGHT },
+	{ CO = TRP3_API.Colors.MONK, TX = LOCALIZED_CLASS_NAMES_MALE.MONK or loc.CM_CLASS_MONK },
+	{ CO = TRP3_API.Colors.DEMONHUNTER, TX = LOCALIZED_CLASS_NAMES_MALE.DEMONHUNTER or loc.CM_CLASS_DEMONHUNTER },
+	{ CO = TRP3_API.Colors.EVOKER, TX = LOCALIZED_CLASS_NAMES_MALE.EVOKER or loc.CM_CLASS_EVOKER },
 }
 table.sort(COLOR_PRESETS_CLASS, function(a,b) return a.TX<b.TX end)
 
 local COLOR_PRESETS_RESOURCES = {
-	{ CO = ColorManager.POWER_MANA, TX = POWER_TYPE_MANA },
-	{ CO = ColorManager.POWER_RAGE, TX = RAGE },
-	{ CO = ColorManager.POWER_FOCUS, TX = POWER_TYPE_FOCUS },
-	{ CO = ColorManager.POWER_ENERGY, TX = POWER_TYPE_ENERGY },
-	{ CO = ColorManager.POWER_COMBO_POINTS, TX = COMBO_POINTS },
-	{ CO = ColorManager.POWER_RUNES, TX = RUNES },
-	{ CO = ColorManager.POWER_RUNIC_POWER, TX = POWER_TYPE_RUNIC_POWER or RUNIC_POWER },
-	{ CO = ColorManager.POWER_SOUL_SHARDS, TX = SOUL_SHARDS },
-	{ CO = ColorManager.POWER_LUNAR_POWER, TX = POWER_TYPE_LUNAR_POWER },
-	{ CO = ColorManager.POWER_HOLY_POWER, TX = HOLY_POWER },
-	{ CO = ColorManager.POWER_MAELSTROM, TX = POWER_TYPE_MAELSTROM },
-	{ CO = ColorManager.POWER_INSANITY, TX = POWER_TYPE_INSANITY },
-	{ CO = ColorManager.POWER_CHI, TX = CHI },
-	{ CO = ColorManager.POWER_ARCANE_CHARGES, TX = POWER_TYPE_ARCANE_CHARGES },
-	{ CO = ColorManager.POWER_FURY, TX = POWER_TYPE_FURY },
-	{ CO = ColorManager.POWER_PAIN, TX = POWER_TYPE_PAIN },
-	{ CO = ColorManager.POWER_AMMOSLOT, TX = AMMOSLOT },
-	{ CO = ColorManager.POWER_FUEL, TX = POWER_TYPE_FUEL },
+	{ CO = TRP3_API.Colors.POWER_MANA, TX = POWER_TYPE_MANA },
+	{ CO = TRP3_API.Colors.POWER_RAGE, TX = RAGE },
+	{ CO = TRP3_API.Colors.POWER_FOCUS, TX = POWER_TYPE_FOCUS },
+	{ CO = TRP3_API.Colors.POWER_ENERGY, TX = POWER_TYPE_ENERGY },
+	{ CO = TRP3_API.Colors.POWER_COMBO_POINTS, TX = COMBO_POINTS },
+	{ CO = TRP3_API.Colors.POWER_RUNES, TX = RUNES },
+	{ CO = TRP3_API.Colors.POWER_RUNIC_POWER, TX = POWER_TYPE_RUNIC_POWER or RUNIC_POWER },
+	{ CO = TRP3_API.Colors.POWER_SOUL_SHARDS, TX = SOUL_SHARDS },
+	{ CO = TRP3_API.Colors.POWER_LUNAR_POWER, TX = POWER_TYPE_LUNAR_POWER },
+	{ CO = TRP3_API.Colors.POWER_HOLY_POWER, TX = HOLY_POWER },
+	{ CO = TRP3_API.Colors.POWER_MAELSTROM, TX = POWER_TYPE_MAELSTROM },
+	{ CO = TRP3_API.Colors.POWER_INSANITY, TX = POWER_TYPE_INSANITY },
+	{ CO = TRP3_API.Colors.POWER_CHI, TX = CHI },
+	{ CO = TRP3_API.Colors.POWER_ARCANE_CHARGES, TX = POWER_TYPE_ARCANE_CHARGES },
+	{ CO = TRP3_API.Colors.POWER_FURY, TX = POWER_TYPE_FURY },
+	{ CO = TRP3_API.Colors.POWER_PAIN, TX = POWER_TYPE_PAIN },
+	{ CO = TRP3_API.Colors.POWER_AMMOSLOT, TX = AMMOSLOT },
+	{ CO = TRP3_API.Colors.POWER_FUEL, TX = POWER_TYPE_FUEL },
 }
 
 table.sort(COLOR_PRESETS_RESOURCES, function(a,b) return a.TX<b.TX end)
 
 local COLOR_PRESETS_ITEMS = {
-	{ CO = ColorManager.ITEM_POOR, TX = ITEM_QUALITY0_DESC},
-	{ CO = ColorManager.ITEM_COMMON, TX = ITEM_QUALITY1_DESC},
-	{ CO = ColorManager.ITEM_UNCOMMON, TX = ITEM_QUALITY2_DESC},
-	{ CO = ColorManager.ITEM_RARE, TX = ITEM_QUALITY3_DESC},
-	{ CO = ColorManager.ITEM_EPIC, TX = ITEM_QUALITY4_DESC},
-	{ CO = ColorManager.ITEM_LEGENDARY, TX = ITEM_QUALITY5_DESC},
-	{ CO = ColorManager.ITEM_ARTIFACT, TX = ITEM_QUALITY6_DESC},
-	{ CO = ColorManager.ITEM_HEIRLOOM, TX = ITEM_QUALITY7_DESC},
-	{ CO = ColorManager.ITEM_WOW_TOKEN, TX = ITEM_QUALITY8_DESC},
+	{ CO = TRP3_API.Colors.ITEM_POOR, TX = ITEM_QUALITY0_DESC},
+	{ CO = TRP3_API.Colors.ITEM_COMMON, TX = ITEM_QUALITY1_DESC},
+	{ CO = TRP3_API.Colors.ITEM_UNCOMMON, TX = ITEM_QUALITY2_DESC},
+	{ CO = TRP3_API.Colors.ITEM_RARE, TX = ITEM_QUALITY3_DESC},
+	{ CO = TRP3_API.Colors.ITEM_EPIC, TX = ITEM_QUALITY4_DESC},
+	{ CO = TRP3_API.Colors.ITEM_LEGENDARY, TX = ITEM_QUALITY5_DESC},
+	{ CO = TRP3_API.Colors.ITEM_ARTIFACT, TX = ITEM_QUALITY6_DESC},
+	{ CO = TRP3_API.Colors.ITEM_HEIRLOOM, TX = ITEM_QUALITY7_DESC},
+	{ CO = TRP3_API.Colors.ITEM_WOW_TOKEN, TX = ITEM_QUALITY8_DESC},
 }
 
 ---@param color Color
 local function getPresetForColor(color)
-	local hexa = "#" .. color:GenerateHexadecimalColor(true);
+	local hexa = color:GenerateColorString();
 	for k, colorPreset in pairs(TRP3_Colors) do
 		if colorPreset.CO == hexa then
 			return colorPreset, k;
@@ -869,14 +868,14 @@ end
 local function saveCustomColor(color, name, indexToUpdate)
 	TRP3_ColorBrowserEditBox:ClearFocus();
 
-	local hexaColorCode = "#" .. color:GenerateHexadecimalColor(true);
+	local hexaColorCode = color:GenerateColorString();
 	if (name == "") then
 		name = hexaColorCode;
 	end
 
 	if not indexToUpdate then
 		for index, preset in pairs(TRP3_Colors) do
-			if (Color(preset.CO):IsEqualTo(color)) then
+			if (TRP3_API.GetColorFromString(preset.CO):IsEqualTo(color)) then
 				indexToUpdate = index;
 				break
 			end
@@ -888,7 +887,18 @@ local function saveCustomColor(color, name, indexToUpdate)
 	else
 		tinsert(TRP3_Colors, { CO = hexaColorCode, TX = name });
 		table.sort(TRP3_Colors, function(a, b)
-			return ColorManager.compareHSL(Color(a.CO), Color(b.CO))
+			local color1 = TRP3_API.GetColorFromString(a.CO);
+			local color2 = TRP3_API.GetColorFromString(b.CO);
+			local h1, s1, l1 = color1:GetHSL();
+			local h2, s2, l2 = color2:GetHSL();
+
+			if (h1 == h2) then
+				if (s1 == s2) then
+					return (l1 < l2)
+				end
+				return (s1 < s2)
+			end
+			return (h1 < h2)
 		end)
 	end
 end
@@ -902,23 +912,20 @@ end
 local function colorPresetsDropDownSelection(hexValue)
 	if hexValue == "SAVE" then
 		TRP3_API.popup.showTextInputPopup(loc.BW_CUSTOM_NAME .. "\n\n" .. loc.BW_CUSTOM_NAME_TT, function(text)
-			saveCustomColor(Color(TRP3_ColorBrowser.red, TRP3_ColorBrowser.green, TRP3_ColorBrowser.blue), text);
+			saveCustomColor(TRP3_ColorBrowser.color, text);
 		end);
 	elseif hexValue == "RENAME" then
-		local existingPreset, index = getPresetForColor(Color(TRP3_ColorBrowser.red, TRP3_ColorBrowser.green, TRP3_ColorBrowser.blue));
+		local existingPreset, index = getPresetForColor(TRP3_ColorBrowser.color);
 		TRP3_API.popup.showTextInputPopup(loc.BW_CUSTOM_NAME .. "\n\n" .. loc.BW_CUSTOM_NAME_TT, function(text)
-			saveCustomColor(Color(TRP3_ColorBrowser.red, TRP3_ColorBrowser.green, TRP3_ColorBrowser.blue), text, index);
+			saveCustomColor(TRP3_ColorBrowser.color, text, index);
 		end, nil, existingPreset.TX);
 	elseif hexValue == "DELETE" then
-		local _, index = getPresetForColor(Color(TRP3_ColorBrowser.red, TRP3_ColorBrowser.green, TRP3_ColorBrowser.blue));
+		local _, index = getPresetForColor(TRP3_ColorBrowser.color);
 		deleteCustomColorAtIndex(index)
 	else
-		local r, g, b = ColorManager.hexaToNumber(hexValue);
-		TRP3_ColorBrowser.red = r;
-		TRP3_ColorBrowser.green = g;
-		TRP3_ColorBrowser.blue = b;
-		TRP3_ColorBrowserColor:SetColorRGB(r, g, b);
-		TRP3_ColorBrowserSwatch:SetColorTexture(r, g, b);
+		local color = TRP3_API.GetColorFromString(hexValue);
+		TRP3_ColorBrowserColor:SetColorRGB(color:GetRGB());
+		TRP3_ColorBrowserSwatch:SetColorTexture(color:GetRGB());
 	end
 end
 
@@ -927,11 +934,11 @@ local function colorPresetsDropDown()
 
 	local values_basic = {};
 
-	tinsert(values, { Ellyb.ColorManager.YELLOW(loc.BW_COLOR_PRESET_TITLE)});
+	tinsert(values, { TRP3_API.Colors.YELLOW(loc.BW_COLOR_PRESET_TITLE)});
 
-	local existingPreset = getPresetForColor(Color(TRP3_ColorBrowser.red, TRP3_ColorBrowser.green, TRP3_ColorBrowser.blue));
+	local existingPreset = getPresetForColor(TRP3_ColorBrowser.color);
 	if existingPreset then
-		local coloredText = Color(existingPreset.CO):WrapTextInColorCode(existingPreset.TX);
+		local coloredText = TRP3_API.GetColorFromString(existingPreset.CO):WrapTextInColorCode(existingPreset.TX);
 		tinsert(values, { loc.BW_COLOR_PRESET_RENAME:format(coloredText), "RENAME" });
 		tinsert(values, { loc.BW_COLOR_PRESET_DELETE:format(coloredText), "DELETE" });
 	else
@@ -940,31 +947,31 @@ local function colorPresetsDropDown()
 	tinsert(values, { "" }); -- Separator
 
 	for _, preset in pairs(COLOR_PRESETS_BASIC) do
-		tinsert(values_basic, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateHexadecimalColor() });
+		tinsert(values_basic, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateColorString() });
 	end
 	tinsert(values, {loc.UI_COLOR_BROWSER_PRESETS_BASIC, values_basic});
 
 	local values_classes = {};
 	for _, preset in pairs(COLOR_PRESETS_CLASS) do
-		tinsert(values_classes, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateHexadecimalColor() });
+		tinsert(values_classes, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateColorString() });
 	end
 	tinsert(values, {loc.UI_COLOR_BROWSER_PRESETS_CLASSES, values_classes});
 
 	local values_resources = {};
 	for _, preset in pairs(COLOR_PRESETS_RESOURCES) do
-		tinsert(values_resources, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateHexadecimalColor() });
+		tinsert(values_resources, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateColorString() });
 	end
 	tinsert(values, {loc.UI_COLOR_BROWSER_PRESETS_RESOURCES, values_resources});
 
 	local values_items = {};
 	for _, preset in pairs(COLOR_PRESETS_ITEMS) do
-		tinsert(values_items, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateHexadecimalColor() });
+		tinsert(values_items, { preset.CO:WrapTextInColorCode(preset.TX), preset.CO:GenerateColorString() });
 	end
 	tinsert(values, {loc.UI_COLOR_BROWSER_PRESETS_ITEMS, values_items});
 
 	local values_custom = {};
 	for _, preset in pairs(TRP3_Colors) do
-		tinsert(values_custom, { Color(preset.CO):WrapTextInColorCode(preset.TX), preset.CO });
+		tinsert(values_custom, { TRP3_API.GetColorFromString(preset.CO):WrapTextInColorCode(preset.TX), preset.CO });
 	end
 	tinsert(values, {loc.UI_COLOR_BROWSER_PRESETS_CUSTOM, values_custom});
 
@@ -985,12 +992,10 @@ local function initColorBrowser()
 
 	TRP3_ColorBrowserEditBox:SetScript("OnEnterPressed", function(self)
 		if self:GetText():match("^%x%x%x%x%x%x$") or self:GetText():match("^#%x%x%x%x%x%x$") then -- Checks that it is a 6 figures hexadecimal number (with or without a #)
-			local r, g, b = ColorManager.hexaToNumber(self:GetText());
-			TRP3_ColorBrowser.red = r;
-			TRP3_ColorBrowser.green = g;
-			TRP3_ColorBrowser.blue = b;
-			TRP3_ColorBrowserColor:SetColorRGB(r, g, b);
-			TRP3_ColorBrowserSwatch:SetColorTexture(r, g, b);
+			local color = TRP3_API.GetColorFromString(self:GetText());
+			TRP3_ColorBrowser.color = color;
+			TRP3_ColorBrowserColor:SetColorRGB(color:GetRGB());
+			TRP3_ColorBrowserSwatch:SetColorTexture(color:GetRGB());
 			self:ClearFocus();
 		else
 			toast(loc.BW_COLOR_CODE_ALERT, 1);
@@ -1001,9 +1006,7 @@ local function initColorBrowser()
 		TRP3_ColorBrowserEditBox:ClearFocus();
 
 		TRP3_ColorBrowserSwatch:SetColorTexture(r, g, b);
-		TRP3_ColorBrowser.red = r;
-		TRP3_ColorBrowser.green = g;
-		TRP3_ColorBrowser.blue = b;
+		TRP3_ColorBrowser.color = TRP3_API.CreateColor(r, g, b);
 		TRP3_ColorBrowserEditBox:SetText(("#%.2x%.2x%.2x"):format(r * 255, g * 255, b * 255):upper());
 	end);
 
@@ -1011,33 +1014,36 @@ local function initColorBrowser()
 		hidePopups();
 		TRP3_ColorBrowser:Hide();
 		if TRP3_ColorBrowser.callback ~= nil then
-			TRP3_ColorBrowser.callback((TRP3_ColorBrowser.red or 1) * 255, (TRP3_ColorBrowser.green or 1) * 255, (TRP3_ColorBrowser.blue or 1) * 255);
+			TRP3_ColorBrowser.callback(TRP3_ColorBrowser.color);
 		end
 	end);
 
 	TRP3_ColorBrowserPresets:SetScript("OnClick", colorPresetsDropDown);
 end
 
-local function showColorBrowser(callback, red, green, blue)
-	TRP3_ColorBrowserColor:SetColorRGB((red or 255) / 255, (green or 255) / 255, (blue or 255) / 255);
+local function showColorBrowser(callback, color)
+	if color then
+		TRP3_ColorBrowserColor:SetColorRGB(color:GetRGB());
+	else
+		TRP3_ColorBrowserColor:SetColorRGB(1, 1, 1);
+	end
+
 	TRP3_ColorBrowser.callback = callback;
 end
 
 function TRP3_ColorButtonLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	self.setColor = function(red, green, blue)
-		self.red = red;
-		self.green = green;
-		self.blue = blue;
-		if red and green and blue then
-			_G[self:GetName() .. "SwatchBg"]:SetColorTexture(red / 255, green / 255, blue / 255);
-			_G[self:GetName() .. "SwatchBgHighlight"]:SetVertexColor(red / 255, green / 255, blue / 255);
+	self.setColor = function(color)
+		self.color = color;
+		if color then
+			_G[self:GetName() .. "SwatchBg"]:SetColorTexture(color:GetRGB());
+			_G[self:GetName() .. "SwatchBgHighlight"]:SetVertexColor(color:GetRGB());
 		else
 			_G[self:GetName() .. "SwatchBg"]:SetTexture([[interface\icons\]] .. TRP3_InterfaceIcons.Gears);
 			_G[self:GetName() .. "SwatchBgHighlight"]:SetVertexColor(1.0, 1.0, 1.0);
 		end
 		if self.onSelection then
-			self.onSelection(red, green, blue);
+			self.onSelection(color);
 		end
 		_G[self:GetName() .. "BlinkAnimate"]:Play();
 		_G[self:GetName() .. "BlinkAnimate"]:Finish();
@@ -1046,9 +1052,14 @@ function TRP3_ColorButtonLoad(self)
 end
 
 function TRP3_API.popup.showDefaultColorPicker(popupArgs)
-	local setColor, r, g, b = unpack(popupArgs);
+	local setColor, color = unpack(popupArgs);
 
-	ColorPickerFrame:SetColorRGB((r or 255) / 255, (g or 255) / 255, (b or 255) / 255);
+	if color then
+		ColorPickerFrame:SetColorRGB(color:GetRGB());
+	else
+		ColorPickerFrame:SetColorRGB(1, 1, 1);
+	end
+
 	ColorPickerFrame.hasOpacity = false;
 	ColorPickerFrame.opacity = 1;
 
@@ -1058,12 +1069,12 @@ function TRP3_API.popup.showDefaultColorPicker(popupArgs)
 	end
 
 	ColorPickerFrame.opacityFunc = function()
-		local newR, newG, newB = ColorPickerFrame:GetColorRGB();
-		setColor(newR * 255, newG * 255, newB * 255);
+		local r, g, b = ColorPickerFrame:GetColorRGB();
+		setColor(TRP3_API.CreateColor(r, g, b));
 	end
 
 	ColorPickerFrame.cancelFunc = function()
-		setColor(r, g, b);
+		setColor(color);
 	end
 
 	ShowUIPanel(ColorPickerFrame);

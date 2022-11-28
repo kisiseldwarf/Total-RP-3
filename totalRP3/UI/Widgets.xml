@@ -155,7 +155,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 			<KeyValue key="fontStringLayer" value="OVERLAY"/>
 			<KeyValue key="fontStringTemplate" value="GameFontNormal"/>
 			<KeyValue key="fontStringSublayer" value="0" type="number"/>
-			<!-- <KeyValue key="fontStringColor" value="NORMAL_FONT_COLOR" type="global"/> -->
+			<!-- <KeyValue key="fontStringColor" value="TRP3_API.Colors.WHITE" type="global"/> -->
 			<!-- <KeyValue key="fontStringJustifyH" value="CENTER"/> -->
 			<!-- <KeyValue key="fontStringJustifyV" value="MIDDLE"/> -->
 		</KeyValues>
@@ -744,12 +744,12 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 			<OnClick>
 				if button == "LeftButton" then
 					if IsShiftKeyDown() or (TRP3_API.configuration.getValue("default_color_picker")) then
-						TRP3_API.popup.showDefaultColorPicker({self.setColor, self.red, self.green, self.blue});
+						TRP3_API.popup.showDefaultColorPicker({self.setColor, self.color});
 					else
-						TRP3_API.popup.showPopup(TRP3_API.popup.COLORS, nil, {self.setColor, self.red, self.green, self.blue});
+						TRP3_API.popup.showPopup(TRP3_API.popup.COLORS, nil, {self.setColor, self.color});
 					end
 				elseif button == "RightButton" then
-					self.setColor(nil, nil, nil);
+					self.setColor(nil);
 				end
 			</OnClick>
 			<OnEnter>

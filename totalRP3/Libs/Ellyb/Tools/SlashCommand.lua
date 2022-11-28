@@ -52,9 +52,9 @@ function SlashCommand:InitializeCommand(commandKey)
 			print("List of slash commands for " .. Ellyb.addOnName);
 
 			for command, commandInfo in pairs(COMMANDS) do
-				local cmdText = Ellyb.ColorManager.GREEN(slashCommandName) .. " " .. Ellyb.ColorManager.ORANGE(command);
+				local cmdText = GREEN_FONT_COLOR:WrapTextInColorCode(slashCommandName) .. " " .. ORANGE_FONT_COLOR:WrapTextInColorCode(command);
 				if commandInfo.helpLine then
-					cmdText = cmdText .. Ellyb.ColorManager.GREY(commandInfo.helpLine);
+					cmdText = cmdText .. GRAY_FONT_COLOR:WrapTextInColorCode(commandInfo.helpLine);
 				end
 				print(cmdText);
 			end

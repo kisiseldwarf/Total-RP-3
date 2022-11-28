@@ -57,7 +57,7 @@ Prat:AddModuleToLoad(function()
 
 		--- Extract the color used by Prat so we use it by default
 		---@type ColorMixin
-		local characterColor = TRP3_API.utils.color.extractColorFromText(message.PLAYER);
+		local characterColor = TRP3_API.GetColorFromHexMarkup(message.PLAYER);
 
 		-- Character name is without the server name is they are from the same realm or if the option to remove realm info is enabled
 		if realm == TRP3_API.globals.player_realm_id or TRP3_API.configuration.getValue("remove_realm") then

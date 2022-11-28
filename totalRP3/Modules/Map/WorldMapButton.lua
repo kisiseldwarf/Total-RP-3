@@ -14,9 +14,6 @@ local registerConfigKey = TRP3_API.configuration.registerConfigKey;
 local displayDropDown = TRP3_API.ui.listbox.displayDropDown;
 --endregion
 
---region Ellyb imports
-local YELLOW = Ellyb.ColorManager.YELLOW
---endregion
 
 --region WoW imports
 local after = C_Timer.After;
@@ -118,7 +115,7 @@ end)
 -- disabled and tell the user things are firing up.
 Events.registerCallback(Events.BROADCAST_CHANNEL_CONNECTING, function()
 	WorldMapButton:SetEnabled(false);
-	WorldMapButton.subtitle = YELLOW(loc.MAP_BUTTON_SUBTITLE_CONNECTING);
+	WorldMapButton.subtitle = TRP3_API.Colors.YELLOW(loc.MAP_BUTTON_SUBTITLE_CONNECTING);
 	WorldMapButton.Icon:SetDesaturated(true);
 end);
 
@@ -126,7 +123,7 @@ end);
 -- disabled and dump the localised error into the tooltip, to be useful.
 Events.registerCallback(Events.BROADCAST_CHANNEL_OFFLINE, function(reason)
 	WorldMapButton:SetEnabled(false);
-	WorldMapButton.subtitle = YELLOW(loc.MAP_BUTTON_SUBTITLE_OFFLINE):format(reason);
+	WorldMapButton.subtitle = TRP3_API.Colors.YELLOW(loc.MAP_BUTTON_SUBTITLE_OFFLINE):format(reason);
 	WorldMapButton.Icon:SetDesaturated(true);
 end);
 
@@ -134,7 +131,7 @@ end);
 -- standard tooltip description.
 Events.registerCallback(Events.BROADCAST_CHANNEL_READY, function()
 	WorldMapButton:SetEnabled(true);
-	WorldMapButton.subtitle = YELLOW(loc.MAP_BUTTON_SUBTITLE);
+	WorldMapButton.subtitle = TRP3_API.Colors.YELLOW(loc.MAP_BUTTON_SUBTITLE);
 	WorldMapButton.Icon:SetDesaturated(false);
 end);
 

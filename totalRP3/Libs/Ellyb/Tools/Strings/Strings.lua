@@ -203,7 +203,7 @@ end
 ---@param text string
 ---@return string
 function Strings.clickInstruction(click, text)
-	return Ellyb.ColorManager.YELLOW("[" .. click .. "]") .. ": " .. Ellyb.ColorManager.WHITE(text);
+	return YELLOW_FONT_COLOR:WrapTextInColorCode("[" .. click .. "]") .. ": " .. WHITE_FONT_COLOR:WrapTextInColorCode(text);
 end
 
 local BYTES_MULTIPLES = { "byte", "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
@@ -226,29 +226,3 @@ function Strings.formatBytes(bytes)
 	return Ellyb.Maths.round(bytes / math.pow(1024, i), 2) .. Ellyb.Enum.CHARS.NON_BREAKING_SPACE .. BYTES_MULTIPLES[i + 2];
 end
 
---- Split a string into a table using a given separator
---- Taken from http://lua-users.org/wiki/SplitJoin
----@param text string @ The string of text to split
----@param separator string @ A separator
----@return string[] textContent @ A table of strings
-function Strings.split(text, separator)
-	Ellyb.Assertions.isType(text, "string", "text");
-	Ellyb.Assertions.isType(separator, "string", "separator");
-
-	local t = {}
-	local fpat = "(.-)" .. separator
-	local last_end = 1
-	local s, e, cap = text:find(fpat, 1)
-	while s do
-		if s ~= 1 or cap ~= "" then
-			table.insert(t, cap)
-		end
-		last_end = e + 1
-		s, e, cap = text:find(fpat, last_end)
-	end
-	if last_end <= #text then
-		cap = text:sub(last_end)
-		table.insert(t, cap)
-	end
-	return t
-end

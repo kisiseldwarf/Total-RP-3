@@ -7,6 +7,10 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 
 	<Include file="ErrorUtil.lua"/>
 	<Include file="ObjectUtil.lua"/>
+	<Include file="Color.lua"/>
+	<Include file="ColorData.lua"/>
+	<Include file="ColorUtil.lua"/>
+
 	<Include file="..\UI\Widgets.xml"/>
 
 	<!-- Please note that the loading order matters a lot -->
@@ -41,7 +45,6 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 	<Include file="UITools.lua"/>
 	<Include file="Slash.lua"/>
 
-
 	<Include file="..\UI\Main.xml"/>
 	<Include file="MainStructure.lua"/>
 
@@ -67,5 +70,4 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 	<Include file="Profiles.lua"/>
 	<Include file="ProfilesChatLinksModule.lua"/>
 	<Include file="Automation.lua"/>
-
 </Ui>

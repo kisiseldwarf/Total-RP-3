@@ -268,7 +268,7 @@ function TRP3_NamePlatesUtil.GenerateConfigurationPage()
 				inherit = "TRP3_ConfigDropDown",
 				title = L.CO_TOOLTIP_PREFERRED_OOC_INDICATOR,
 				listContent = {
-					{ L.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_TEXT .. TRP3_API.Ellyb.ColorManager.RED(L.CM_OOC), "TEXT" },
+					{ L.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_TEXT .. TRP3_API.Colors.RED(L.CM_OOC), "TEXT" },
 					{ L.CO_TOOLTIP_PREFERRED_OOC_INDICATOR_ICON .. TRP3_NamePlatesUtil.OOC_ICON, "ICON" },
 				},
 				configKey = "NamePlates_PreferredOOCIndicator",

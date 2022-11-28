@@ -19,11 +19,6 @@ local AddOn_TotalRP3 = AddOn_TotalRP3;
 local ChatLinks = {};
 TRP3_API.ChatLinks = ChatLinks;
 
---region Ellyb imports
-local ColorManager = Ellyb.ColorManager;
-local ORANGE = ColorManager.ORANGE;
---endregion
-
 --region Wow Imports
 local assert = assert;
 local pairs = pairs;
@@ -44,7 +39,7 @@ local loc = TRP3_API.loc;
 local LINK_CODE = "garrmission:totalrp3";
 local LINK_LENGTHS = LINK_CODE:len();
 
-local LINK_COLOR = ColorManager.YELLOW;
+local LINK_COLOR = TRP3_API.Colors.YELLOW;
 local CHAT_LINKS_PROTOCOL_REQUEST_PREFIX = "CTLK_R"; -- Request data about a link clicked
 local CHAT_LINKS_PROTOCOL_DATA_PREFIX = "CTLK_D"; -- Send data bout a link sent
 
@@ -61,8 +56,8 @@ ChatLinks.FORMAT = {
 		SMALL = "SMALL",
 	},
 	COLORS = {
-		YELLOW = ColorManager.YELLOW,
-		WHITE = ColorManager.WHITE,
+		YELLOW = TRP3_API.Colors.YELLOW,
+		WHITE = TRP3_API.Colors.WHITE,
 	}
 }
 
@@ -156,7 +151,7 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 		hideActionButtons();
 
 		TRP3_RefTooltip.sender = sender;
-		TRP3_RefTooltip:SetText(tooltipContent.title, TRP3_API.Ellyb.ColorManager.WHITE:GetRGB());
+		TRP3_RefTooltip:SetText(tooltipContent.title, TRP3_API.Colors.WHITE:GetRGB());
 
 		if tooltipContent.lines then
 			for _, line in ipairs(tooltipContent.lines) do
@@ -172,11 +167,11 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 		if IsAltKeyDown() then
 			TRP3_RefTooltip:AddLine(" ");
 			if itemData.moduleName then
-				TRP3_RefTooltip:AddLine(loc.CL_TYPE:format(ORANGE(itemData.moduleName)));
+				TRP3_RefTooltip:AddLine(loc.CL_TYPE:format(TRP3_API.Colors.ORANGE(itemData.moduleName)));
 			end
-			TRP3_RefTooltip:AddLine(loc.CL_SENT_BY:format(ORANGE(sender)));
+			TRP3_RefTooltip:AddLine(loc.CL_SENT_BY:format(TRP3_API.Colors.ORANGE(sender)));
 			if itemData.size then
-				TRP3_RefTooltip:AddLine(loc.CL_CONTENT_SIZE:format(ORANGE(Ellyb.Strings.formatBytes(itemData.size))));
+				TRP3_RefTooltip:AddLine(loc.CL_CONTENT_SIZE:format(TRP3_API.Colors.ORANGE(Ellyb.Strings.formatBytes(itemData.size))));
 			end
 			TRP3_RefTooltip.wasAltKeyDown = true;
 		else
@@ -277,7 +272,7 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 		Ellyb.Assertions.isType(linkType, "string", "linkType");
 		Ellyb.Assertions.isType(callback, "function", "callback");
 
-		TRP3_API.popup.showCustomYesNoPopup(loc.CL_MAKE_IMPORTABLE_SIMPLER:format(TRP3_API.Ellyb.ColorManager.ORANGE(linkType)),
+		TRP3_API.popup.showCustomYesNoPopup(loc.CL_MAKE_IMPORTABLE_SIMPLER:format(TRP3_API.Colors.ORANGE(linkType)),
 			loc.CL_MAKE_IMPORTABLE_BUTTON_TEXT,
 			loc.CL_MAKE_NON_IMPORTABLE,
 			function()

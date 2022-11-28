@@ -16,7 +16,6 @@ local function onStart()
 	local customGetColoredNameWithCustomFallbackFunction = TRP3_API.utils.customGetColoredNameWithCustomFallbackFunction;
 	local playerID = TRP3_API.globals.player_id;
 	local getFullnameForUnitUsingChatMethod = TRP3_API.chat.getFullnameForUnitUsingChatMethod; -- Get full name using settings
-	local getClassColor = TRP3_API.utils.color.getClassColor;
 	local getUnitCustomColor = TRP3_API.utils.color.getUnitCustomColor;
 	local increaseColorContrast = AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast;
 	local configShowNameCustomColors = TRP3_API.chat.configShowNameCustomColors
@@ -48,7 +47,7 @@ local function onStart()
 
 		local name = getFullnameForUnitUsingChatMethod(playerID) or playerName;
 		local _, playerClass = UnitClass("Player");
-		local color = configShowNameCustomColors() and getUnitCustomColor(playerID) or getClassColor(playerClass);
+		local color = configShowNameCustomColors() and getUnitCustomColor(playerID) or TRP3_API.GetClassDisplayColor(playerClass);
 
 		if increaseColorContrast() then
 			color:LightenColorUntilItIsReadable();

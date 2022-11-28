@@ -49,9 +49,9 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 		if dataTab.IC then
 			name = Utils.str.icon(dataTab.IC, 30) .. " " .. name;
 		end
-		tooltipLines:SetTitle(name, TRP3_API.Ellyb.ColorManager.WHITE);
+		tooltipLines:SetTitle(name, TRP3_API.Colors.WHITE);
 		if dataTab.TI then
-			tooltipLines:AddLine("< " .. dataTab.TI .. " >", TRP3_API.Ellyb.ColorManager.ORANGE);
+			tooltipLines:AddLine("< " .. dataTab.TI .. " >", TRP3_API.Colors.ORANGE);
 		end
 		return tooltipLines;
 	end

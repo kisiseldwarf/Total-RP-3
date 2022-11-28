@@ -110,8 +110,8 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 		local channelTypes = {};
 
 		for channelLabel, channelName in pairs(CHANNEL_TYPES) do
-			local channelColor = TRP3_API.Ellyb.ColorManager.getChatColorForChannel(channelName);
-			tinsert(channelTypes, { TRP3_API.Ellyb.ColorManager.YELLOW(loc.NPC_TALK_CHANNEL) .. channelColor(_G[channelLabel]), channelName});
+			local channelColor = TRP3_API.GetColorFromChatType(channelName);
+			tinsert(channelTypes, { TRP3_API.Colors.YELLOW(loc.NPC_TALK_CHANNEL) .. channelColor(_G[channelLabel]), channelName});
 		end
 
 		-- Set the dropdown for the channels

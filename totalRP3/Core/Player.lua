@@ -114,22 +114,23 @@ function Player:GetRelationshipWithPlayer()
 	return TRP3_API.register.relation.getRelation(TRP3_API.register.getUnitIDProfileID(self:GetCharacterID()));
 end
 
----@return Ellyb_Color|nil customColor
+---@return ColorMixin|nil customColor
 function Player:GetCustomColor()
 	local characteristics = self:GetCharacteristics();
 	if characteristics and characteristics.CH then
-		return Ellyb.Color.CreateFromHexa(characteristics.CH);
+		return TRP3_API.GetColorFromString(characteristics.CH);
 	end
 end
 
 
 --- Returns a suitable for display custom color for the player.
 --- If the current user has the option to increase color contrast on darker names, the color will be affected.
---- @ return Ellyb_Color|nil
+--- @ return ColorMixin|nil
 function Player:GetCustomColorForDisplay()
 	local color = self:GetCustomColor()
 	if color and AddOn_TotalRP3.Configuration.shouldDisplayIncreasedColorContrast() then
-		color:LightenColorUntilItIsReadableOnDarkBackgrounds()
+		color = TRP3_API.GenerateReadableColor(color, TRP3_API.Colors.BLACK);
+		-- color:LightenColorUntilItIsReadableOnDarkBackgrounds()
 	end
 	return color
 end

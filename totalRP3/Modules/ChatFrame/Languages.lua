@@ -121,7 +121,7 @@ TRP3_API.events.listenToEvent(TRP3_API.events.WORKFLOW_ON_LOADED, function()
 			for _, language in ipairs(Languages.getAvailableLanguages()) do
 				if language:IsActive() then
 					tinsert(dropdownItems, {
-						language:GetIcon():GenerateString(15) .. " " .. TRP3_API.Ellyb.ColorManager.GREEN(language:GetName()),
+						language:GetIcon():GenerateString(15) .. " " .. TRP3_API.Colors.GREEN(language:GetName()),
 						nil
 					})
 				else

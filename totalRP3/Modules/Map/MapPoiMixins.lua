@@ -42,7 +42,6 @@ MapPoiMixins.CoalescedMapPinMixin = CoalescedMapPinMixin;
 -- The grouped coalesced map pins have uses categories to group the content of the markers under the cursor
 local GroupedCoalescedMapPinMixin = {};
 
-local WHITE = Ellyb.ColorManager.WHITE;
 local TOOLTIP_CATEGORY_SEPARATOR = [[|TInterface\Common\UI-TooltipDivider-Transparent:8:128:0:0:8:8:0:128:0:8:255:255:255|t]];
 
 --- Custom sorting function that compares entries. The resulting order is
@@ -117,14 +116,14 @@ function GroupedCoalescedMapPinMixin:OnMouseEnter()
 		if marker.categoryName ~= lastCategory and marker.tooltipLine then
 			-- Insert separator between categories except for on the first.
 			if lastCategory ~= nil then
-				tooltip:AddTempLine(TOOLTIP_CATEGORY_SEPARATOR, WHITE);
+				tooltip:AddTempLine(TOOLTIP_CATEGORY_SEPARATOR, TRP3_API.Colors.WHITE);
 			end
 
 			tooltip:AddTempLine(marker.categoryName or "");
 			lastCategory = marker.categoryName;
 		end
 
-		tooltip:AddTempLine(marker.tooltipLine or "", WHITE);
+		tooltip:AddTempLine(marker.tooltipLine or "", TRP3_API.Colors.WHITE);
 	end
 
 	self:OnTooltipAboutToShow(tooltip);

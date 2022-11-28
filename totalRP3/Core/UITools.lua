@@ -24,7 +24,6 @@ local TRP3_MainTooltip, TRP3_MainTooltipTextRight1, TRP3_MainTooltipTextLeft1, T
 local shiftDown = IsShiftKeyDown;
 local UnitIsPlayer = UnitIsPlayer;
 local getUnitID = TRP3_API.utils.str.getUnitID;
-local numberToHexa = TRP3_API.utils.color.numberToHexa;
 local TRP3_Enums = AddOn_TotalRP3.Enums;
 
 local CONFIG_UI_SOUNDS = "ui_sounds";
@@ -895,7 +894,7 @@ end
 
 local function onColorTagSelected(red, green, blue, frame)
 	local cursorIndex = frame:GetCursorPosition();
-	local tag = ("{col:%s}"):format(strconcat(numberToHexa(red), numberToHexa(green), numberToHexa(blue)));
+	local tag = ("{col:%02x%02x%02x}"):format(red, green, blue);
 	insertTag(tag .. "{/col}", cursorIndex, frame);
 	frame:SetCursorPosition(cursorIndex + tag:len());
 	frame:SetFocus();
@@ -1131,9 +1130,10 @@ function TRP3_API.ui.frame.initResize(resizeButton)
 	end);
 end
 
-local VALID_SIZE_COLOR = TRP3_API.Ellyb.ColorManager.GREEN;
-local INVALID_SIZE_COLOR = TRP3_API.Ellyb.ColorManager.RED;
 resizeShadowFrame:SetScript("OnUpdate", function(self)
+	local VALID_SIZE_COLOR = TRP3_API.Colors.GREEN;
+	local INVALID_SIZE_COLOR = TRP3_API.Colors.RED;
+
 	local height, width = self:GetHeight(), self:GetWidth();
 	local heightColor, widthColor = VALID_SIZE_COLOR, VALID_SIZE_COLOR;
 	if height < self.minHeight then
