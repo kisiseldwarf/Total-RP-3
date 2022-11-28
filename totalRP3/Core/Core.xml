@@ -6,6 +6,7 @@
 https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 
 	<Include file="ErrorUtil.lua"/>
+	<Include file="ObjectUtil.lua"/>
 	<Include file="..\UI\Widgets.xml"/>
 
 	<!-- Please note that the loading order matters a lot -->
