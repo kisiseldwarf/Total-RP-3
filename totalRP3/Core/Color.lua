@@ -72,7 +72,8 @@ function TRP3.GetClassDisplayColor(classToken)
 end
 
 function TRP3.GetColorFromName(name)
-	return TRP3.NamedColors[name];
+	local key = string.upper(name);
+	return TRP3.NamedColors[key];
 end
 
 function TRP3.GetColorFromHexString(str)
