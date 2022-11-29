@@ -158,6 +158,11 @@ function TRP3.GenerateInterpolatedColor(colorA, colorB, ratio)
 	local h1, s1, l1, a1 = colorA:GetHSLA();
 	local h2, s2, l2, a2 = colorB:GetHSLA();
 
+	-- If we'd traverse > 180° of hue then go the other way instead.
+	if (h2 - h1) > 0.5 then
+		h2 = 1 - h2;
+	end
+
 	local ht = Lerp(h1, h2, ratio);
 	local st = Lerp(s1, s2, ratio);
 	local lt = Lerp(l1, l2, ratio);
