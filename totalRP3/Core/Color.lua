@@ -360,11 +360,10 @@ function ConvertHSLToRGB(h, s, l)
 	if s ~= 0 then
 		local t2 = (l < 0.5) and (l * (1 + s)) or (l + s - l * s);
 		local t1 = 2 * l - t2;
-		local th = h / 360;
 
-		r = ConvertHSLComponent(th + (1 / 3), t1, t2);
-		g = ConvertHSLComponent(th, t1, t2);
-		b = ConvertHSLComponent(th - (1 / 3), t1, t2);
+		r = ConvertHSLComponent(h + (1 / 3), t1, t2);
+		g = ConvertHSLComponent(h, t1, t2);
+		b = ConvertHSLComponent(h - (1 / 3), t1, t2);
 	end
 
 	return r, g, b;
@@ -389,10 +388,10 @@ local function CalculateHue(r, g, b)
 		h = ((r - g) / c) + 4;
 	end
 
-	h = h * 60;
+	h = h / 6;
 
 	if h < 0 then
-		h = h + 360;
+		h = h + 1;
 	end
 
 	return h;
