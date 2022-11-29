@@ -606,8 +606,8 @@ local function GenerateColorGradientMarkup(colorStart, colorEnd, text)
 	colorStart = TRP3_API.GetColorFromString(colorStart) or TRP3_API.Colors.WHITE;
 	colorEnd = TRP3_API.GetColorFromString(colorEnd) or TRP3_API.Colors.WHITE;
 
-	local len = string.utf8len(text);
-	local i = 1;
+	local len = strlenutf8(text) - 1;
+	local i = 0;
 
 	local function ColorCodePoint(c)
 		local color = TRP3_API.GenerateInterpolatedColor(colorStart, colorEnd, i / len);
