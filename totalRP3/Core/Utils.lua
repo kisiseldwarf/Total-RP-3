@@ -602,9 +602,27 @@ local function convertTextTag(tag)
 	return "{"..tag.."}";
 end
 
+local function GenerateColorGradientMarkup(colorStart, colorEnd, text)
+	colorStart = TRP3_API.GetColorFromString(colorStart) or TRP3_API.Colors.WHITE;
+	colorEnd = TRP3_API.GetColorFromString(colorEnd) or TRP3_API.Colors.WHITE;
+
+	local len = string.utf8len(text);
+	local i = 1;
+
+	local function ColorCodePoint(c)
+		local color = TRP3_API.GenerateInterpolatedColor(colorStart, colorEnd, i / len);
+		i = i + 1;
+		return color:WrapTextInColorCode(c);
+	end
+
+	return (string.gsub(text, "([%z\1-\127\194-\244][\128-\191]*)", ColorCodePoint));
+end
+
 local function convertTextTags(text)
 	if text then
-		text = text:gsub("%{(.-)%}", convertTextTag);
+		-- TODO: Decide on a proper name for color gradients or reuse {col} markup.
+		text = string.gsub(text, "{cg:([^:}]+):?([^}]*)}(.-){/cg}", GenerateColorGradientMarkup);
+		text = string.gsub(text, "%{(.-)%}", convertTextTag);
 		return text;
 	end
 end
