@@ -1,0 +1,254 @@
+<!--
+	Copyright The Total RP 3 Authors
+	SPDX-License-Identifier: Apache-2.0
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+	<Include file="ColorPicker.lua"/>
+
+	<Script>
+		T = { edgeFile = [[Interface\AddOns\totalRP3\Resources\UI\UIFrameMetalBackdrop]], edgeSize = 8, tileEdge = true }
+	</Script>
+
+	<Frame name="TRP3_ColorPickerShadePickerTemplate" mixin="TRP3_ColorPickerShadePickerMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND"  textureSubLevel="0">
+				<Texture parentKey="Color">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<Color r="0" g="0.66" b="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND"  textureSubLevel="1">
+				<Texture parentKey="White" inherits="TRP3_GradientTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Color"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Color"/>
+					</Anchors>
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="1" g="1" b="1" a="1"/>
+						<MaxColor r="1" g="1" b="1" a="0"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND"  textureSubLevel="2">
+				<Texture parentKey="Black" inherits="TRP3_GradientTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Color"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Color"/>
+					</Anchors>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="0" b="0" a="1"/>
+						<MaxColor r="0" g="0" b="0" a="0"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="ThumbBorder" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumb">
+					<Size x="22" y="22"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ThumbFill" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ThumbBorder"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ThumbBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Backdrop" inherits="BackdropTemplate" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="T" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Slider name="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerSliderMixin" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<Size x="200" y="20"/>
+		<Frames>
+			<Frame parentKey="Backdrop" inherits="BackdropTemplate" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="T" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<ThumbTexture parentKey="ThumbBorder" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumb">
+			<Size x="22" y="22"/>
+		</ThumbTexture>
+		<Scripts>
+			<OnValueChanged method="OnValueChanged"/>
+		</Scripts>
+	</Slider>
+
+	<Slider name="TRP3_ColorPickerHueSliderTemplate" inherits="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerHueSliderMixin" minValue="0" maxValue="359" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="1" g="0" b="0"/>
+						<MaxColor r="1" g="1" b="0"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="1" g="1" b="0"/>
+						<MaxColor r="0" g="1" b="0"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="0" g="1" b="0"/>
+						<MaxColor r="0" g="1" b="1"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="0" g="1" b="1"/>
+						<MaxColor r="0" g="0" b="1"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="0" g="0" b="1"/>
+						<MaxColor r="1" g="0" b="1"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="1" g="0" b="1"/>
+						<MaxColor r="1" g="0" b="0"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ThumbFill" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator">
+					<Anchors/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnSizeChanged method="OnSizeChanged"/>
+		</Scripts>
+	</Slider>
+
+	<Slider name="TRP3_ColorPickerOpacitySliderTemplate" inherits="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerOpacitySliderMixin" minValue="0" maxValue="100" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Gradient" inherits="TRP3_GradientTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+					<Gradient orientation="HORIZONTAL">
+						<MinColor r="0" g="0.66" b="1" a="0"/>
+						<MaxColor r="0" g="0.66" b="1" a="1"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Slider>
+
+	<Frame name="TRP3_ColorPickerPreviewSwatchTemplate" mixin="TRP3_ColorPickerPreviewSwatchMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Color">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Backdrop" inherits="BackdropTemplate" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="T" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TRP3_ColorPickerTemplate" inherits="ResizeLayoutFrame" mixin="TRP3_ColorPickerMixin" toplevel="true" enableMouse="true" virtual="true">
+		<KeyValues>
+			<!-- <KeyValue key="initialColor" value="TRP3_API.Colors.CORNFLOWERBLUE" type="global"/> -->
+			<KeyValue key="widthPadding" value="6" type="number"/>
+			<KeyValue key="heightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Background" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-18"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="ShadePicker" inherits="TRP3_ColorPickerShadePickerTemplate">
+				<Size x="300" y="150"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-28"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="PreviewSwatch" inherits="TRP3_ColorPickerPreviewSwatchTemplate">
+				<Size x="44" y="44"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShadePicker" relativePoint="BOTTOMLEFT" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Slider parentKey="HueSlider" inherits="TRP3_ColorPickerHueSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ShadePicker" relativePoint="BOTTOMRIGHT" y="-4"/>
+					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="4"/>
+				</Anchors>
+			</Slider>
+			<Slider parentKey="OpacitySlider" inherits="TRP3_ColorPickerOpacitySliderTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HueSlider" relativePoint="BOTTOMRIGHT" y="-4"/>
+					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="4"/>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TRP3_ColorPickerFrame" inherits="TRP3_ColorPickerTemplate">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+</Ui>

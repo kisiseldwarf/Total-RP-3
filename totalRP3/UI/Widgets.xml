@@ -6,6 +6,7 @@
 https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 
 	<Include file="GradientTexture.xml"/>
+	<Include file="ColorPicker.xml"/>
 
 	<Include file="Widgets.lua"/>
 
