@@ -16,7 +16,7 @@ function TRP3.CreateObjectCache(factoryFunc, keyFunc)
 		keyFunc = Identity;
 	end
 
-	local cache = { objects = {}, Acquire = nil };
+	local cache = { objects = setmetatable({}, { __mode = "kv" }), Acquire = nil };
 
 	function cache:Acquire(...)
 		local key = keyFunc(...);
