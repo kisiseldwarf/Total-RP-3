@@ -9,7 +9,6 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 	<Include file="ObjectUtil.lua"/>
 	<Include file="Color.lua"/>
 	<Include file="ColorData.lua"/>
-	<Include file="ColorUtil.lua"/>
 
 	<Include file="..\UI\Widgets.xml"/>
 
