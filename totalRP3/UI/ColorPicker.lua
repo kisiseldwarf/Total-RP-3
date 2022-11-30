@@ -196,7 +196,7 @@ function TRP3_ColorPickerShadePickerMixin:GetCanvasRect()
 end
 
 function TRP3_ColorPickerShadePickerMixin:GetCanvasPadding()
-	return 3;
+	return 12;
 end
 
 --
