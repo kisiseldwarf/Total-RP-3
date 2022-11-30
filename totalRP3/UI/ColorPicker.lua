@@ -157,7 +157,7 @@ function TRP3_ColorPickerShadePickerMixin:OnSelectedValuesChanged(h, s, v)
 end
 
 function TRP3_ColorPickerShadePickerMixin:OnUpdate()
-	self:DoTheThing();
+	self:UpdateSelectedValues();
 end
 
 function TRP3_ColorPickerShadePickerMixin:OnMouseDown()
@@ -166,9 +166,10 @@ end
 
 function TRP3_ColorPickerShadePickerMixin:OnMouseUp()
 	self:SetScript("OnUpdate", nil);
+	self:UpdateSelectedValues();
 end
 
-function TRP3_ColorPickerShadePickerMixin:DoTheThing()
+function TRP3_ColorPickerShadePickerMixin:UpdateSelectedValues()
 	local cx, cy = GetCursorPosition();
 	local left, bottom, width, height = self:GetCanvasRect();
 
