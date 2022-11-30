@@ -363,12 +363,9 @@ end
 function ConvertHSLToHSV(h, s, l)
 	local H, S, V;
 
-	l = l * 2;
-	s = s * (l <= 1 and l or (2 - l));
-
 	H = h;
-	S = (2 * s) / (l + s);
-	V = (l + s) / 2;
+	V = l + s * math.min(l, 1 - l);
+	S = (V == 0 and 0 or (2 * (1 - (l / V))));
 
 	return H, S, V;
 end
@@ -392,11 +389,8 @@ function ConvertHSVToHSL(h, s, v)
 	local H, S, L;
 
 	H = h;
-	S = s * v;
-	L = (2 - s) * v;
-
-	S = S / (L <= 1 and L or (2 - L));
-	L = L / 2;
+	L = v * (1 - (s / 2));
+	S = ((L == 0 or L == 1) and 0 or ((v - L) / math.min(L, 1 - L)));
 
 	return H, S, L;
 end
