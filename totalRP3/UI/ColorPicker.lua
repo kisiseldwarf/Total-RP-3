@@ -188,7 +188,7 @@ function TRP3_ColorPickerShadePickerMixin:GetCanvasRect()
 	local padding = self:GetCanvasPadding();
 
 	left = left + padding;
-	bottom = bottom - padding;
+	bottom = bottom + padding;
 	width = width - (padding * 2);
 	height = height - (padding * 2);
 
