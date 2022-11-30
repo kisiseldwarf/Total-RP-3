@@ -14,7 +14,8 @@ local TRP3 = select(2, ...);
 -- TODO: Merge across CBR changes.
 TRP3_ColorPickerDataProviderMixin = CreateFromMixins(CallbackRegistryMixin);
 TRP3_ColorPickerDataProviderMixin:GenerateCallbackEvents({
-	"OnSelectedValuesChanged"
+	"OnOpacityEnabledChanged",
+	"OnSelectedValuesChanged",
 });
 
 function TRP3_ColorPickerDataProviderMixin:Init(initialColor)
@@ -25,14 +26,39 @@ function TRP3_ColorPickerDataProviderMixin:Init(initialColor)
 	end
 
 	self.h, self.s, self.v, self.a = initialColor:GetHSVA();
+	self.opacityEnabled = true;
 end
 
 function TRP3_ColorPickerDataProviderMixin:GetSelectedColor()
-	return TRP3.CreateColorFromHSVA(self:GetSelectedValues());
+	local h, s, v, a = self:GetSelectedValues();
+
+	if not self:IsOpacityEnabled() then
+		a = 1;
+	end
+
+	return TRP3.CreateColorFromHSVA(h, s, v, a);
 end
 
 function TRP3_ColorPickerDataProviderMixin:GetSelectedValues()
 	return self.h, self.s, self.v, self.a;
+end
+
+function TRP3_ColorPickerDataProviderMixin:IsOpacityEnabled()
+	return self.opacityEnabled;
+end
+
+function TRP3_ColorPickerDataProviderMixin:SetOpacityEnabled(enabled)
+	if self.opacityEnabled == enabled then
+		return;
+	end
+
+	self.opacityEnabled = enabled;
+
+	-- Trigger both these events as toggling opacity has a "soft" effect on
+	-- the alpha value, which should lead to some visual changes.
+
+	self:TriggerEvent("OnOpacityEnabledChanged", self.opacityEnabled);
+	self:TriggerEvent("OnSelectedValuesChanged", self:GetSelectedValues());
 end
 
 function TRP3_ColorPickerDataProviderMixin:SetSelectedValues(h, s, v, a)
@@ -74,36 +100,8 @@ function TRP3_ColorPickerWidgetBaseMixin:OnDataProviderChanged(dataProvider)  --
 	-- No-op; implement in a derived mixin to be notified of data provider changes.
 end
 
-function TRP3_ColorPickerWidgetBaseMixin:OnSelectedValuesChanged(h, s, v, a)  -- luacheck: no unused
-	-- No-op; implement in a derived mixin to be notified of selected color changes.
-end
-
 function TRP3_ColorPickerWidgetBaseMixin:GetDataProvider()
 	return self.dataProvider;
-end
-
-function TRP3_ColorPickerWidgetBaseMixin:GetSelectedColor()
-	local color;
-
-	if self.dataProvider then
-		color = self.dataProvider:GetSelectedColor();
-	else
-		color = TRP3.Colors.WHITE;
-	end
-
-	return color;
-end
-
-function TRP3_ColorPickerWidgetBaseMixin:GetSelectedValues()
-	local h, s, v, a;
-
-	if self.dataProvider then
-		h, s, v, a = self.dataProvider:GetSelectedValues();
-	else
-		h, s, v, a = TRP3.Colors.WHITE:GetHSVA();
-	end
-
-	return h, s, v, a;
 end
 
 function TRP3_ColorPickerWidgetBaseMixin:SetDataProvider(dataProvider)
@@ -116,24 +114,7 @@ function TRP3_ColorPickerWidgetBaseMixin:SetDataProvider(dataProvider)
 	end
 
 	self.dataProvider = dataProvider;
-
-	if self.dataProvider then
-		self.dataProvider:RegisterCallback("OnSelectedValuesChanged", self.OnSelectedValuesChanged, self);
-	end
-
 	self:OnDataProviderChanged(self.dataProvider);
-end
-
-function TRP3_ColorPickerWidgetBaseMixin:SetSelectedColor(color)
-	if self.dataProvider then
-		self.dataProvider:SetSelectedColor(color);
-	end
-end
-
-function TRP3_ColorPickerWidgetBaseMixin:SetSelectedValues(h, s, v, a)
-	if self.dataProvider then
-		self.dataProvider:SetSelectedValues(h, s, v, a);
-	end
 end
 
 --
@@ -142,7 +123,27 @@ end
 
 TRP3_ColorPickerShadePickerMixin = CreateFromMixins(TRP3_ColorPickerWidgetBaseMixin);
 
-function TRP3_ColorPickerShadePickerMixin:OnSelectedValuesChanged(h, s, v)
+function TRP3_ColorPickerShadePickerMixin:OnDataProviderChanged(dataProvider)
+	dataProvider:RegisterCallback("OnSelectedValuesChanged", self.UpdateDisplayedColor, self);
+	self:UpdateDisplayedColor();
+end
+
+function TRP3_ColorPickerShadePickerMixin:OnUpdate()
+	self:UpdateSelectedColor();
+end
+
+function TRP3_ColorPickerShadePickerMixin:OnMouseDown()
+	self:SetScript("OnUpdate", self.OnUpdate);
+end
+
+function TRP3_ColorPickerShadePickerMixin:OnMouseUp()
+	self:SetScript("OnUpdate", nil);
+	self:UpdateSelectedColor();
+end
+
+function TRP3_ColorPickerShadePickerMixin:UpdateDisplayedColor()
+	local h, s, v = self:GetDataProvider():GetSelectedValues();
+
 	local width, height = select(3, self:GetCanvasRect());
 	local padding = self:GetCanvasPadding();
 	local scale = self:GetEffectiveScale();
@@ -152,35 +153,22 @@ function TRP3_ColorPickerShadePickerMixin:OnSelectedValuesChanged(h, s, v)
 
 	self.ThumbBorder:ClearAllPoints();
 	self.ThumbBorder:SetPoint("CENTER", self, "BOTTOMLEFT", xOffset, yOffset);
-	self.ThumbFill:SetVertexColor(self:GetSelectedColor():GetRGB());
+	self.ThumbFill:SetVertexColor(self:GetDataProvider():GetSelectedColor():GetRGB());
 	self.Color:SetColorTexture(TRP3.CreateColorFromHSVA(h, 1, 1):GetRGB());
 end
 
-function TRP3_ColorPickerShadePickerMixin:OnUpdate()
-	self:UpdateSelectedValues();
-end
-
-function TRP3_ColorPickerShadePickerMixin:OnMouseDown()
-	self:SetScript("OnUpdate", self.OnUpdate);
-end
-
-function TRP3_ColorPickerShadePickerMixin:OnMouseUp()
-	self:SetScript("OnUpdate", nil);
-	self:UpdateSelectedValues();
-end
-
-function TRP3_ColorPickerShadePickerMixin:UpdateSelectedValues()
+function TRP3_ColorPickerShadePickerMixin:UpdateSelectedColor()
 	local cx, cy = GetCursorPosition();
 	local left, bottom, width, height = self:GetCanvasRect();
 
 	local dx = Clamp(cx, left, left + width) - left;
 	local dy = Clamp(cy, bottom, bottom + height) - bottom;
 
-	local h, _, _, a = self:GetSelectedValues();
+	local h, _, _, a = self:GetDataProvider():GetSelectedValues();
 	local s = Saturate(dx / width);
 	local v = Saturate(dy / height);
 
-	self:SetSelectedValues(h, s, v, a);
+	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
 
 function TRP3_ColorPickerShadePickerMixin:GetCanvasRect()
@@ -209,11 +197,8 @@ function TRP3_ColorPickerSliderMixin:OnValueChanged(value)  -- luacheck: no unus
 	-- No-op; override in a derived mixin to update the data provider.
 end
 
-function TRP3_ColorPickerSliderMixin:OnDataProviderChanged()
-	self:UpdateDeferred();
-end
-
-function TRP3_ColorPickerSliderMixin:OnSelectedValuesChanged()
+function TRP3_ColorPickerSliderMixin:OnDataProviderChanged(dataProvider)
+	dataProvider:RegisterCallback("OnSelectedValuesChanged", self.UpdateDeferred, self);
 	self:UpdateDeferred();
 end
 
@@ -234,7 +219,7 @@ end
 -- Hue Slider
 --
 
-TRP3_ColorPickerHueSliderMixin = {};
+TRP3_ColorPickerHueSliderMixin = CreateFromMixins(TRP3_ColorPickerSliderMixin);
 
 function TRP3_ColorPickerHueSliderMixin:OnLoad()
 	-- Anchors to <ThumbTexture> elements don't work in XML.
@@ -254,14 +239,14 @@ function TRP3_ColorPickerHueSliderMixin:OnSizeChanged()
 end
 
 function TRP3_ColorPickerHueSliderMixin:OnValueChanged(value)
-	local _, s, v, a = self:GetSelectedValues();
+	local _, s, v, a = self:GetDataProvider():GetSelectedValues();
 	local h = value / 360;
 
-	self:SetSelectedValues(h, s, v, a);
+	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
 
 function TRP3_ColorPickerHueSliderMixin:UpdateDisplayedColor()
-	local h = self:GetSelectedValues();
+	local h = self:GetDataProvider():GetSelectedValues();
 
 	if h == 1 then
 		h = 0;
@@ -288,24 +273,32 @@ end
 -- Opacity Slider
 --
 
-TRP3_ColorPickerOpacitySliderMixin = {};
+TRP3_ColorPickerOpacitySliderMixin = CreateFromMixins(TRP3_ColorPickerSliderMixin);
 
+function TRP3_ColorPickerOpacitySliderMixin:OnDataProviderChanged(dataProvider)
+	TRP3_ColorPickerSliderMixin.OnDataProviderChanged(self, dataProvider);
+	dataProvider:RegisterCallback("OnOpacityEnabledChanged", self.UpdateVisibility, self);
+end
 
 function TRP3_ColorPickerOpacitySliderMixin:OnValueChanged(value)
-	local h, s, v = self:GetSelectedValues();
+	local h, s, v = self:GetDataProvider():GetSelectedValues();
 	local a = value / 100;
 
-	self:SetSelectedValues(h, s, v, a);
+	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
 
 function TRP3_ColorPickerOpacitySliderMixin:UpdateDisplayedColor()
-	local h, s, v, a = self:GetSelectedValues();
+	local h, s, v, a = self:GetDataProvider():GetSelectedValues();
 
 	self:SetValue(math.floor(a * 100));
 
 	local startColor = TRP3.CreateColorFromHSVA(h, s, v, 0);
 	local endColor = TRP3.CreateColorFromHSVA(h, s, v, 1);
 	self.Gradient:SetGradient("HORIZONTAL", startColor, endColor);
+end
+
+function TRP3_ColorPickerOpacitySliderMixin:UpdateVisibility()
+	self:SetShown(self:GetDataProvider():IsOpacityEnabled());
 end
 
 --
@@ -317,7 +310,7 @@ TRP3_ColorPickerPreviewSwatchMixin = CreateFromMixins(TRP3_ColorPickerWidgetBase
 function TRP3_ColorPickerPreviewSwatchMixin:OnEnter()
 	-- TODO: Tooltip stuff can be handled through better means.
 	TRP3_MainTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	TRP3_MainTooltip:SetText(self:GetSelectedColor():GenerateColorString());
+	TRP3_MainTooltip:SetText(self:GetDataProvider():GetSelectedColor():GenerateColorString());
 	TRP3_MainTooltip:Show();
 end
 
@@ -325,16 +318,22 @@ function TRP3_ColorPickerPreviewSwatchMixin:OnLeave()
 	TRP3_MainTooltip:Hide();
 end
 
-function TRP3_ColorPickerPreviewSwatchMixin:OnDataProviderChanged()
-	self:UpdateDisplayedColor();
-end
-
-function TRP3_ColorPickerPreviewSwatchMixin:OnSelectedValuesChanged()
+function TRP3_ColorPickerPreviewSwatchMixin:OnDataProviderChanged(dataProvider)
+	dataProvider:RegisterCallback("OnSelectedValuesChanged", self.UpdateDisplayedColor, self);
+	dataProvider:RegisterCallback("OnOpacityEnabledChanged", self.UpdateVisibility, self);
 	self:UpdateDisplayedColor();
 end
 
 function TRP3_ColorPickerPreviewSwatchMixin:UpdateDisplayedColor()
-	self.Color:SetColorTexture(self:GetSelectedColor():GetRGBA());
+	self.Color:SetColorTexture(self:GetDataProvider():GetSelectedColor():GetRGBA());
+end
+
+function TRP3_ColorPickerPreviewSwatchMixin:UpdateVisibility()
+	if self:GetDataProvider():IsOpacityEnabled() then
+		self:SetSize(44, 44);
+	else
+		self:SetSize(20, 20);
+	end
 end
 
 --
@@ -347,30 +346,36 @@ function TRP3_ColorPickerMixin:OnLoad()
 	self:SetDataProvider(TRP3.CreateColorPickerDataProvider(self.initialColor));
 end
 
-function TRP3_ColorPickerMixin:GetDataProvider()
-	return self.dataProvider;
+function TRP3_ColorPickerMixin:GetSelectedColor()
+	return self:GetDataProvider():GetSelectedColor();
 end
 
-function TRP3_ColorPickerMixin:GetHueSlider()
-	return self.HueSlider;
+function TRP3_ColorPickerMixin:GetSelectedValues()
+	return self:GetDataProvider():GetSelectedValues();
 end
 
-function TRP3_ColorPickerMixin:GetOpacitySlider()
-	return self.OpacitySlider;
+function TRP3_ColorPickerMixin:IsOpacityEnabled()
+	return self:GetDataProvider():IsOpacityEnabled();
 end
 
-function TRP3_ColorPickerMixin:GetShadePicker()
-	return self.ShadePicker;
+function TRP3_ColorPickerMixin:SetOpacityEnabled(enabled)
+	self:GetDataProvider():SetOpacityEnabled(enabled);
 end
 
-function TRP3_ColorPickerMixin:GetPreviewSwatch()
-	return self.PreviewSwatch;
+function TRP3_ColorPickerMixin:SetSelectedColor(color)
+	self:GetDataProvider():SetSelectedColor(color);
+end
+
+function TRP3_ColorPickerMixin:SetSelectedValues(h, s, v, a)
+	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
 
 function TRP3_ColorPickerMixin:OnDataProviderChanged(dataProvider)
-	self:GetHueSlider():SetDataProvider(dataProvider);
-	self:GetOpacitySlider():SetDataProvider(dataProvider);
-	self:GetShadePicker():SetDataProvider(dataProvider);
-	self:GetPreviewSwatch():SetDataProvider(dataProvider);
-end
+	-- Opacity enable state changes should re-layout the frame.
+	dataProvider:RegisterCallback("OnOpacityEnabledChanged", self.MarkDirty, self);
 
+	self.HueSlider:SetDataProvider(dataProvider);
+	self.OpacitySlider:SetDataProvider(dataProvider);
+	self.ShadePicker:SetDataProvider(dataProvider);
+	self.PreviewSwatch:SetDataProvider(dataProvider);
+end
