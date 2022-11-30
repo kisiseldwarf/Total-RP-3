@@ -5,9 +5,13 @@ local TRP3 = select(2, ...);
 
 local CalculateLightnessContrast;
 local CalculateLuminance;
+local ConvertHSLToHSV;
 local ConvertHSLToRGB;
+local ConvertHSVToHSL;
+local ConvertHSVToRGB;
 local ConvertHWBToRGB;
 local ConvertRGBToHSL;
+local ConvertRGBToHSV;
 local ConvertRGBToHWB;
 
 local function CreateColorObject(r, g, b, a)
@@ -48,6 +52,11 @@ end
 
 function TRP3.CreateColorFromHSLA(h, s, l, a)
 	local r, g, b = ConvertHSLToRGB(h, s, l);
+	return AcquireColor(r, g, b, a or 1);
+end
+
+function TRP3.CreateColorFromHSVA(h, s, v, a)
+	local r, g, b = ConvertHSVToRGB(h, s, v);
 	return AcquireColor(r, g, b, a or 1);
 end
 
@@ -271,6 +280,15 @@ function TRP3.ColorMixin:GetHSLA()
 	return h, s, l, self.a;
 end
 
+function TRP3.ColorMixin:GetHSV()
+	return ConvertRGBToHSV(self:GetRGB());
+end
+
+function TRP3.ColorMixin:GetHSVA()
+	local h, s, v = self:GetHSV();
+	return h, s, v, self.a;
+end
+
 function TRP3.ColorMixin:GetHWB()
 	return ConvertRGBToHWB(self:GetRGB());
 end
@@ -342,64 +360,62 @@ end
 -- Color Conversion Utilities
 --
 
-local function ConvertHSLComponent(c, t1, t2)
-	if c < 0 then c = c + 1; end
-	if c > 1 then c = c - 1; end
+function ConvertHSLToHSV(h, s, l)
+	local H, S, V;
 
-	if (6 * c) < 1 then
-		return t1 + (t2 - t1) * 6 * c;
-	elseif (2 * c) < 1 then
-		return t2;
-	elseif (3 * c) < 2 then
-		return t1 + (t2 - t1) * (2/3 - c) * 6;
-	else
-		return t1;
-	end
+	l = l * 2;
+	s = s * (l <= 1 and l or (2 - l));
+
+	H = h;
+	S = (2 * s) / (l + s);
+	V = (l + s) / 2;
+
+	return H, S, V;
+end
+
+local function ConvertHSLComponent(n, h, s, l)
+	local k = (n + h * 12) % 12;
+	local a = s * math.min(l, 1 - l);
+
+	return l - a * math.max(-1, math.min(k - 3, 9 - k, 1));
 end
 
 function ConvertHSLToRGB(h, s, l)
-	local r = l;
-	local g = l;
-	local b = l;
-
-	if s ~= 0 then
-		local t2 = (l < 0.5) and (l * (1 + s)) or (l + s - l * s);
-		local t1 = 2 * l - t2;
-
-		r = ConvertHSLComponent(h + (1 / 3), t1, t2);
-		g = ConvertHSLComponent(h, t1, t2);
-		b = ConvertHSLComponent(h - (1 / 3), t1, t2);
-	end
+	local r = ConvertHSLComponent(0, h, s, l);
+	local g = ConvertHSLComponent(8, h, s, l);
+	local b = ConvertHSLComponent(4, h, s, l);
 
 	return r, g, b;
 end
 
-function ConvertHWBToRGB(h, w, b)
+function ConvertHSVToHSL(h, s, v)
+	local H, S, L;
+
+	H = h;
+	S = s * v;
+	L = (2 - s) * v;
+
+	S = S / (L <= 1 and L or (2 - L));
+	L = L / 2;
+
+	return H, S, L;
 end
 
-local function CalculateHue(r, g, b)
-	local cmax = math.max(r, g, b);
-	local cmin = math.min(r, g, b);
-	local c = cmax - cmin;
-	local h;
+function ConvertHSVToRGB(h, s, v)
+	return ConvertHSLToRGB(ConvertHSVToHSL(h, s, v));
+end
 
-	if c == 0 then
-		h = 0;
-	elseif r == cmax then
-		h = ((g - b) / c);
-	elseif g == cmax then
-		h = ((b - r) / c) + 2;
+function ConvertHWBToRGB(h, w, b)
+	if w + b >= 1 then
+		local g = w / (w + b);
+		return g, g, g;
 	else
-		h = ((r - g) / c) + 4;
+		local R, G, B = ConvertHSLToRGB(h, 1, 0.5);
+		R = (R * (1 - w - b)) + w;
+		G = (G * (1 - w - b)) + w;
+		B = (B * (1 - w - b)) + w;
+		return R, G, B;
 	end
-
-	h = h / 6;
-
-	if h < 0 then
-		h = h + 1;
-	end
-
-	return h;
 end
 
 function ConvertRGBToHSL(r, g, b)
@@ -407,23 +423,33 @@ function ConvertRGBToHSL(r, g, b)
 	local cmin = math.min(r, g, b);
 	local c = cmax - cmin;
 
-	local h = CalculateHue(r, g, b);
-	local s;
+	local h = 0;
+	local s = 0;
 	local l = (cmin + cmax) / 2;
 
-	if c == 0 then
-		s = 0;
-	elseif l <= 0.5 then
-		s = c / (cmax + cmin);
-	else
-		s = c / (2 - cmax - cmin);
+	if c ~= 0 then
+		s = (l == 0 or l == 1) and 0 or ((cmax - l) / math.min(l, 1 - l));
+
+		if cmax == r then
+			h = (g - b) / c + (g < b and 6 or 0);
+		elseif cmax == g then
+			h = (b - r) / c + 2;
+		else
+			h = (r - g) / c + 4;
+		end
+
+		h = h / 6;
 	end
 
 	return h, s, l;
 end
 
+function ConvertRGBToHSV(r, g, b)
+	return ConvertHSLToHSV(ConvertRGBToHSL(r, g, b));
+end
+
 function ConvertRGBToHWB(r, g, b)
-	local h = CalculateHue(r, g, b);
+	local h = ConvertRGBToHSL(r, g, b);
 	local w = math.min(r, g, b);
 	local b = 1 - math.max(r, g, b);  -- luacheck: no redefined
 
