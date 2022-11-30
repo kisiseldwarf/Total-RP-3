@@ -157,7 +157,7 @@ function TRP3_ColorPickerShadePickerMixin:OnSelectedValuesChanged(h, s, v)
 end
 
 function TRP3_ColorPickerShadePickerMixin:OnUpdate()
-	self:DoTheThing();  -- TODO: Should this be throttled a bit?
+	self:DoTheThing();
 end
 
 function TRP3_ColorPickerShadePickerMixin:OnMouseDown()
