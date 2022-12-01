@@ -233,12 +233,20 @@ end
 function TRP3_ColorPickerHueSliderMixin:OnSizeChanged()
 	local extent = self:GetGradientElementExtent();
 	local padding = self:GetGradientPadding();
+	local orientation = self:GetOrientation();
 
 	for i, texture in ipairs(self.backgroundTextures) do
 		texture:ClearAllPoints();
-		texture:SetPoint("TOPLEFT", (i - 1) * extent + padding, -padding);
-		texture:SetPoint("BOTTOM", 0, padding);
-		texture:SetWidth(extent);
+
+		if orientation == "HORIZONTAL" then
+			texture:SetPoint("TOPLEFT", (i - 1) * extent + padding, -padding);
+			texture:SetPoint("BOTTOM", 0, padding);
+			texture:SetWidth(extent);
+		else
+			texture:SetPoint("TOPLEFT", padding, -((i - 1) * extent + padding));
+			texture:SetPoint("RIGHT", -padding, 0);
+			texture:SetHeight(extent);
+		end
 	end
 end
 
@@ -260,9 +268,21 @@ function TRP3_ColorPickerHueSliderMixin:UpdateDisplayedColor()
 	self.ThumbFill:SetVertexColor(TRP3.CreateColorFromHSVA(h, 1, 1):GetRGB());
 end
 
+function TRP3_ColorPickerHueSliderMixin:GetGradientExtent()
+	local padding = self:GetGradientPadding();
+	local extent;
+
+	if self:GetOrientation() == "HORIZONTAL" then
+		extent = self:GetWidth();
+	else
+		extent = self:GetHeight();
+	end
+
+	return extent - (padding * 2);
+end
+
 function TRP3_ColorPickerHueSliderMixin:GetGradientElementExtent()
-	local widthPadding = (self:GetGradientPadding() * 2);
-	return (self:GetWidth() - widthPadding) / self:GetGradientStride();
+	return self:GetGradientExtent() / self:GetGradientStride();
 end
 
 function TRP3_ColorPickerHueSliderMixin:GetGradientStride()
@@ -291,7 +311,7 @@ end
 
 function TRP3_ColorPickerOpacitySliderMixin:OnValueChanged(value)
 	local h, s, v = self:GetDataProvider():GetSelectedValues();
-	local a = value / 100;
+	local a = 1 - (value / 100);
 
 	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
@@ -299,11 +319,11 @@ end
 function TRP3_ColorPickerOpacitySliderMixin:UpdateDisplayedColor()
 	local h, s, v, a = self:GetDataProvider():GetSelectedValues();
 
-	self:SetValue(math.floor(a * 100));
+	self:SetValue(math.floor((1 - a) * 100));
 
 	local startColor = TRP3.CreateColorFromHSVA(h, s, v, 0);
 	local endColor = TRP3.CreateColorFromHSVA(h, s, v, 1);
-	self.Gradient:SetGradient("HORIZONTAL", startColor, endColor);
+	self.Gradient:SetGradient("VERTICAL", startColor, endColor);
 	self.ThumbFill:SetColorTexture(self:GetDataProvider():GetSelectedColor():GetRGBA());
 end
 

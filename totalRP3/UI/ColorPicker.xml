@@ -76,8 +76,8 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 		</Scripts>
 	</Frame>
 
-	<Slider name="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerSliderMixin" orientation="HORIZONTAL" enableMouse="true" virtual="true">
-		<Size x="200" y="20"/>
+	<Slider name="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerSliderMixin" orientation="VERTICAL" enableMouse="true" virtual="true">
+		<Size x="20" y="200"/>
 		<Frames>
 			<Frame parentKey="Backdrop" inherits="BackdropTemplate" useParentLevel="true" setAllPoints="true">
 				<KeyValues>
@@ -97,39 +97,39 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="1" g="0" b="0"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="1" g="1" b="0"/>
+						<MaxColor r="1" g="0" b="0"/>
+					</Gradient>
+				</Texture>
+				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="1" b="0"/>
 						<MaxColor r="1" g="1" b="0"/>
 					</Gradient>
 				</Texture>
 				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="1" g="1" b="0"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="1" b="1"/>
 						<MaxColor r="0" g="1" b="0"/>
 					</Gradient>
 				</Texture>
 				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="0" g="1" b="0"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="0" b="1"/>
 						<MaxColor r="0" g="1" b="1"/>
 					</Gradient>
 				</Texture>
 				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="0" g="1" b="1"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="1" g="0" b="1"/>
 						<MaxColor r="0" g="0" b="1"/>
 					</Gradient>
 				</Texture>
 				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="0" g="0" b="1"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="1" g="0" b="0"/>
 						<MaxColor r="1" g="0" b="1"/>
-					</Gradient>
-				</Texture>
-				<Texture inherits="TRP3_GradientTextureTemplate" parentArray="backgroundTextures">
-					<Gradient orientation="HORIZONTAL">
-						<MinColor r="1" g="0" b="1"/>
-						<MaxColor r="1" g="0" b="0"/>
 					</Gradient>
 				</Texture>
 			</Layer>
@@ -252,24 +252,24 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					<Anchor point="TOPLEFT" x="12" y="-28"/>
 				</Anchors>
 			</Frame>
+			<Slider parentKey="HueSlider" inherits="TRP3_ColorPickerHueSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShadeCanvas" relativePoint="TOPRIGHT" x="4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMLEFT" x="4"/>
+				</Anchors>
+			</Slider>
+			<Slider parentKey="OpacitySlider" inherits="TRP3_ColorPickerOpacitySliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HueSlider" relativePoint="TOPRIGHT" x="4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.HueSlider" relativePoint="BOTTOMLEFT" x="4"/>
+				</Anchors>
+			</Slider>
 			<Frame parentKey="PreviewSwatch" inherits="TRP3_ColorPickerPreviewSwatchTemplate">
 				<Size x="44" y="44"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
 			</Frame>
-			<Slider parentKey="HueSlider" inherits="TRP3_ColorPickerHueSliderTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMRIGHT" y="-4"/>
-					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="4"/>
-				</Anchors>
-			</Slider>
-			<Slider parentKey="OpacitySlider" inherits="TRP3_ColorPickerOpacitySliderTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.HueSlider" relativePoint="BOTTOMRIGHT" y="-4"/>
-					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="4"/>
-				</Anchors>
-			</Slider>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
