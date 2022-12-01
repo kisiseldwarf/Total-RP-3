@@ -121,27 +121,27 @@ end
 -- "Neon yellow-green baby poop" Selector
 --
 
-TRP3_ColorPickerShadePickerMixin = CreateFromMixins(TRP3_ColorPickerWidgetBaseMixin);
+TRP3_ColorPickerShadeCanvasMixin = CreateFromMixins(TRP3_ColorPickerWidgetBaseMixin);
 
-function TRP3_ColorPickerShadePickerMixin:OnDataProviderChanged(dataProvider)
+function TRP3_ColorPickerShadeCanvasMixin:OnDataProviderChanged(dataProvider)
 	dataProvider:RegisterCallback("OnSelectedValuesChanged", self.UpdateDisplayedColor, self);
 	self:UpdateDisplayedColor();
 end
 
-function TRP3_ColorPickerShadePickerMixin:OnUpdate()
+function TRP3_ColorPickerShadeCanvasMixin:OnUpdate()
 	self:UpdateSelectedColor();
 end
 
-function TRP3_ColorPickerShadePickerMixin:OnMouseDown()
+function TRP3_ColorPickerShadeCanvasMixin:OnMouseDown()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
-function TRP3_ColorPickerShadePickerMixin:OnMouseUp()
+function TRP3_ColorPickerShadeCanvasMixin:OnMouseUp()
 	self:SetScript("OnUpdate", nil);
 	self:UpdateSelectedColor();
 end
 
-function TRP3_ColorPickerShadePickerMixin:UpdateDisplayedColor()
+function TRP3_ColorPickerShadeCanvasMixin:UpdateDisplayedColor()
 	local h, s, v = self:GetDataProvider():GetSelectedValues();
 
 	local width, height = select(3, self:GetCanvasRect());
@@ -156,7 +156,7 @@ function TRP3_ColorPickerShadePickerMixin:UpdateDisplayedColor()
 	self.Color:SetColorTexture(TRP3.CreateColorFromHSVA(h, 1, 1):GetRGB());
 end
 
-function TRP3_ColorPickerShadePickerMixin:UpdateSelectedColor()
+function TRP3_ColorPickerShadeCanvasMixin:UpdateSelectedColor()
 	local cx, cy = GetCursorPosition();
 	local scale = self:GetEffectiveScale();
 
@@ -175,7 +175,7 @@ function TRP3_ColorPickerShadePickerMixin:UpdateSelectedColor()
 	self:GetDataProvider():SetSelectedValues(h, s, v, a);
 end
 
-function TRP3_ColorPickerShadePickerMixin:GetCanvasRect()
+function TRP3_ColorPickerShadeCanvasMixin:GetCanvasRect()
 	local left, bottom, width, height = self:GetRect();
 	local padding = self:GetCanvasPadding();
 
@@ -187,7 +187,7 @@ function TRP3_ColorPickerShadePickerMixin:GetCanvasRect()
 	return left, bottom, width, height;
 end
 
-function TRP3_ColorPickerShadePickerMixin:GetCanvasPadding()
+function TRP3_ColorPickerShadeCanvasMixin:GetCanvasPadding()
 	return 12;
 end
 
@@ -386,6 +386,6 @@ function TRP3_ColorPickerMixin:OnDataProviderChanged(dataProvider)
 
 	self.HueSlider:SetDataProvider(dataProvider);
 	self.OpacitySlider:SetDataProvider(dataProvider);
-	self.ShadePicker:SetDataProvider(dataProvider);
+	self.ShadeCanvas:SetDataProvider(dataProvider);
 	self.PreviewSwatch:SetDataProvider(dataProvider);
 end

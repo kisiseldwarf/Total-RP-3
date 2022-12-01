@@ -14,7 +14,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 	<Texture name="TRP3_ColorPickerThumbFillTextureTemplate" virtual="true" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator"/>
 	<Texture name="TRP3_ColorPickerTransparencyGridTextureTemplate" virtual="true" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true"/>
 
-	<Frame name="TRP3_ColorPickerShadePickerTemplate" mixin="TRP3_ColorPickerShadePickerMixin" virtual="true">
+	<Frame name="TRP3_ColorPickerShadeCanvasTemplate" mixin="TRP3_ColorPickerShadeCanvasMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND"  textureSubLevel="0">
 				<Texture parentKey="Color">
@@ -246,7 +246,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait"/>
 				</KeyValues>
 			</Frame>
-			<Frame parentKey="ShadePicker" inherits="TRP3_ColorPickerShadePickerTemplate">
+			<Frame parentKey="ShadeCanvas" inherits="TRP3_ColorPickerShadeCanvasTemplate">
 				<Size x="300" y="150"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-28"/>
@@ -255,12 +255,12 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 			<Frame parentKey="PreviewSwatch" inherits="TRP3_ColorPickerPreviewSwatchTemplate">
 				<Size x="44" y="44"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ShadePicker" relativePoint="BOTTOMLEFT" y="-4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
 			</Frame>
 			<Slider parentKey="HueSlider" inherits="TRP3_ColorPickerHueSliderTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.ShadePicker" relativePoint="BOTTOMRIGHT" y="-4"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMRIGHT" y="-4"/>
 					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="4"/>
 				</Anchors>
 			</Slider>
