@@ -150,8 +150,8 @@ function TRP3_ColorPickerShadePickerMixin:UpdateDisplayedColor()
 	local xOffset = (s * width) + padding;
 	local yOffset = (v * height) + padding;
 
-	self.ThumbBorder:ClearAllPoints();
-	self.ThumbBorder:SetPoint("CENTER", self, "BOTTOMLEFT", xOffset, yOffset);
+	self.ThumbFill:ClearAllPoints();
+	self.ThumbFill:SetPoint("CENTER", self, "BOTTOMLEFT", xOffset, yOffset);
 	self.ThumbFill:SetVertexColor(self:GetDataProvider():GetSelectedColor():GetRGB());
 	self.Color:SetColorTexture(TRP3.CreateColorFromHSVA(h, 1, 1):GetRGB());
 end
@@ -270,7 +270,7 @@ function TRP3_ColorPickerHueSliderMixin:GetGradientStride()
 end
 
 function TRP3_ColorPickerHueSliderMixin:GetGradientPadding()
-	return 3;
+	return 4;
 end
 
 --
@@ -278,6 +278,11 @@ end
 --
 
 TRP3_ColorPickerOpacitySliderMixin = CreateFromMixins(TRP3_ColorPickerSliderMixin);
+
+function TRP3_ColorPickerOpacitySliderMixin:OnLoad()
+	-- Anchors to <ThumbTexture> elements don't work in XML.
+	self.ThumbFill:SetAllPoints(self.ThumbBorder);
+end
 
 function TRP3_ColorPickerOpacitySliderMixin:OnDataProviderChanged(dataProvider)
 	TRP3_ColorPickerSliderMixin.OnDataProviderChanged(self, dataProvider);
@@ -299,6 +304,7 @@ function TRP3_ColorPickerOpacitySliderMixin:UpdateDisplayedColor()
 	local startColor = TRP3.CreateColorFromHSVA(h, s, v, 0);
 	local endColor = TRP3.CreateColorFromHSVA(h, s, v, 1);
 	self.Gradient:SetGradient("HORIZONTAL", startColor, endColor);
+	self.ThumbFill:SetColorTexture(self:GetDataProvider():GetSelectedColor():GetRGBA());
 end
 
 function TRP3_ColorPickerOpacitySliderMixin:UpdateVisibility()

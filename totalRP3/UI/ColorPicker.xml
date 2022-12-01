@@ -10,13 +10,17 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 		T = { edgeFile = [[Interface\AddOns\totalRP3\Resources\UI\UIFrameMetalBackdrop]], edgeSize = 8, tileEdge = true }
 	</Script>
 
+	<Texture name="TRP3_ColorPickerThumbBorderTextureTemplate" virtual="true" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumb"/>
+	<Texture name="TRP3_ColorPickerThumbFillTextureTemplate" virtual="true" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator"/>
+	<Texture name="TRP3_ColorPickerTransparencyGridTextureTemplate" virtual="true" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true"/>
+
 	<Frame name="TRP3_ColorPickerShadePickerTemplate" mixin="TRP3_ColorPickerShadePickerMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND"  textureSubLevel="0">
 				<Texture parentKey="Color">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 					</Anchors>
 					<Color r="0" g="0.66" b="1"/>
 				</Texture>
@@ -45,16 +49,16 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					</Gradient>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="0">
-				<Texture parentKey="ThumbBorder" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumb">
-					<Size x="22" y="22"/>
+			<Layer level="BORDER">
+				<Texture parentKey="ThumbFill" inherits="TRP3_ColorPickerThumbFillTextureTemplate">
+					<Size x="24" y="24"/>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="ThumbFill" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator">
+			<Layer level="OVERLAY">
+				<Texture parentKey="ThumbBorder" inherits="TRP3_ColorPickerThumbBorderTextureTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ThumbBorder"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ThumbBorder"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ThumbFill"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ThumbFill"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -81,8 +85,8 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 				</KeyValues>
 			</Frame>
 		</Frames>
-		<ThumbTexture parentKey="ThumbBorder" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumb">
-			<Size x="22" y="22"/>
+		<ThumbTexture parentKey="ThumbBorder" inherits="TRP3_ColorPickerThumbBorderTextureTemplate">
+			<Size x="24" y="24"/>
 		</ThumbTexture>
 		<Scripts>
 			<OnValueChanged method="OnValueChanged"/>
@@ -129,8 +133,8 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					</Gradient>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="ThumbFill" file="Interface\AddOns\totalRP3\Resources\UI\UIColorPickerSliderThumbIndicator">
+			<Layer level="BORDER" textureSubLevel="7">
+				<Texture parentKey="ThumbFill" inherits="TRP3_ColorPickerThumbFillTextureTemplate">
 					<Anchors/>
 				</Texture>
 			</Layer>
@@ -144,10 +148,10 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 	<Slider name="TRP3_ColorPickerOpacitySliderTemplate" inherits="TRP3_ColorPickerSliderTemplate" mixin="TRP3_ColorPickerOpacitySliderMixin" minValue="0" maxValue="100" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="Background" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true">
+				<Texture parentKey="Background" inherits="TRP3_ColorPickerTransparencyGridTextureTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -163,16 +167,42 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					</Gradient>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture parentKey="ThumbFillBackground" inherits="TRP3_ColorPickerTransparencyGridTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="7">
+				<Texture parentKey="ThumbFill">
+					<Anchors/>
+				</Texture>
+				<MaskTexture parentKey="ThumbFillMask" inherits="TRP3_ColorPickerThumbFillTextureTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ThumbFill"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ThumbFill"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ThumbFillBackground"/>
+						<MaskedTexture childKey="ThumbFill"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Slider>
 
 	<Frame name="TRP3_ColorPickerPreviewSwatchTemplate" mixin="TRP3_ColorPickerPreviewSwatchMixin" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="Background" file="Interface\AddOns\totalRP3\Resources\UI\UITransparencyGrid" horizTile="true" vertTile="true">
+				<Texture parentKey="Background" inherits="TRP3_ColorPickerTransparencyGridTextureTemplate">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -208,7 +238,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 			<Frame parentKey="Background" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-18"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
@@ -246,9 +276,9 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 		</Scripts>
 	</Frame>
 
-	<Frame name="TRP3_ColorPickerFrame" inherits="TRP3_ColorPickerTemplate">
+	<Frame name="TRP3_ColorPickerFrame" parent="UIParent" inherits="TRP3_ColorPickerTemplate">
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="TOPLEFT" x="300" y="-300"/>
 		</Anchors>
 	</Frame>
 </Ui>
