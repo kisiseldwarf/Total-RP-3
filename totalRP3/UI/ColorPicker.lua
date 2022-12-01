@@ -408,4 +408,20 @@ function TRP3_ColorPickerMixin:OnDataProviderChanged(dataProvider)
 	self.OpacitySlider:SetDataProvider(dataProvider);
 	self.ShadeCanvas:SetDataProvider(dataProvider);
 	self.PreviewSwatch:SetDataProvider(dataProvider);
+
+	dataProvider:RegisterCallback("OnSelectedValuesChanged", function()
+		if not self.TempEditBox:HasFocus() then
+			self.TempEditBox:SetText(dataProvider:GetSelectedColor():GenerateColorString());
+		end
+	end)
+
+	self.TempEditBox:SetScript("OnTextChanged", function(_, isKeypress)
+		if isKeypress then
+			local color = TRP3.GetColorFromString(self.TempEditBox:GetText());
+
+			if color then
+				dataProvider:SetSelectedColor(color);
+			end
+		end
+	end)
 end

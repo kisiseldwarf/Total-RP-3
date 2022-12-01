@@ -247,7 +247,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 				</KeyValues>
 			</Frame>
 			<Frame parentKey="ShadeCanvas" inherits="TRP3_ColorPickerShadeCanvasTemplate">
-				<Size x="300" y="150"/>
+				<Size x="270" y="180"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="-28"/>
 				</Anchors>
@@ -269,6 +269,34 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ShadeCanvas" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
+			</Frame>
+			<EditBox parentKey="TempEditBox" inherits="InputBoxTemplate" autoFocus="false">
+				<Size y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PreviewSwatch" relativePoint="RIGHT" x="8" y="2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ShadeCanvas" x="-1"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="ButtonTray">
+				<Size y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreviewSwatch" relativePoint="BOTTOMLEFT" y="-4"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size x="96" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="-8"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+						<Size x="96" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-2"/>
+						</Anchors>
+					</Button>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
