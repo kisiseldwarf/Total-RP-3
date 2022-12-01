@@ -146,10 +146,9 @@ function TRP3_ColorPickerShadePickerMixin:UpdateDisplayedColor()
 
 	local width, height = select(3, self:GetCanvasRect());
 	local padding = self:GetCanvasPadding();
-	local scale = self:GetEffectiveScale();
 
-	local xOffset = ((s * width) + padding) * scale;  -- TODO: Test with scaling.
-	local yOffset = ((v * height) + padding) * scale;  -- TODO: Test with scaling.
+	local xOffset = (s * width) + padding;
+	local yOffset = (v * height) + padding;
 
 	self.ThumbBorder:ClearAllPoints();
 	self.ThumbBorder:SetPoint("CENTER", self, "BOTTOMLEFT", xOffset, yOffset);
@@ -159,6 +158,11 @@ end
 
 function TRP3_ColorPickerShadePickerMixin:UpdateSelectedColor()
 	local cx, cy = GetCursorPosition();
+	local scale = self:GetEffectiveScale();
+
+	cx = cx / scale;
+	cy = cy / scale;
+
 	local left, bottom, width, height = self:GetCanvasRect();
 
 	local dx = Clamp(cx, left, left + width) - left;
